@@ -123,3 +123,140 @@ class TestItemEffects:
         )
         result = simulate_1v1(garchomp_oran, garchomp_naked)
         assert result.win_rate_a > 0.5
+
+
+class TestAbilityEffects:
+    def test_huge_power_doubles_physical(self):
+        """ちからもちで攻撃が実質2倍になる"""
+        garchomp_huge = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        garchomp_huge.ability = "huge-power"
+
+        garchomp_opponent = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(garchomp_huge, garchomp_opponent)
+        assert result.win_rate_a > 0.7  # ちからもちで圧倒的有利
+
+    def test_intimidate_lowers_attack(self):
+        """いかくで相手の攻撃が下がる"""
+        garchomp_intimidate = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        garchomp_intimidate.ability = "intimidate"
+
+        garchomp_normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(garchomp_intimidate, garchomp_normal)
+        assert result.win_rate_a > 0.5  # いかくで相手攻撃ランク-1 → 有利
+
+    def test_sturdy_survives_ohko(self):
+        """がんじょうでHP満タンからの一撃KOを耐える"""
+        garchomp = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        magikarp_sturdy = BattlePokemon.from_data(
+            species="magikarp", nature=Nature.JOLLY,
+            evs={}, ivs={}, item="",
+            move_names=["tackle"],
+        )
+        magikarp_sturdy.ability = "sturdy"
+        result = simulate_1v1(garchomp, magikarp_sturdy)
+        # がんじょうで1発耐えてたいあたりを1回は撃てる → ガブリアス100%勝ちだが残HPが減る
+        assert result.win_rate_a == 1.0
+        assert result.avg_remaining_hp_a < garchomp.stats["hp"]
+
+    def test_levitate_immune_to_ground(self):
+        """ふゆうで地面技無効"""
+        garchomp = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        # ふゆう + アウトレイジ持ちのガブリアスモドキ
+        rotom = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake", "outrage"],
+        )
+        rotom.ability = "levitate"
+        result = simulate_1v1(garchomp, rotom)
+        # ガブリアスの地震はふゆうで無効 → rotom側のアウトレイジで優位
+        assert result.win_rate_b > 0.9
+
+    def test_stamina_boosts_defense(self):
+        """じきゅうりょくで被弾のたびに防御が上がる"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender_stamina = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "defense": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender_stamina.ability = "stamina"
+
+        defender_normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "defense": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result_stamina = simulate_1v1(attacker, defender_stamina)
+        result_normal = simulate_1v1(
+            BattlePokemon.from_data(
+                species="garchomp", nature=Nature.JOLLY,
+                evs={"attack": 32, "speed": 32}, ivs={}, item="",
+                move_names=["earthquake"],
+            ),
+            defender_normal,
+        )
+        # じきゅうりょく持ちのdefenderの方が高い勝率を持つ
+        assert result_stamina.win_rate_b > result_normal.win_rate_b
+
+    def test_water_absorb_immune_to_water(self):
+        """ちょすいで水技無効"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["surf"],
+        )
+        # ちょすい持ちに対して水技のみのアタッカー → 全技無効 → bが100%勝つ
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender.ability = "water-absorb"
+        result = simulate_1v1(attacker, defender)
+        assert result.win_rate_b == 1.0
+
+    def test_flash_fire_immune_to_fire(self):
+        """もらいびで炎技無効"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["flamethrower"],
+        )
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender.ability = "flash-fire"
+        result = simulate_1v1(attacker, defender)
+        # 炎技が無効 → attackerのダメージ0 → bが100%勝つ
+        assert result.win_rate_b == 1.0

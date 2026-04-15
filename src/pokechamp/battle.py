@@ -53,6 +53,7 @@ class BattlePokemon:
     item: str
     nature: Nature
     evs: dict[str, int]
+    ability: str = ""
     stage_modifiers: dict[str, int] = field(default_factory=lambda: {
         "attack": 0,
         "defense": 0,
@@ -71,6 +72,7 @@ class BattlePokemon:
         item: str,
         move_names: list[str],
         level: int = 50,
+        ability: Optional[str] = None,
     ) -> "BattlePokemon":
         """ポケモン名・性格・努力値などからBattlePokemonを生成する。"""
         pokemon = load_pokemon(species)
@@ -108,6 +110,9 @@ class BattlePokemon:
         # 技を読み込む
         moves = [load_move(name) for name in move_names]
 
+        # アビリティ: 引数で指定がなければポケモンデータの最初のアビリティを使用
+        resolved_ability = ability if ability is not None else (pokemon.abilities[0] if pokemon.abilities else "")
+
         return cls(
             name=species,
             types=pokemon.types,
@@ -116,6 +121,7 @@ class BattlePokemon:
             item=item,
             nature=nature,
             evs=ev_defaults,
+            ability=resolved_ability,
         )
 
     def get_effective_stat(self, stat_name: str) -> int:
@@ -156,6 +162,10 @@ class BattlePokemon:
             if move.power == 0:
                 continue
 
+            # アビリティによるタイプ無効チェック
+            if _is_type_immune(opponent, move):
+                continue
+
             # タイプ相性を計算（複合タイプ対応）
             eff = 1.0
             for defend_type in opponent.types:
@@ -164,8 +174,9 @@ class BattlePokemon:
             if eff == 0.0:
                 continue
 
-            # STAB判定
-            stab = move.type in self.types
+            # STAB判定 (adaptabilityは2.0)
+            stab_mult = _get_stab_multiplier(self, move)
+            stab = stab_mult > 1.0
 
             # 攻撃/特攻の選択
             if move.category == "physical":
@@ -175,12 +186,26 @@ class BattlePokemon:
                 atk_stat = self.get_effective_stat("sp_attack")
                 def_stat = opponent.get_effective_stat("sp_defense")
 
+            # アビリティによる攻撃補正をatk_statに乗算
+            atk_mod = _get_attack_modifier(self, move)
+            atk_stat = math.floor(atk_stat * atk_mod)
+
             # タイプ強化アイテムの補正
             item_mod = 1.0
             if self.item in _ITEM_EFFECTS:
                 effect = _ITEM_EFFECTS[self.item]
                 if effect["type"] == "type_boost" and move.type.value == effect["boost_type"]:
                     item_mod = effect["value"]
+
+            # アビリティによるダメージ補正をitem_modに乗算
+            item_mod *= _get_damage_modifier(self, move, opponent)
+
+            # adaptabilityのSTABは calc_damage_range の stab=False + item_mod で処理
+            # (1.5→2.0の差分をitem_modで追加する代わりに、stab引数はbool→実際の倍率に対応させる)
+            # 実装方針: stab=Trueで1.5倍、追加の差分をitem_modに乗算
+            if stab and stab_mult == 2.0:
+                # adaptability: 1.5倍ではなく2.0倍 → item_modに差分 (2.0/1.5) を乗算
+                item_mod *= 2.0 / 1.5
 
             dmg_range = calc_damage_range(
                 level=50,
@@ -199,6 +224,58 @@ class BattlePokemon:
                 best_dmg = dmg_range
 
         return best_move, best_dmg
+
+
+# ---------------------------------------------------------------------------
+# アビリティ効果ヘルパー
+# ---------------------------------------------------------------------------
+
+def _get_attack_modifier(attacker: "BattlePokemon", move: Move) -> float:
+    """攻撃側アビリティによる攻撃倍率を返す。"""
+    mod = 1.0
+    if attacker.ability in ("huge-power", "pure-power") and move.category == "physical":
+        mod *= 2.0
+    if attacker.ability == "hustle" and move.category == "physical":
+        mod *= 1.5
+    return mod
+
+
+def _get_stab_multiplier(attacker: "BattlePokemon", move: Move) -> float:
+    """STAB倍率を返す (adaptabilityは2.0)。"""
+    if move.type in attacker.types:
+        return 2.0 if attacker.ability == "adaptability" else 1.5
+    return 1.0
+
+
+def _get_damage_modifier(attacker: "BattlePokemon", move: Move, defender: "BattlePokemon") -> float:
+    """アビリティによるダメージ倍率を返す（両側）。"""
+    mod = 1.0
+    # 攻撃側アビリティ
+    if attacker.ability == "water-bubble" and move.type == TypeName.WATER:
+        mod *= 2.0
+    # 防御側アビリティ
+    if defender.ability == "fur-coat" and move.category == "physical":
+        mod *= 0.5
+    if defender.ability == "water-bubble" and move.type == TypeName.FIRE:
+        mod *= 0.5
+    if defender.ability == "dry-skin" and move.type == TypeName.FIRE:
+        mod *= 1.25
+    return mod
+
+
+def _is_type_immune(defender: "BattlePokemon", move: Move) -> bool:
+    """防御側アビリティによるタイプ無効を判定する。"""
+    ability = defender.ability
+    move_type = move.type
+    if ability in ("water-absorb", "dry-skin") and move_type == TypeName.WATER:
+        return True
+    if ability in ("volt-absorb", "lightning-rod") and move_type == TypeName.ELECTRIC:
+        return True
+    if ability == "levitate" and move_type == TypeName.GROUND:
+        return True
+    if ability == "flash-fire" and move_type == TypeName.FIRE:
+        return True
+    return False
 
 
 def _apply_setup(pokemon: BattlePokemon, setup_move_name: str, turns: int) -> None:
@@ -237,6 +314,12 @@ def simulate_1v1(
     if setup_move and setup_turns > 0:
         _apply_setup(a, setup_move, setup_turns)
         setup_applied = True
+
+    # いかく: 対戦開始時に相手の攻撃ランクを-1
+    if a.ability == "intimidate":
+        b.stage_modifiers["attack"] = max(-6, b.stage_modifiers["attack"] - 1)
+    if b.ability == "intimidate":
+        a.stage_modifiers["attack"] = max(-6, a.stage_modifiers["attack"] - 1)
 
     # 各側の最善技・ダメージ乱数を取得
     move_a, dmg_range_a = a.best_move_against(b)
@@ -401,6 +484,21 @@ def simulate_1v1(
             sitrus_heal_a = max(1, hp_a // 4)
             sitrus_heal_b = max(1, hp_b // 4)
 
+            # アビリティフラグ (試行ごとにリセット)
+            # マルチスケイル: HP満タン時に被ダメージ半減
+            # ばけのかわ: 最初の1発を無効化
+            disguise_a = a.ability == "disguise"
+            disguise_b = b.ability == "disguise"
+            # がんじょう: HP満タンから一撃KOを耐える (タスキと同様)
+            sturdy_a = a.ability == "sturdy"
+            sturdy_b = b.ability == "sturdy"
+            # もらいび: 炎技を受けると炎技が1.5倍に (炎は無効化)
+            flash_fire_active_a = False  # aのもらいびが発動中
+            flash_fire_active_b = False  # bのもらいびが発動中
+            # じきゅうりょく: 被弾のたびに防御+1 → ダメージ軽減として追跡
+            stamina_boosts_a = 0
+            stamina_boosts_b = 0
+
             # 同速の場合は試行ごとにランダム決定
             if a_goes_first is None:
                 first_is_a = random.random() < 0.5
@@ -411,48 +509,144 @@ def simulate_1v1(
                 da = random.choice(dmg_range_a)
                 db = random.choice(dmg_range_b)
 
+                # もらいび発動中なら炎技ダメージを1.5倍に
+                # (best_move_againstはループ前に計算済みのため、ここでインラインに補正)
+                if flash_fire_active_a and move_a and move_a.type == TypeName.FIRE:
+                    da = math.floor(da * 1.5)
+                if flash_fire_active_b and move_b and move_b.type == TypeName.FIRE:
+                    db = math.floor(db * 1.5)
+
+                # じきゅうりょく: 蓄積した防御ブーストを軽減率として適用
+                # N回被弾後: 防御ステージ+N → 軽減率 2/(2+N)
+                if stamina_boosts_a > 0:
+                    db = math.floor(db * 2 / (2 + stamina_boosts_a))
+                if stamina_boosts_b > 0:
+                    da = math.floor(da * 2 / (2 + stamina_boosts_b))
+
                 if first_is_a:
                     prev_hp_b = cur_hp_b
+                    # マルチスケイル: HP満タン時に被ダメージ半減
+                    if b.ability == "multiscale" and cur_hp_b == hp_b:
+                        da = math.floor(da * 0.5)
+                    # ばけのかわ: 最初の1発を無効化
+                    if disguise_b:
+                        da = 0
+                        disguise_b = False
+                        # ばけのかわ破壊時に最大HPの1/8ダメージ
+                        cur_hp_b -= max(1, hp_b // 8)
+                        if cur_hp_b <= 0:
+                            break
+                    # もらいびチェック: 炎技を受けた場合
+                    if b.ability == "flash-fire" and move_a and move_a.type == TypeName.FIRE:
+                        da = 0
+                        flash_fire_active_b = True
                     cur_hp_b -= da
-                    # きあいのタスキ: HP満タンから一撃で倒される場合HP1で耐える
+                    # きあいのタスキ / がんじょう: HP満タンから一撃で倒される場合HP1で耐える
                     if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
                         cur_hp_b = 1
                         sash_b = False
+                    if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b:
+                        cur_hp_b = 1
+                        sturdy_b = False
                     if cur_hp_b <= 0:
                         break
+                    # じきゅうりょく: 被弾後に防御+1
+                    if b.ability == "stamina" and da > 0:
+                        stamina_boosts_b = min(6, stamina_boosts_b + 1)
                     # オボンのみ: HP半分以下で最大HPの1/4回復
                     if sitrus_b and cur_hp_b <= hp_b // 2:
                         cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
                         sitrus_b = False
 
                     prev_hp_a = cur_hp_a
+                    # マルチスケイル: HP満タン時に被ダメージ半減
+                    if a.ability == "multiscale" and cur_hp_a == hp_a:
+                        db = math.floor(db * 0.5)
+                    # ばけのかわ: 最初の1発を無効化
+                    if disguise_a:
+                        db = 0
+                        disguise_a = False
+                        cur_hp_a -= max(1, hp_a // 8)
+                        if cur_hp_a <= 0:
+                            break
+                    # もらいびチェック: 炎技を受けた場合
+                    if a.ability == "flash-fire" and move_b and move_b.type == TypeName.FIRE:
+                        db = 0
+                        flash_fire_active_a = True
                     cur_hp_a -= db
                     if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
                         cur_hp_a = 1
                         sash_a = False
+                    if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a:
+                        cur_hp_a = 1
+                        sturdy_a = False
                     if cur_hp_a <= 0:
                         break
+                    # じきゅうりょく: 被弾後に防御+1
+                    if a.ability == "stamina" and db > 0:
+                        stamina_boosts_a = min(6, stamina_boosts_a + 1)
                     if sitrus_a and cur_hp_a <= hp_a // 2:
                         cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
                         sitrus_a = False
                 else:
                     prev_hp_a = cur_hp_a
+                    # マルチスケイル
+                    if a.ability == "multiscale" and cur_hp_a == hp_a:
+                        db = math.floor(db * 0.5)
+                    # ばけのかわ
+                    if disguise_a:
+                        db = 0
+                        disguise_a = False
+                        cur_hp_a -= max(1, hp_a // 8)
+                        if cur_hp_a <= 0:
+                            break
+                    # もらいびチェック
+                    if a.ability == "flash-fire" and move_b and move_b.type == TypeName.FIRE:
+                        db = 0
+                        flash_fire_active_a = True
                     cur_hp_a -= db
                     if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
                         cur_hp_a = 1
                         sash_a = False
+                    if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a:
+                        cur_hp_a = 1
+                        sturdy_a = False
                     if cur_hp_a <= 0:
                         break
+                    # じきゅうりょく
+                    if a.ability == "stamina" and db > 0:
+                        stamina_boosts_a = min(6, stamina_boosts_a + 1)
                     if sitrus_a and cur_hp_a <= hp_a // 2:
                         cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
                         sitrus_a = False
 
+                    prev_hp_b = cur_hp_b
+                    # マルチスケイル
+                    if b.ability == "multiscale" and cur_hp_b == hp_b:
+                        da = math.floor(da * 0.5)
+                    # ばけのかわ
+                    if disguise_b:
+                        da = 0
+                        disguise_b = False
+                        cur_hp_b -= max(1, hp_b // 8)
+                        if cur_hp_b <= 0:
+                            break
+                    # もらいびチェック
+                    if b.ability == "flash-fire" and move_a and move_a.type == TypeName.FIRE:
+                        da = 0
+                        flash_fire_active_b = True
                     cur_hp_b -= da
-                    if cur_hp_b <= 0 and sash_b and cur_hp_b + da == hp_b:
+                    if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
                         cur_hp_b = 1
                         sash_b = False
+                    if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b:
+                        cur_hp_b = 1
+                        sturdy_b = False
                     if cur_hp_b <= 0:
                         break
+                    # じきゅうりょく
+                    if b.ability == "stamina" and da > 0:
+                        stamina_boosts_b = min(6, stamina_boosts_b + 1)
                     if sitrus_b and cur_hp_b <= hp_b // 2:
                         cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
                         sitrus_b = False
