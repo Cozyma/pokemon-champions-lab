@@ -195,6 +195,10 @@ def _simulate_one_sequence(
             log.append(f"A switched to {team_a[idx_a].name}")
             continue  # switch turn - no attack from a this turn
 
+        # Note: stat stage changes (boosts/debuffs) are automatically reset when a
+        # pokemon switches out, because each simulate_1v1 call starts with fresh stages.
+        # This correctly models the game behavior where switching resets all stat changes.
+
         # Run 1v1 to completion with current HPs (n_trials=1 for single deterministic trial)
         result = simulate_1v1(
             cur_a, cur_b,

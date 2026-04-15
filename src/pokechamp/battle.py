@@ -278,6 +278,19 @@ _SLASHING_MOVES: set[str] = {
     "kowtow-cleave",
 }
 
+# 確定自己デバフ技: 攻撃後に自分のステータスが下がる（確率ではなく確定）
+# key=技名, value=[(stat, stages), ...]
+_SELF_DEBUFF_MOVES: dict[str, list[tuple[str, int]]] = {
+    "draco-meteor": [("sp_attack", -2)],
+    "overheat": [("sp_attack", -2)],
+    "leaf-storm": [("sp_attack", -2)],
+    "fleur-cannon": [("sp_attack", -2)],
+    "close-combat": [("defense", -1), ("sp_defense", -1)],
+    "superpower": [("attack", -1), ("defense", -1)],
+    "hammer-arm": [("speed", -1)],  # 厳密にはステ変化ではなくS低下だが同様に扱う
+    "v-create": [("defense", -1), ("sp_defense", -1), ("speed", -1)],
+}
+
 _SKIN_ABILITIES: dict[str, TypeName] = {
     "pixilate": TypeName.FAIRY,
     "aerilate": TypeName.FLYING,
@@ -539,6 +552,8 @@ def _choose_move(
     max_hp_self: int,
     turn_number: int = 1,
     setup_used: bool = False,
+    atk_boost: int = 0,
+    spa_boost: int = 0,
 ) -> tuple[Move | None, list[int]]:
     """ターンごとの状況に応じて最適な技を選択する。
 
@@ -550,9 +565,27 @@ def _choose_move(
        a. 先制技でKOできるなら使用
        b. 被弾で倒れる場合: 先制技+急所でKO可能なら先制技（博打）、不可なら最大ダメージ
        c. 生存可能 → 最大ダメージ技
+
+    atk_boost/spa_boost: 現在の攻撃/特攻ランク補正（自己デバフ等で変動）。
+    ダメージ推定に反映してデバフ後の実ダメージで技選択する。
     """
     if not all_moves:
         return None, [0] * 16
+
+    def _adjusted_avg(move: Move, dmg_range: list[int]) -> float:
+        """現在のブーストを反映した平均ダメージを返す。"""
+        avg = sum(dmg_range) / len(dmg_range)
+        if move.category == "physical" and atk_boost != 0:
+            if atk_boost > 0:
+                avg *= (2 + atk_boost) / 2
+            else:
+                avg *= 2 / (2 + abs(atk_boost))
+        elif move.category == "special" and spa_boost != 0:
+            if spa_boost > 0:
+                avg *= (2 + spa_boost) / 2
+            else:
+                avg *= 2 / (2 + abs(spa_boost))
+        return avg
 
     # セットアップ技検討 (ターン1のみ、未使用時のみ)
     if turn_number == 1 and not setup_used:
@@ -564,8 +597,8 @@ def _choose_move(
 
             if will_survive or has_sash or has_sturdy:
                 # セットアップが有効かを推定する
-                best_atk_move = max(all_moves, key=lambda x: sum(x[1]) / len(x[1]))
-                best_avg_dmg = sum(best_atk_move[1]) / len(best_atk_move[1])
+                best_atk_move = max(all_moves, key=lambda x: _adjusted_avg(x[0], x[1]))
+                best_avg_dmg = _adjusted_avg(best_atk_move[0], best_atk_move[1])
 
                 if best_avg_dmg > 0:
                     # ブーストによるダメージ増加率を推定
@@ -587,8 +620,8 @@ def _choose_move(
     # 先制技と通常技に分類
     priority_moves = [(m, dr) for m, dr in all_moves if m.priority > 0]
 
-    # 最大ダメージ技（平均ダメージ最大）
-    best_normal = max(all_moves, key=lambda x: sum(x[1]) / len(x[1]))
+    # 最大ダメージ技（ブースト調整済み平均ダメージ最大）
+    best_normal = max(all_moves, key=lambda x: _adjusted_avg(x[0], x[1]))
 
     i_am_faster = my_speed > opp_speed
 
@@ -827,11 +860,13 @@ def simulate_1v1(
                 a, b, cur_hp_b, eff_speed_a, eff_speed_b,
                 all_moves_a, max_dmg_from_b, cur_hp_a, max_hp_a,
                 turn_number=turn_number, setup_used=setup_used_a,
+                atk_boost=atk_boost_a, spa_boost=spa_boost_a,
             )
             move_b, dmg_range_b_cur = _choose_move(
                 b, a, cur_hp_a, eff_speed_b, eff_speed_a,
                 all_moves_b, max_dmg_from_a, cur_hp_b, max_hp_b,
                 turn_number=turn_number, setup_used=setup_used_b,
+                atk_boost=atk_boost_b, spa_boost=spa_boost_b,
             )
 
             # セットアップ技の処理: ステージを記録しda/db=0に設定
@@ -918,27 +953,51 @@ def simulate_1v1(
             if stamina_boosts_b > 0:
                 da = math.floor(da * 2 / (2 + stamina_boosts_b))
 
-            # セットアップ技による攻撃ブーストを適用 (命中時のみ)
+            # セットアップ技による攻撃ブーストを適用 (命中時のみ、正負両対応)
             if hit_a and da > 0:
-                if atk_boost_a > 0 and move_a and move_a.category == "physical":
-                    da = math.floor(da * (2 + atk_boost_a) / 2)
-                if spa_boost_a > 0 and move_a and move_a.category == "special":
-                    da = math.floor(da * (2 + spa_boost_a) / 2)
+                if atk_boost_a != 0 and move_a and move_a.category == "physical":
+                    if atk_boost_a > 0:
+                        da = math.floor(da * (2 + atk_boost_a) / 2)
+                    else:
+                        da = math.floor(da * 2 / (2 + abs(atk_boost_a)))
+                if spa_boost_a != 0 and move_a and move_a.category == "special":
+                    if spa_boost_a > 0:
+                        da = math.floor(da * (2 + spa_boost_a) / 2)
+                    else:
+                        da = math.floor(da * 2 / (2 + abs(spa_boost_a)))
             if hit_b and db > 0:
-                if atk_boost_b > 0 and move_b and move_b.category == "physical":
-                    db = math.floor(db * (2 + atk_boost_b) / 2)
-                if spa_boost_b > 0 and move_b and move_b.category == "special":
-                    db = math.floor(db * (2 + spa_boost_b) / 2)
+                if atk_boost_b != 0 and move_b and move_b.category == "physical":
+                    if atk_boost_b > 0:
+                        db = math.floor(db * (2 + atk_boost_b) / 2)
+                    else:
+                        db = math.floor(db * 2 / (2 + abs(atk_boost_b)))
+                if spa_boost_b != 0 and move_b and move_b.category == "special":
+                    if spa_boost_b > 0:
+                        db = math.floor(db * (2 + spa_boost_b) / 2)
+                    else:
+                        db = math.floor(db * 2 / (2 + abs(spa_boost_b)))
 
-            # セットアップ技による防御ブーストを適用 (被弾ダメージを軽減)
-            if def_boost_a > 0 and move_b and move_b.category == "physical":
-                db = math.floor(db * 2 / (2 + def_boost_a))
-            if spd_boost_a > 0 and move_b and move_b.category == "special":
-                db = math.floor(db * 2 / (2 + spd_boost_a))
-            if def_boost_b > 0 and move_a and move_a.category == "physical":
-                da = math.floor(da * 2 / (2 + def_boost_b))
-            if spd_boost_b > 0 and move_a and move_a.category == "special":
-                da = math.floor(da * 2 / (2 + spd_boost_b))
+            # セットアップ技による防御ブーストを適用 (被弾ダメージ増減、正負両対応)
+            if def_boost_a != 0 and move_b and move_b.category == "physical":
+                if def_boost_a > 0:
+                    db = math.floor(db * 2 / (2 + def_boost_a))
+                else:
+                    db = math.floor(db * (2 + abs(def_boost_a)) / 2)
+            if spd_boost_a != 0 and move_b and move_b.category == "special":
+                if spd_boost_a > 0:
+                    db = math.floor(db * 2 / (2 + spd_boost_a))
+                else:
+                    db = math.floor(db * (2 + abs(spd_boost_a)) / 2)
+            if def_boost_b != 0 and move_a and move_a.category == "physical":
+                if def_boost_b > 0:
+                    da = math.floor(da * 2 / (2 + def_boost_b))
+                else:
+                    da = math.floor(da * (2 + abs(def_boost_b)) / 2)
+            if spd_boost_b != 0 and move_a and move_a.category == "special":
+                if spd_boost_b > 0:
+                    da = math.floor(da * 2 / (2 + spd_boost_b))
+                else:
+                    da = math.floor(da * (2 + abs(spd_boost_b)) / 2)
 
             # 先攻判定: ターンごとに優先度と素早さで決定
             # かそくが発動済みなら素早さを上書き (2ターン目以降)
@@ -1005,6 +1064,19 @@ def simulate_1v1(
                 if sitrus_b and cur_hp_b <= max_hp_b // 2:
                     cur_hp_b = min(max_hp_b, cur_hp_b + sitrus_heal_b)
                     sitrus_b = False
+                # 確定自己デバフ技: 命中後に攻撃側ステータス低下
+                if hit_a and move_a and move_a.name_en in _SELF_DEBUFF_MOVES:
+                    for _stat, _stages in _SELF_DEBUFF_MOVES[move_a.name_en]:
+                        if _stat == "attack":
+                            atk_boost_a = max(-6, atk_boost_a + _stages)
+                        elif _stat == "sp_attack":
+                            spa_boost_a = max(-6, spa_boost_a + _stages)
+                        elif _stat == "defense":
+                            def_boost_a = max(-6, def_boost_a + _stages)
+                        elif _stat == "sp_defense":
+                            spd_boost_a = max(-6, spd_boost_a + _stages)
+                        elif _stat == "speed":
+                            spe_boost_a = max(-6, spe_boost_a + _stages)
 
                 prev_hp_a = cur_hp_a
                 # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
@@ -1048,6 +1120,19 @@ def simulate_1v1(
                 if sitrus_a and cur_hp_a <= max_hp_a // 2:
                     cur_hp_a = min(max_hp_a, cur_hp_a + sitrus_heal_a)
                     sitrus_a = False
+                # 確定自己デバフ技: 命中後に攻撃側ステータス低下
+                if hit_b and move_b and move_b.name_en in _SELF_DEBUFF_MOVES:
+                    for _stat, _stages in _SELF_DEBUFF_MOVES[move_b.name_en]:
+                        if _stat == "attack":
+                            atk_boost_b = max(-6, atk_boost_b + _stages)
+                        elif _stat == "sp_attack":
+                            spa_boost_b = max(-6, spa_boost_b + _stages)
+                        elif _stat == "defense":
+                            def_boost_b = max(-6, def_boost_b + _stages)
+                        elif _stat == "sp_defense":
+                            spd_boost_b = max(-6, spd_boost_b + _stages)
+                        elif _stat == "speed":
+                            spe_boost_b = max(-6, spe_boost_b + _stages)
             else:
                 prev_hp_a = cur_hp_a
                 # マルチスケイル (かたやぶりで無効)
@@ -1091,6 +1176,19 @@ def simulate_1v1(
                 if sitrus_a and cur_hp_a <= max_hp_a // 2:
                     cur_hp_a = min(max_hp_a, cur_hp_a + sitrus_heal_a)
                     sitrus_a = False
+                # 確定自己デバフ技: 命中後に攻撃側ステータス低下
+                if hit_b and move_b and move_b.name_en in _SELF_DEBUFF_MOVES:
+                    for _stat, _stages in _SELF_DEBUFF_MOVES[move_b.name_en]:
+                        if _stat == "attack":
+                            atk_boost_b = max(-6, atk_boost_b + _stages)
+                        elif _stat == "sp_attack":
+                            spa_boost_b = max(-6, spa_boost_b + _stages)
+                        elif _stat == "defense":
+                            def_boost_b = max(-6, def_boost_b + _stages)
+                        elif _stat == "sp_defense":
+                            spd_boost_b = max(-6, spd_boost_b + _stages)
+                        elif _stat == "speed":
+                            spe_boost_b = max(-6, spe_boost_b + _stages)
 
                 prev_hp_b = cur_hp_b
                 # マルチスケイル (かたやぶりで無効)
@@ -1134,6 +1232,19 @@ def simulate_1v1(
                 if sitrus_b and cur_hp_b <= max_hp_b // 2:
                     cur_hp_b = min(max_hp_b, cur_hp_b + sitrus_heal_b)
                     sitrus_b = False
+                # 確定自己デバフ技: 命中後に攻撃側ステータス低下
+                if hit_a and move_a and move_a.name_en in _SELF_DEBUFF_MOVES:
+                    for _stat, _stages in _SELF_DEBUFF_MOVES[move_a.name_en]:
+                        if _stat == "attack":
+                            atk_boost_a = max(-6, atk_boost_a + _stages)
+                        elif _stat == "sp_attack":
+                            spa_boost_a = max(-6, spa_boost_a + _stages)
+                        elif _stat == "defense":
+                            def_boost_a = max(-6, def_boost_a + _stages)
+                        elif _stat == "sp_defense":
+                            spd_boost_a = max(-6, spd_boost_a + _stages)
+                        elif _stat == "speed":
+                            spe_boost_a = max(-6, spe_boost_a + _stages)
 
             # ターン終了時: たべのこし回復
             if leftovers_a and cur_hp_a > 0:
