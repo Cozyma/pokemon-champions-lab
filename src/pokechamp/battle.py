@@ -432,7 +432,12 @@ def _calc_all_moves(
         # タイプ相性を計算（複合タイプ対応）
         eff = 1.0
         for defend_type in opponent.types:
-            eff *= type_effectiveness(effective_type, defend_type)
+            mult = type_effectiveness(effective_type, defend_type)
+            # きもったま: ノーマル・格闘技がゴーストに無効化されない（0.0→1.0）
+            if mult == 0.0 and attacker.ability == "scrappy":
+                if effective_type in (TypeName.NORMAL, TypeName.FIGHTING) and defend_type == TypeName.GHOST:
+                    mult = 1.0
+            eff *= mult
 
         if eff == 0.0:
             continue
