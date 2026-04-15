@@ -29,6 +29,7 @@ tags: [index, docs]
 | ファイル | 概要 | タグ |
 |---------|------|------|
 | [_template.md](design/decisions/_template.md) | ADRテンプレート | ADR, template |
+| [2026-04-15-initial-development.md](design/decisions/2026-04-15-initial-development.md) | 初期開発経緯（設計判断・実装時系列・フェーズ2→2.5） | ADR, log |
 
 > 設計判断が発生したら `design/decisions/YYYY-MM-DD-{topic}.md` に記録する。
 
