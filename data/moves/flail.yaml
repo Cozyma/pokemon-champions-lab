@@ -1,0 +1,10 @@
+name: じたばた
+name_en: flail
+type: normal
+category: physical
+power: 20
+accuracy: 100
+pp: 15
+priority: 0
+effects: []
+stat_changes: []

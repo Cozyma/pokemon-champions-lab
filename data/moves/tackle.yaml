@@ -1,0 +1,10 @@
+name: たいあたり
+name_en: tackle
+type: normal
+category: physical
+power: 40
+accuracy: 100
+pp: 35
+priority: 0
+effects: []
+stat_changes: []

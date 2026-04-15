@@ -1,0 +1,10 @@
+name: スケイルショット
+name_en: scale-shot
+type: dragon
+category: physical
+power: 25
+accuracy: 90
+pp: 20
+priority: 0
+effects: []
+stat_changes: []
