@@ -1,0 +1,12 @@
+name: draco-meteor
+name_en: draco-meteor
+type: dragon
+category: special
+power: 130
+accuracy: 90
+pp: 5
+priority: 0
+effects: []
+stat_changes:
+- stat: sp_attack
+  stages: -2

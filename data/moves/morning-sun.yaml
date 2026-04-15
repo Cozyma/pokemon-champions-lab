@@ -1,0 +1,10 @@
+name: morning-sun
+name_en: morning-sun
+type: normal
+category: status
+power: 0
+accuracy: 100
+pp: 5
+priority: 0
+effects: []
+stat_changes: []

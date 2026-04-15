@@ -1,0 +1,14 @@
+name: close-combat
+name_en: close-combat
+type: fighting
+category: physical
+power: 120
+accuracy: 100
+pp: 5
+priority: 0
+effects: []
+stat_changes:
+- stat: defense
+  stages: -1
+- stat: sp_defense
+  stages: -1

@@ -1,0 +1,43 @@
+name: スクリーンショット構築
+pokemon:
+  - species: lopunny
+    ability: limber
+    item: lopunny-mega-stone
+    nature: jolly
+    evs: {attack: 32, speed: 32, hp: 2}
+    moves: [fake-out, close-combat, mega-kick, swords-dance]
+
+  - species: dragonite
+    ability: multiscale
+    item: dragonite-mega-stone
+    nature: modest
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [draco-meteor, air-slash, thunderbolt, aqua-jet]
+
+  - species: garchomp
+    ability: rough-skin
+    item: choice-scarf
+    nature: jolly
+    evs: {attack: 32, speed: 32, hp: 2}
+    moves: [outrage, earthquake, stone-edge, poison-jab]
+
+  - species: primarina
+    ability: torrent
+    item: focus-sash
+    nature: modest
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [sparkling-aria, moonblast, aqua-jet, encore]
+
+  - species: corviknight
+    ability: pressure
+    item: leftovers
+    nature: impish
+    evs: {hp: 32, defense: 32, sp_defense: 2}
+    moves: [body-press, u-turn, iron-defense, roost]
+
+  - species: volcarona
+    ability: flame-body
+    item: sitrus-berry
+    nature: timid
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [flamethrower, giga-drain, quiver-dance, morning-sun]

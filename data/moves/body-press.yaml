@@ -1,0 +1,10 @@
+name: body-press
+name_en: body-press
+type: fighting
+category: physical
+power: 80
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

@@ -1,0 +1,12 @@
+name: iron-defense
+name_en: iron-defense
+type: steel
+category: status
+power: 0
+accuracy: 100
+pp: 15
+priority: 0
+effects: []
+stat_changes:
+- stat: defense
+  stages: 2

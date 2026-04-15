@@ -1,0 +1,10 @@
+name: poison-jab
+name_en: poison-jab
+type: poison
+category: physical
+power: 80
+accuracy: 100
+pp: 20
+priority: 0
+effects: []
+stat_changes: []

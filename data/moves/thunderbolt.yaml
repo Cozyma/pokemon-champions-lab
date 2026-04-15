@@ -1,0 +1,10 @@
+name: thunderbolt
+name_en: thunderbolt
+type: electric
+category: special
+power: 90
+accuracy: 100
+pp: 15
+priority: 0
+effects: []
+stat_changes: []

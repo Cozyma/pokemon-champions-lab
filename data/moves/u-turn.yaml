@@ -1,0 +1,10 @@
+name: u-turn
+name_en: u-turn
+type: bug
+category: physical
+power: 70
+accuracy: 100
+pp: 20
+priority: 0
+effects: []
+stat_changes: []

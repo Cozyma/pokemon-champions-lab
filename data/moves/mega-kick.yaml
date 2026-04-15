@@ -1,0 +1,10 @@
+name: mega-kick
+name_en: mega-kick
+type: normal
+category: physical
+power: 120
+accuracy: 75
+pp: 5
+priority: 0
+effects: []
+stat_changes: []

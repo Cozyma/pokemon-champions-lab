@@ -1,0 +1,10 @@
+name: giga-drain
+name_en: giga-drain
+type: grass
+category: special
+power: 75
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

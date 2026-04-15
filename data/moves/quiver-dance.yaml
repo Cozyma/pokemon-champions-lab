@@ -1,0 +1,16 @@
+name: quiver-dance
+name_en: quiver-dance
+type: bug
+category: status
+power: 0
+accuracy: 100
+pp: 20
+priority: 0
+effects: []
+stat_changes:
+- stat: sp_attack
+  stages: 1
+- stat: sp_defense
+  stages: 1
+- stat: speed
+  stages: 1

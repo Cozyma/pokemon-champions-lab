@@ -1,0 +1,10 @@
+name: aqua-jet
+name_en: aqua-jet
+type: water
+category: physical
+power: 40
+accuracy: 100
+pp: 20
+priority: 1
+effects: []
+stat_changes: []

@@ -1,0 +1,10 @@
+name: air-slash
+name_en: air-slash
+type: flying
+category: special
+power: 75
+accuracy: 95
+pp: 15
+priority: 0
+effects: []
+stat_changes: []

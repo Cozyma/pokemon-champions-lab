@@ -1,0 +1,10 @@
+name: roost
+name_en: roost
+type: flying
+category: status
+power: 0
+accuracy: 100
+pp: 5
+priority: 0
+effects: []
+stat_changes: []
