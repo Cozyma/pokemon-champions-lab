@@ -1,0 +1,12 @@
+name: コイキング
+name_en: magikarp
+types: [water]
+base_stats:
+  hp: 20
+  attack: 10
+  defense: 55
+  sp_attack: 15
+  sp_defense: 20
+  speed: 80
+abilities: [swift-swim, rattled]
+learnable_moves: [splash, tackle, flail]

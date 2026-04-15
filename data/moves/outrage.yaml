@@ -1,0 +1,10 @@
+name: げきりん
+name_en: outrage
+type: dragon
+category: physical
+power: 120
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

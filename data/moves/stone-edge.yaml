@@ -1,0 +1,10 @@
+name: ストーンエッジ
+name_en: stone-edge
+type: rock
+category: physical
+power: 100
+accuracy: 80
+pp: 5
+priority: 0
+effects: []
+stat_changes: []
