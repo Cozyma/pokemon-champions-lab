@@ -587,11 +587,16 @@ def _choose_move(
                 avg *= 2 / (2 + abs(spa_boost))
         return avg
 
-    # ねこだまし: ターン1で自分が遅い場合に使用
-    # （先制+ひるみで相手の攻撃を1ターン封じる。自分が速い場合は最大火力のほうが得）
-    if turn_number == 1 and my_speed <= opp_speed:
+    # ねこだまし: ターン1で使用（優先度+3先制＋ひるみで相手1ターン封じ）
+    # 速い/遅い問わずねこだましのダメージ＋相手の行動封じ分が常に得。
+    # ただし最大火力技で確1の場合はそちらを優先（ねこだまし不要）。
+    if turn_number == 1:
         for move, dmg_range in all_moves:
             if move.name_en == "fake-out":
+                # 他の技で確1なら不要
+                best = max(all_moves, key=lambda x: _adjusted_avg(x[0], x[1]))
+                if min(best[1]) >= cur_hp_opponent:
+                    break  # 確1あるのでねこだまし不要
                 return move, dmg_range
 
     # セットアップ技検討 (ターン1のみ、未使用時のみ)
