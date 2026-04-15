@@ -18,6 +18,13 @@ from pokechamp.models import (
 )
 
 
+def _is_mega_member(member: TeamMember) -> bool:
+    """チームメンバーがメガストーンを持っているか判定する."""
+    from pokechamp.loader import load_pokemon
+    pokemon = load_pokemon(member.species)
+    return pokemon.mega is not None and pokemon.mega.stone == member.item
+
+
 def build_battle_pokemon_from_team(team: Team) -> list[BattlePokemon]:
     """チーム定義からBattlePokemonリストを構築."""
     return [_member_to_battle_pokemon(member) for member in team.pokemon]
@@ -130,8 +137,12 @@ def evaluate_matchup(
                         )
                     )
 
+    # メガフラグを計算
+    is_mega_a = [_is_mega_member(m) for m in members_a]
+    is_mega_b = [_is_mega_member(m) for m in members_b]
+
     # 選出ランキング
-    selection_ranking = _rank_selections(names_a, names_b, matrix)
+    selection_ranking = _rank_selections(names_a, names_b, matrix, is_mega_a=is_mega_a, is_mega_b=is_mega_b)
 
     # 総合スコア = matrixの全要素の平均
     all_values = [matrix[i][j] for i in range(n) for j in range(m)]
@@ -152,13 +163,19 @@ def _rank_selections(
     names_b: list[str],
     matrix: list[list[float]],
     top_n: int = 5,
+    is_mega_a: list[bool] | None = None,
+    is_mega_b: list[bool] | None = None,
 ) -> list[SelectionScore]:
     """C(n,3) x C(m,3) の全選出組み合わせを生成してスコアリングする.
 
     チームが3体未満の場合は全員を使用。
+    メガ制約: 各選出にメガシンカポケモンは1体まで。
     """
     size_a = len(names_a)
     size_b = len(names_b)
+
+    mega_a = is_mega_a if is_mega_a is not None else [False] * size_a
+    mega_b = is_mega_b if is_mega_b is not None else [False] * size_b
 
     # 選出候補のインデックス組み合わせを生成
     if size_a >= 3:
@@ -173,7 +190,14 @@ def _rank_selections(
 
     scored: list[SelectionScore] = []
     for sel_a in sels_a:
+        # メガ制約: 選出内のメガシンカポケモンは1体まで
+        if sum(1 for i in sel_a if mega_a[i]) > 1:
+            continue
         for sel_b in sels_b:
+            # メガ制約: 選出内のメガシンカポケモンは1体まで
+            if sum(1 for j in sel_b if mega_b[j]) > 1:
+                continue
+
             # この選出の平均勝率を計算
             rates = [matrix[i][j] for i in sel_a for j in sel_b]
             score = sum(rates) / len(rates) if rates else 0.5

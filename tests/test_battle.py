@@ -388,3 +388,80 @@ class TestAbilityEffectsExtended:
         # かそくコイキングはガブリアスに勝てないが、シミュレーションが正常動作することを確認
         result = simulate_1v1(slow_booster, fast_normal)
         assert result.win_rate_a + result.win_rate_b > 0  # クラッシュしないことを確認
+
+
+class TestMegaEvolution:
+    def test_mega_garchomp_stats(self):
+        """メガストーン持ちはメガシンカ種族値で計算される"""
+        normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        mega = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="garchomp-mega-stone",
+            move_names=["earthquake"],
+        )
+        # メガシンカで攻撃種族値が 130 → 170 に上昇
+        assert mega.stats["attack"] > normal.stats["attack"]
+        # メガシンカで素早さ種族値が 102 → 92 に低下
+        assert mega.stats["speed"] < normal.stats["speed"]
+        # メガシンカのアビリティは sand-force
+        assert mega.ability == "sand-force"
+
+    def test_mega_garchomp_hp_unchanged(self):
+        """メガシンカしてもHPは変わらない（種族値 108 は同じ）"""
+        normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        mega = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="garchomp-mega-stone",
+            move_names=["earthquake"],
+        )
+        assert mega.stats["hp"] == normal.stats["hp"]
+
+    def test_mega_garchomp_stronger_in_battle(self):
+        """メガガブリアスは通常ガブリアスより火力が高い"""
+        mega = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="garchomp-mega-stone",
+            move_names=["earthquake"],
+        )
+        normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        target1 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        target2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        result_mega = simulate_1v1(mega, target1)
+        result_normal = simulate_1v1(normal, target2)
+        # メガの方が攻撃が高い → 勝率が同等か高い
+        assert result_mega.win_rate_a >= result_normal.win_rate_a
+
+    def test_mega_stone_no_item_effect(self):
+        """メガストーンはアイテムスロットを占有し、通常アイテム効果は発動しない"""
+        # メガストーン持ちはchoice-scarfのような速度補正がない
+        mega = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"speed": 32}, ivs={}, item="garchomp-mega-stone",
+            move_names=["earthquake"],
+        )
+        # メガシンカ後の素早さ種族値 92 で計算される（スカーフ補正なし）
+        scarf = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"speed": 32}, ivs={}, item="choice-scarf",
+            move_names=["earthquake"],
+        )
+        # スカーフは speed の実効値に 1.5 倍補正がかかる → スカーフの方が速い
+        assert scarf.get_effective_stat("speed") > mega.get_effective_stat("speed")

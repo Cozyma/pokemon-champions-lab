@@ -90,11 +90,28 @@ class BattlePokemon:
         }
         ev_defaults.update(evs)
 
+        # メガシンカ判定: メガストーンを持っている場合はメガシンカ種族値・タイプ・アビリティを使用
+        is_mega = pokemon.mega is not None and item == pokemon.mega.stone
+        if is_mega:
+            mega = pokemon.mega
+            stat_source = mega.base_stats  # type: ignore[union-attr]
+            types_to_use = mega.types  # type: ignore[union-attr]
+            # メガシンカ時: HP は元の種族値を使用（メガデータの hp は元と同値のはずだが念のため）
+            resolved_ability = mega.ability  # type: ignore[union-attr]
+        else:
+            stat_source = pokemon.base_stats
+            types_to_use = pokemon.types
+            resolved_ability = ability if ability is not None else (pokemon.abilities[0] if pokemon.abilities else "")
+
         # 各ステータス実数値を計算
         stat_names = ["hp", "attack", "defense", "sp_attack", "sp_defense", "speed"]
         stats: dict[str, int] = {}
         for stat_name in stat_names:
-            base = getattr(pokemon.base_stats, stat_name)
+            if is_mega and stat_name == "hp":
+                # HPは元の種族値で計算
+                base = pokemon.base_stats.hp
+            else:
+                base = getattr(stat_source, stat_name)
             stats[stat_name] = calc_stat(
                 base=base,
                 iv=iv_defaults[stat_name],
@@ -106,16 +123,14 @@ class BattlePokemon:
 
         # アイテムによるステータス補正はget_effective_stat()で動的に適用する
         # (stats辞書には補正前の値を格納し、実効値計算時にアイテム効果を乗算)
+        # メガストーン持ちはアイテムスロットをメガストーンが占有するため _ITEM_EFFECTS は適用しない
 
         # 技を読み込む
         moves = [load_move(name) for name in move_names]
 
-        # アビリティ: 引数で指定がなければポケモンデータの最初のアビリティを使用
-        resolved_ability = ability if ability is not None else (pokemon.abilities[0] if pokemon.abilities else "")
-
         return cls(
             name=species,
-            types=pokemon.types,
+            types=types_to_use,
             stats=stats,
             moves=moves,
             item=item,

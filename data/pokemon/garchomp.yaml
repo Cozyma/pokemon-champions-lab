@@ -10,3 +10,14 @@ base_stats:
   speed: 102
 abilities: [sand-veil, rough-skin]
 learnable_moves: [earthquake, outrage, swords-dance, scale-shot, iron-head, stone-edge, fire-fang, dragon-claw]
+mega:
+  stone: garchomp-mega-stone
+  types: [ground, dragon]
+  ability: sand-force
+  base_stats:
+    hp: 108
+    attack: 170
+    defense: 115
+    sp_attack: 120
+    sp_defense: 95
+    speed: 92

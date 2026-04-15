@@ -111,6 +111,13 @@ class Move(BaseModel):
     stat_changes: list[dict[str, int | str]] = Field(default_factory=list)
 
 
+class MegaData(BaseModel):
+    stone: str  # mega stone item name
+    types: list[TypeName]
+    ability: str
+    base_stats: BaseStats
+
+
 class Pokemon(BaseModel):
     name: str
     name_en: str
@@ -118,6 +125,7 @@ class Pokemon(BaseModel):
     base_stats: BaseStats
     abilities: list[str]
     learnable_moves: list[str]
+    mega: MegaData | None = None  # optional mega data
 
 
 class EVs(BaseModel):
