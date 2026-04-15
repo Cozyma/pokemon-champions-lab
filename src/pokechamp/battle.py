@@ -299,14 +299,9 @@ def simulate_1v1(
             avg_remaining_hp_b=0.0,
         )
 
-    # 先攻が決まっていて1ターンKOの可能性がある場合は全列挙
-    a_min_dmg = min(dmg_range_a)
-    b_min_dmg = min(dmg_range_b)
-    can_1hko_a = a_min_dmg >= hp_b  # aの最小ダメでもbをKO
-    can_1hko_b = b_min_dmg >= hp_a  # bの最小ダメでもaをKO
-    one_turn_scenario = (can_1hko_a or can_1hko_b or max(dmg_range_a) >= hp_b or max(dmg_range_b) >= hp_a)
-
-    if a_goes_first is not None and one_turn_scenario:
+    # アイテム効果があるためモンテカルロに一本化
+    # （全列挙は高速だがタスキ・たべのこし等の処理が複雑になるため）
+    if False:
         # 16x16全列挙
         wins_a = 0
         wins_b = 0
@@ -390,9 +385,21 @@ def simulate_1v1(
         total_remaining_hp_a = 0.0
         total_remaining_hp_b = 0.0
 
+        # アイテムフラグ
+        leftovers_a = a.item == "leftovers"
+        leftovers_b = b.item == "leftovers"
+        leftovers_heal_a = max(1, hp_a // 16)
+        leftovers_heal_b = max(1, hp_b // 16)
+
         for _ in range(n_trials):
             cur_hp_a = hp_a
             cur_hp_b = hp_b
+            sash_a = a.item == "focus-sash"
+            sash_b = b.item == "focus-sash"
+            sitrus_a = a.item == "sitrus-berry"
+            sitrus_b = b.item == "sitrus-berry"
+            sitrus_heal_a = max(1, hp_a // 4)
+            sitrus_heal_b = max(1, hp_b // 4)
 
             # 同速の場合は試行ごとにランダム決定
             if a_goes_first is None:
@@ -405,15 +412,56 @@ def simulate_1v1(
                 db = random.choice(dmg_range_b)
 
                 if first_is_a:
+                    prev_hp_b = cur_hp_b
                     cur_hp_b -= da
+                    # きあいのタスキ: HP満タンから一撃で倒される場合HP1で耐える
+                    if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
+                        cur_hp_b = 1
+                        sash_b = False
                     if cur_hp_b <= 0:
                         break
+                    # オボンのみ: HP半分以下で最大HPの1/4回復
+                    if sitrus_b and cur_hp_b <= hp_b // 2:
+                        cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
+                        sitrus_b = False
+
+                    prev_hp_a = cur_hp_a
                     cur_hp_a -= db
-                else:
-                    cur_hp_a -= db
+                    if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
+                        cur_hp_a = 1
+                        sash_a = False
                     if cur_hp_a <= 0:
                         break
+                    if sitrus_a and cur_hp_a <= hp_a // 2:
+                        cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
+                        sitrus_a = False
+                else:
+                    prev_hp_a = cur_hp_a
+                    cur_hp_a -= db
+                    if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
+                        cur_hp_a = 1
+                        sash_a = False
+                    if cur_hp_a <= 0:
+                        break
+                    if sitrus_a and cur_hp_a <= hp_a // 2:
+                        cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
+                        sitrus_a = False
+
                     cur_hp_b -= da
+                    if cur_hp_b <= 0 and sash_b and cur_hp_b + da == hp_b:
+                        cur_hp_b = 1
+                        sash_b = False
+                    if cur_hp_b <= 0:
+                        break
+                    if sitrus_b and cur_hp_b <= hp_b // 2:
+                        cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
+                        sitrus_b = False
+
+                # ターン終了時: たべのこし回復
+                if leftovers_a and cur_hp_a > 0:
+                    cur_hp_a = min(hp_a, cur_hp_a + leftovers_heal_a)
+                if leftovers_b and cur_hp_b > 0:
+                    cur_hp_b = min(hp_b, cur_hp_b + leftovers_heal_b)
 
             if cur_hp_a <= 0:
                 wins_b += 1
