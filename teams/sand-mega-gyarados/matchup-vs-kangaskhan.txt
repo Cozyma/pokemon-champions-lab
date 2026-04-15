@@ -1,0 +1,48 @@
+=== 砂メガギャラドス vs メガガルーラ+メガメガニウム晴れ ===
+
+【対面マトリクス】(A勝率%)
+                          kangaskhan          meganium         hippowdon  aegislash-shield          greninja         volcarona
+hippowdon                      98.6%              0.0%             50.0%            100.0%             88.3%             93.6%
+gyarados                       66.8%              0.0%             93.8%            100.0%             98.6%            100.0%
+archaludon                     15.5%              5.0%             79.6%             85.9%             99.7%              0.0%
+floette-eternal                98.3%            100.0%             95.9%              0.9%             88.1%              0.0%
+arcanine                        0.3%             94.7%              2.7%            100.0%              0.0%              0.0%
+greninja                        0.0%            100.0%             10.4%            100.0%             49.9%              0.0%
+
+【推奨選出】
+  1. hippowdon / gyarados / archaludon  スコア: 88.4
+  2. hippowdon / gyarados / archaludon  スコア: 85.1
+  3. hippowdon / gyarados / archaludon  スコア: 83.7
+  4. hippowdon / gyarados / greninja  スコア: 81.2
+  5. gyarados / archaludon / greninja  スコア: 79.8
+
+【3v3シーケンス評価】
+  1. hippowdon / gyarados / archaludon vs hippowdon / aegislash-shield / greninja
+     勝率: 99.0%  残ポケ: A=2.2 B=0.0
+     ログ:
+       hippowdon(HP19) beat hippowdon
+       A switched to gyarados
+       gyarados(HP85) beat aegislash-shield
+       greninja(HP1) beat gyarados
+       A switched to archaludon
+       archaludon(HP25) beat greninja
+
+  2. hippowdon / gyarados / archaludon vs aegislash-shield / greninja / volcarona
+     勝率: 36.0%  残ポケ: A=0.7 B=0.6
+     ログ:
+       hippowdon(HP119) beat aegislash-shield
+       A switched to gyarados
+       greninja(HP1) beat gyarados
+       greninja(HP1) beat hippowdon
+       archaludon(HP103) beat greninja
+       volcarona(HP161) beat archaludon
+
+  3. hippowdon / gyarados / archaludon vs kangaskhan / aegislash-shield / greninja
+     勝率: 95.0%  残ポケ: A=2.5 B=0.1
+     ログ:
+       hippowdon(HP46) beat kangaskhan
+       A switched to gyarados
+       gyarados(HP144) beat aegislash-shield
+       gyarados(HP76) beat greninja
+
+総合スコア: 56.0
