@@ -64,3 +64,16 @@ learnable_moves:
 - taunt
 - helping-hand
 - superpower
+mega:
+  stone: emboar-mega-stone
+  types:
+  - fire
+  - fighting
+  ability: mold-breaker
+  base_stats:
+    hp: 110
+    attack: 148
+    defense: 75
+    sp_attack: 110
+    sp_defense: 110
+    speed: 75

@@ -64,3 +64,16 @@ learnable_moves:
 - future-sight
 - heat-wave
 - will-o-wisp
+mega:
+  stone: delphox-mega-stone
+  types:
+  - fire
+  - psychic
+  ability: levitate
+  base_stats:
+    hp: 75
+    attack: 69
+    defense: 72
+    sp_attack: 159
+    sp_defense: 125
+    speed: 134

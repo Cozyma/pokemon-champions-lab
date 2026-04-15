@@ -65,3 +65,16 @@ learnable_moves:
 - shock-wave
 - payback
 - embargo
+mega:
+  stone: chandelure-mega-stone
+  types:
+  - ghost
+  - fire
+  ability: infiltrator
+  base_stats:
+    hp: 60
+    attack: 75
+    defense: 110
+    sp_attack: 175
+    sp_defense: 110
+    speed: 90

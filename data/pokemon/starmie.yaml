@@ -65,3 +65,16 @@ learnable_moves:
 - attract
 - sleep-talk
 - return
+mega:
+  stone: starmie-mega-stone
+  types:
+  - water
+  - psychic
+  ability: huge-power
+  base_stats:
+    hp: 60
+    attack: 100
+    defense: 105
+    sp_attack: 130
+    sp_defense: 105
+    speed: 120

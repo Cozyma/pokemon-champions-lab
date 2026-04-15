@@ -64,3 +64,16 @@ learnable_moves:
 - sunny-day
 - stockpile
 - spit-up
+mega:
+  stone: victreebel-mega-stone
+  types:
+  - grass
+  - poison
+  ability: innards-out
+  base_stats:
+    hp: 80
+    attack: 125
+    defense: 85
+    sp_attack: 135
+    sp_defense: 95
+    speed: 70

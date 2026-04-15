@@ -62,3 +62,16 @@ learnable_moves:
 - spicy-extract
 - trailblaze
 - temper-flare
+mega:
+  stone: scovillain-mega-stone
+  types:
+  - grass
+  - fire
+  ability: popping-habanero
+  base_stats:
+    hp: 65
+    attack: 138
+    defense: 85
+    sp_attack: 138
+    sp_defense: 85
+    speed: 75

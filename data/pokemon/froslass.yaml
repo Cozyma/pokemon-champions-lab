@@ -64,3 +64,16 @@ learnable_moves:
 - psych-up
 - shadow-ball
 - hail
+mega:
+  stone: froslass-mega-stone
+  types:
+  - ice
+  - ghost
+  ability: snow-warning
+  base_stats:
+    hp: 70
+    attack: 80
+    defense: 70
+    sp_attack: 140
+    sp_defense: 100
+    speed: 120

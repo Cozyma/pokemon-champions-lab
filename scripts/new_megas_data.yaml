@@ -1,0 +1,145 @@
+new_megas:
+  - base_species: clefable
+    stone: clefable-mega-stone
+    stone_ja: ピクシナイト
+    types: [fairy]
+    ability: magic-bounce
+    base_stats: {hp: 95, attack: 80, defense: 93, sp_attack: 135, sp_defense: 110, speed: 70}
+  - base_species: victreebel
+    stone: victreebel-mega-stone
+    stone_ja: ウツボットナイト
+    types: [grass, poison]
+    ability: innards-out
+    base_stats: {hp: 80, attack: 125, defense: 85, sp_attack: 135, sp_defense: 95, speed: 70}
+  - base_species: starmie
+    stone: starmie-mega-stone
+    stone_ja: スターミーナイト
+    types: [water, psychic]
+    ability: huge-power
+    base_stats: {hp: 60, attack: 100, defense: 105, sp_attack: 130, sp_defense: 105, speed: 120}
+  - base_species: dragonite
+    stone: dragonite-mega-stone
+    stone_ja: カイリュナイト
+    types: [dragon, flying]
+    ability: multiscale
+    base_stats: {hp: 91, attack: 124, defense: 115, sp_attack: 145, sp_defense: 125, speed: 100}
+  - base_species: meganium
+    stone: meganium-mega-stone
+    stone_ja: メガニウムナイト
+    types: [grass, fairy]
+    ability: mega-solar
+    base_stats: {hp: 80, attack: 92, defense: 115, sp_attack: 143, sp_defense: 115, speed: 80}
+  - base_species: feraligatr
+    stone: feraligatr-mega-stone
+    stone_ja: オーダイルナイト
+    types: [water, dragon]
+    ability: dragon-skin
+    base_stats: {hp: 85, attack: 160, defense: 125, sp_attack: 89, sp_defense: 93, speed: 78}
+  - base_species: skarmory
+    stone: skarmory-mega-stone
+    stone_ja: エアームドナイト
+    types: [steel, flying]
+    ability: stalwart
+    base_stats: {hp: 65, attack: 140, defense: 110, sp_attack: 40, sp_defense: 100, speed: 110}
+  - base_species: chimecho
+    stone: chimecho-mega-stone
+    stone_ja: チリーンナイト
+    types: [psychic, steel]
+    ability: levitate
+    base_stats: {hp: 75, attack: 50, defense: 110, sp_attack: 135, sp_defense: 120, speed: 65}
+  - base_species: froslass
+    stone: froslass-mega-stone
+    stone_ja: ユキメノコナイト
+    types: [ice, ghost]
+    ability: snow-warning
+    base_stats: {hp: 70, attack: 80, defense: 70, sp_attack: 140, sp_defense: 100, speed: 120}
+  - base_species: emboar
+    stone: emboar-mega-stone
+    stone_ja: エンブオーナイト
+    types: [fire, fighting]
+    ability: mold-breaker
+    base_stats: {hp: 110, attack: 148, defense: 75, sp_attack: 110, sp_defense: 110, speed: 75}
+  - base_species: excadrill
+    stone: excadrill-mega-stone
+    stone_ja: ドリュウズナイト
+    types: [ground, steel]
+    ability: piercing-drill
+    base_stats: {hp: 110, attack: 165, defense: 100, sp_attack: 65, sp_defense: 65, speed: 103}
+  - base_species: chandelure
+    stone: chandelure-mega-stone
+    stone_ja: シャンデラナイト
+    types: [ghost, fire]
+    ability: infiltrator
+    base_stats: {hp: 60, attack: 75, defense: 110, sp_attack: 175, sp_defense: 110, speed: 90}
+  - base_species: golurk
+    stone: golurk-mega-stone
+    stone_ja: ゴルーグナイト
+    types: [ground, ghost]
+    ability: unseen-fist
+    base_stats: {hp: 89, attack: 159, defense: 105, sp_attack: 70, sp_defense: 105, speed: 55}
+  - base_species: chesnaught
+    stone: chesnaught-mega-stone
+    stone_ja: ブリガロンナイト
+    types: [grass, fighting]
+    ability: bulletproof
+    base_stats: {hp: 88, attack: 137, defense: 172, sp_attack: 74, sp_defense: 115, speed: 44}
+  - base_species: delphox
+    stone: delphox-mega-stone
+    stone_ja: マフォクシーナイト
+    types: [fire, psychic]
+    ability: levitate
+    base_stats: {hp: 75, attack: 69, defense: 72, sp_attack: 159, sp_defense: 125, speed: 134}
+  - base_species: greninja
+    stone: greninja-mega-stone
+    stone_ja: ゲッコウガナイト
+    types: [water, dark]
+    ability: protean
+    base_stats: {hp: 72, attack: 125, defense: 77, sp_attack: 133, sp_defense: 81, speed: 142}
+  - base_species: floette-eternal
+    stone: floette-mega-stone
+    stone_ja: フラエッテナイト
+    types: [fairy]
+    ability: fairy-aura
+    base_stats: {hp: 74, attack: 85, defense: 87, sp_attack: 155, sp_defense: 148, speed: 102}
+  - base_species: meowstic-male
+    stone: meowstic-mega-stone
+    stone_ja: ニャオニクスナイト
+    types: [psychic]
+    ability: trace
+    base_stats: {hp: 74, attack: 48, defense: 76, sp_attack: 143, sp_defense: 101, speed: 124}
+  - base_species: meowstic-female
+    stone: meowstic-mega-stone
+    stone_ja: ニャオニクスナイト
+    types: [psychic]
+    ability: trace
+    base_stats: {hp: 74, attack: 48, defense: 76, sp_attack: 143, sp_defense: 101, speed: 124}
+  - base_species: hawlucha
+    stone: hawlucha-mega-stone
+    stone_ja: ルチャブルナイト
+    types: [fighting, flying]
+    ability: no-guard
+    base_stats: {hp: 78, attack: 137, defense: 100, sp_attack: 74, sp_defense: 93, speed: 118}
+  - base_species: crabominable
+    stone: crabominable-mega-stone
+    stone_ja: ケケンカニナイト
+    types: [fighting, ice]
+    ability: iron-fist
+    base_stats: {hp: 97, attack: 157, defense: 122, sp_attack: 62, sp_defense: 107, speed: 33}
+  - base_species: drampa
+    stone: drampa-mega-stone
+    stone_ja: ジジーロンナイト
+    types: [normal, dragon]
+    ability: berserk
+    base_stats: {hp: 78, attack: 85, defense: 110, sp_attack: 160, sp_defense: 116, speed: 36}
+  - base_species: scovillain
+    stone: scovillain-mega-stone
+    stone_ja: スコヴィランナイト
+    types: [grass, fire]
+    ability: popping-habanero
+    base_stats: {hp: 65, attack: 138, defense: 85, sp_attack: 138, sp_defense: 85, speed: 75}
+  - base_species: glimmora
+    stone: glimmora-mega-stone
+    stone_ja: キラフロルナイト
+    types: [rock, poison]
+    ability: adaptability
+    base_stats: {hp: 83, attack: 90, defense: 105, sp_attack: 150, sp_defense: 96, speed: 101}

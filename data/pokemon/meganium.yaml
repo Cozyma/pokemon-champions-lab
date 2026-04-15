@@ -63,3 +63,16 @@ learnable_moves:
 - hidden-power
 - sunny-day
 - ancient-power
+mega:
+  stone: meganium-mega-stone
+  types:
+  - grass
+  - fairy
+  ability: mega-solar
+  base_stats:
+    hp: 80
+    attack: 92
+    defense: 115
+    sp_attack: 143
+    sp_defense: 115
+    speed: 80

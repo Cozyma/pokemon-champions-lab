@@ -61,3 +61,16 @@ learnable_moves:
 - meteor-beam
 - tera-blast
 - mortal-spin
+mega:
+  stone: glimmora-mega-stone
+  types:
+  - rock
+  - poison
+  ability: adaptability
+  base_stats:
+    hp: 83
+    attack: 90
+    defense: 105
+    sp_attack: 150
+    sp_defense: 96
+    speed: 101

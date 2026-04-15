@@ -64,3 +64,15 @@ learnable_moves:
 - soft-boiled
 - dream-eater
 - flash
+mega:
+  stone: clefable-mega-stone
+  types:
+  - fairy
+  ability: magic-bounce
+  base_stats:
+    hp: 95
+    attack: 80
+    defense: 93
+    sp_attack: 135
+    sp_defense: 110
+    speed: 70

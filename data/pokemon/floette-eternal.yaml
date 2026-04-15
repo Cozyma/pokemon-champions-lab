@@ -1,0 +1,77 @@
+name: floette-eternal
+name_en: floette-eternal
+types:
+- fairy
+base_stats:
+  hp: 74
+  attack: 65
+  defense: 67
+  sp_attack: 125
+  sp_defense: 128
+  speed: 92
+abilities:
+- flower-veil
+- symbiosis
+learnable_moves:
+- vine-whip
+- tackle
+- razor-leaf
+- solar-beam
+- petal-dance
+- toxic
+- psychic
+- double-team
+- flash
+- rest
+- substitute
+- snore
+- protect
+- giga-drain
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- safeguard
+- synthesis
+- hidden-power
+- rain-dance
+- sunny-day
+- facade
+- nature-power
+- helping-hand
+- wish
+- magic-coat
+- endeavor
+- secret-power
+- aromatherapy
+- covet
+- magical-leaf
+- calm-mind
+- lucky-chant
+- worry-seed
+- seed-bomb
+- energy-ball
+- grass-knot
+- after-you
+- round
+- echoed-voice
+- ally-switch
+- petal-blizzard
+- grassy-terrain
+- misty-terrain
+- fairy-wind
+- moonblast
+mega:
+  stone: floette-mega-stone
+  types:
+  - fairy
+  ability: fairy-aura
+  base_stats:
+    hp: 74
+    attack: 85
+    defense: 87
+    sp_attack: 155
+    sp_defense: 148
+    speed: 102

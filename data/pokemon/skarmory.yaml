@@ -65,3 +65,16 @@ learnable_moves:
 - twister
 - sunny-day
 - rock-smash
+mega:
+  stone: skarmory-mega-stone
+  types:
+  - steel
+  - flying
+  ability: stalwart
+  base_stats:
+    hp: 65
+    attack: 140
+    defense: 110
+    sp_attack: 40
+    sp_defense: 100
+    speed: 110

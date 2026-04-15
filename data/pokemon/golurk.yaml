@@ -65,3 +65,16 @@ learnable_moves:
 - rain-dance
 - sunny-day
 - psych-up
+mega:
+  stone: golurk-mega-stone
+  types:
+  - ground
+  - ghost
+  ability: unseen-fist
+  base_stats:
+    hp: 89
+    attack: 159
+    defense: 105
+    sp_attack: 70
+    sp_defense: 105
+    speed: 55

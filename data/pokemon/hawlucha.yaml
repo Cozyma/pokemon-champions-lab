@@ -65,3 +65,16 @@ learnable_moves:
 - uproar
 - torment
 - facade
+mega:
+  stone: hawlucha-mega-stone
+  types:
+  - fighting
+  - flying
+  ability: no-guard
+  base_stats:
+    hp: 78
+    attack: 137
+    defense: 100
+    sp_attack: 74
+    sp_defense: 93
+    speed: 118

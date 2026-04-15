@@ -65,3 +65,16 @@ learnable_moves:
 - iron-defense
 - mud-shot
 - rock-blast
+mega:
+  stone: excadrill-mega-stone
+  types:
+  - ground
+  - steel
+  ability: piercing-drill
+  base_stats:
+    hp: 110
+    attack: 165
+    defense: 100
+    sp_attack: 65
+    sp_defense: 65
+    speed: 103

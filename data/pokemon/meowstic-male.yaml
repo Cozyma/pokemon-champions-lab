@@ -64,3 +64,15 @@ learnable_moves:
 - yawn
 - skill-swap
 - imprison
+mega:
+  stone: meowstic-mega-stone
+  types:
+  - psychic
+  ability: trace
+  base_stats:
+    hp: 74
+    attack: 48
+    defense: 76
+    sp_attack: 143
+    sp_defense: 101
+    speed: 124

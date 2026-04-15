@@ -65,3 +65,16 @@ learnable_moves:
 - endeavor
 - rock-tomb
 - iron-defense
+mega:
+  stone: crabominable-mega-stone
+  types:
+  - fighting
+  - ice
+  ability: iron-fist
+  base_stats:
+    hp: 97
+    attack: 157
+    defense: 122
+    sp_attack: 62
+    sp_defense: 107
+    speed: 33

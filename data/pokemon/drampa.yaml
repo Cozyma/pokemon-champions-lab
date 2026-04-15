@@ -65,3 +65,16 @@ learnable_moves:
 - nature-power
 - helping-hand
 - superpower
+mega:
+  stone: drampa-mega-stone
+  types:
+  - normal
+  - dragon
+  ability: berserk
+  base_stats:
+    hp: 78
+    attack: 85
+    defense: 110
+    sp_attack: 160
+    sp_defense: 116
+    speed: 36

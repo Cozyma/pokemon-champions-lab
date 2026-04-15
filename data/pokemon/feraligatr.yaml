@@ -63,3 +63,16 @@ learnable_moves:
 - outrage
 - endure
 - swagger
+mega:
+  stone: feraligatr-mega-stone
+  types:
+  - water
+  - dragon
+  ability: dragon-skin
+  base_stats:
+    hp: 85
+    attack: 160
+    defense: 125
+    sp_attack: 89
+    sp_defense: 93
+    speed: 78

@@ -64,3 +64,16 @@ learnable_moves:
 - taunt
 - helping-hand
 - role-play
+mega:
+  stone: greninja-mega-stone
+  types:
+  - water
+  - dark
+  ability: protean
+  base_stats:
+    hp: 72
+    attack: 125
+    defense: 77
+    sp_attack: 133
+    sp_defense: 81
+    speed: 142

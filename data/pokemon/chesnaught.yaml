@@ -64,3 +64,16 @@ learnable_moves:
 - metal-claw
 - synthesis
 - hidden-power
+mega:
+  stone: chesnaught-mega-stone
+  types:
+  - grass
+  - fighting
+  ability: bulletproof
+  base_stats:
+    hp: 88
+    attack: 137
+    defense: 172
+    sp_attack: 74
+    sp_defense: 115
+    speed: 44

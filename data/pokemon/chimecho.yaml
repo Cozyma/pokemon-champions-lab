@@ -62,3 +62,16 @@ learnable_moves:
 - shadow-ball
 - future-sight
 - uproar
+mega:
+  stone: chimecho-mega-stone
+  types:
+  - psychic
+  - steel
+  ability: levitate
+  base_stats:
+    hp: 75
+    attack: 50
+    defense: 110
+    sp_attack: 135
+    sp_defense: 120
+    speed: 65

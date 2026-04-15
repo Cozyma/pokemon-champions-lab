@@ -64,3 +64,16 @@ learnable_moves:
 - waterfall
 - swift
 - skull-bash
+mega:
+  stone: dragonite-mega-stone
+  types:
+  - dragon
+  - flying
+  ability: multiscale
+  base_stats:
+    hp: 91
+    attack: 124
+    defense: 115
+    sp_attack: 145
+    sp_defense: 125
+    speed: 100
