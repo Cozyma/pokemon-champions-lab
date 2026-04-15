@@ -204,8 +204,8 @@ def calc_stat(
     Returns:
         実数値 (int)
     """
-    ev_contribution = math.floor(ev / 4)
-    inner = 2 * base + iv + ev_contribution
+    # チャンピオンズ仕様: EV1=実数値1（本編のfloor(ev/4)ではない）
+    inner = 2 * base + iv + ev
 
     if stat_name == "hp":
         return math.floor(inner * level / 100) + level + 10

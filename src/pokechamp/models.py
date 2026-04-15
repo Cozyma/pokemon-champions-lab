@@ -121,12 +121,13 @@ class Pokemon(BaseModel):
 
 
 class EVs(BaseModel):
-    hp: int = Field(default=0, ge=0, le=252)
-    attack: int = Field(default=0, ge=0, le=252)
-    defense: int = Field(default=0, ge=0, le=252)
-    sp_attack: int = Field(default=0, ge=0, le=252)
-    sp_defense: int = Field(default=0, ge=0, le=252)
-    speed: int = Field(default=0, ge=0, le=252)
+    """チャンピオンズ仕様: 各0〜32、合計66。EV1=実数値1。"""
+    hp: int = Field(default=0, ge=0, le=32)
+    attack: int = Field(default=0, ge=0, le=32)
+    defense: int = Field(default=0, ge=0, le=32)
+    sp_attack: int = Field(default=0, ge=0, le=32)
+    sp_defense: int = Field(default=0, ge=0, le=32)
+    speed: int = Field(default=0, ge=0, le=32)
 
 
 class IVs(BaseModel):

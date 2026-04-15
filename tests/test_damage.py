@@ -22,19 +22,22 @@ class TestTypeEffectiveness:
 
 class TestCalcStat:
     def test_hp_stat(self):
-        # ガブリアスHP: base108, IV31, EV4, Lv50 = 184
+        # ガブリアスHP: base108, IV31, EV4, Lv50
+        # inner=2*108+31+4=251, floor(251*50/100)+50+10=185
         hp = calc_stat(base=108, iv=31, ev=4, level=50, nature=Nature.JOLLY, stat_name="hp")
-        assert hp == 184
+        assert hp == 185
 
     def test_attack_with_nature_boost(self):
-        # ガブリアス攻撃: base130, IV31, EV252, Lv50, いじっぱり(attack↑)
-        atk = calc_stat(base=130, iv=31, ev=252, level=50, nature=Nature.ADAMANT, stat_name="attack")
-        assert atk == 200
+        # ガブリアス攻撃: base130, IV31, EV32, Lv50, いじっぱり(attack↑)
+        # inner=2*130+31+32=323, floor(323*50/100)+5=166, floor(166*1.1)=182
+        atk = calc_stat(base=130, iv=31, ev=32, level=50, nature=Nature.ADAMANT, stat_name="attack")
+        assert atk == 182
 
     def test_speed_with_nature_boost(self):
-        # ガブリアス素早さ: base102, IV31, EV252, Lv50, ようき(speed↑)
-        spe = calc_stat(base=102, iv=31, ev=252, level=50, nature=Nature.JOLLY, stat_name="speed")
-        assert spe == 169
+        # ガブリアス素早さ: base102, IV31, EV32, Lv50, ようき(speed↑)
+        # inner=2*102+31+32=267, floor(267*50/100)+5=138, floor(138*1.1)=151
+        spe = calc_stat(base=102, iv=31, ev=32, level=50, nature=Nature.JOLLY, stat_name="speed")
+        assert spe == 151
 
 
 class TestCalcDamageRange:

@@ -4,5 +4,5 @@ pokemon:
     ability: rough-skin
     item: choice-scarf
     nature: jolly
-    evs: {hp: 4, attack: 252, speed: 252}
+    evs: {hp: 2, attack: 32, speed: 32}
     moves: [earthquake, outrage, iron-head, stone-edge]

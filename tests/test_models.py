@@ -57,10 +57,10 @@ class TestTeamMember:
         member = TeamMember(
             species="garchomp", ability="rough-skin", item="choice-scarf",
             nature=Nature.JOLLY,
-            evs=EVs(hp=4, attack=252, speed=252),
+            evs=EVs(hp=2, attack=32, speed=32),
             moves=["earthquake", "outrage", "iron-head", "stone-edge"],
         )
-        assert member.evs.attack == 252
+        assert member.evs.attack == 32
         assert member.evs.defense == 0
 
 

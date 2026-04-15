@@ -4,22 +4,22 @@ from pokechamp.models import Nature
 
 class TestBattlePokemon:
     def test_from_team_member(self):
-        """ガブリアス(ようき AS252 H4)の実数値を検証"""
+        """ガブリアス(ようき A32 S32 H2)の実数値を検証"""
         bp = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
-            evs={"hp": 4, "attack": 252, "speed": 252},
+            evs={"hp": 2, "attack": 32, "speed": 32},
             ivs={}, item="choice-scarf",
             move_names=["earthquake", "outrage", "iron-head", "stone-edge"],
         )
         assert bp.name == "garchomp"
         assert bp.stats["hp"] == 184
-        assert bp.stats["speed"] == 169
+        assert bp.stats["speed"] == 151
 
     def test_garchomp_vs_magikarp(self):
         """ガブリアスはコイキング(はねるのみ)に100%勝つ"""
         garchomp = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
-            evs={"hp": 4, "attack": 252, "speed": 252},
+            evs={"hp": 2, "attack": 32, "speed": 32},
             ivs={}, item="choice-scarf",
             move_names=["earthquake"],
         )
@@ -38,13 +38,13 @@ class TestSetupEvaluation:
         """剣舞1積みで勝率が上がることを確認"""
         garchomp_base = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
-            evs={"hp": 4, "attack": 252, "speed": 252},
+            evs={"hp": 2, "attack": 32, "speed": 32},
             ivs={}, item="",
             move_names=["earthquake", "outrage"],
         )
         garchomp_opponent_base = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
-            evs={"hp": 4, "attack": 252, "speed": 252},
+            evs={"hp": 2, "attack": 32, "speed": 32},
             ivs={}, item="",
             move_names=["earthquake", "outrage"],
         )
@@ -52,13 +52,13 @@ class TestSetupEvaluation:
 
         garchomp_setup = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
-            evs={"hp": 4, "attack": 252, "speed": 252},
+            evs={"hp": 2, "attack": 32, "speed": 32},
             ivs={}, item="",
             move_names=["earthquake", "outrage"],
         )
         garchomp_opponent_setup = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
-            evs={"hp": 4, "attack": 252, "speed": 252},
+            evs={"hp": 2, "attack": 32, "speed": 32},
             ivs={}, item="",
             move_names=["earthquake", "outrage"],
         )
