@@ -1,0 +1,10 @@
+name: protect
+name_en: protect
+type: normal
+category: status
+power: 0
+accuracy: 100
+pp: 10
+priority: 4
+effects: []
+stat_changes: []

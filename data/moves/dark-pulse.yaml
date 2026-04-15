@@ -1,0 +1,10 @@
+name: dark-pulse
+name_en: dark-pulse
+type: dark
+category: special
+power: 80
+accuracy: 100
+pp: 15
+priority: 0
+effects: []
+stat_changes: []

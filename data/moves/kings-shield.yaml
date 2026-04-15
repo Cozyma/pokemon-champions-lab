@@ -1,0 +1,10 @@
+name: kings-shield
+name_en: kings-shield
+type: steel
+category: status
+power: 0
+accuracy: 100
+pp: 10
+priority: 4
+effects: []
+stat_changes: []

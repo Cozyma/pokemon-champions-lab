@@ -1,0 +1,12 @@
+name: focus-blast
+name_en: focus-blast
+type: fighting
+category: special
+power: 120
+accuracy: 70
+pp: 5
+priority: 0
+effects: []
+stat_changes:
+- stat: sp_defense
+  stages: -1

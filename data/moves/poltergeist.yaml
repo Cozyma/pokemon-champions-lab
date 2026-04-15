@@ -1,0 +1,10 @@
+name: poltergeist
+name_en: poltergeist
+type: ghost
+category: physical
+power: 110
+accuracy: 90
+pp: 5
+priority: 0
+effects: []
+stat_changes: []

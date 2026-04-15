@@ -1,0 +1,10 @@
+name: shadow-sneak
+name_en: shadow-sneak
+type: ghost
+category: physical
+power: 40
+accuracy: 100
+pp: 30
+priority: 1
+effects: []
+stat_changes: []

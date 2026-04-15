@@ -1,0 +1,10 @@
+name: sludge-wave
+name_en: sludge-wave
+type: poison
+category: special
+power: 95
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

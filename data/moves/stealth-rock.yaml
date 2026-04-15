@@ -1,0 +1,10 @@
+name: stealth-rock
+name_en: stealth-rock
+type: rock
+category: status
+power: 0
+accuracy: 100
+pp: 20
+priority: 0
+effects: []
+stat_changes: []

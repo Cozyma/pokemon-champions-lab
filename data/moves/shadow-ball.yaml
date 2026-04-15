@@ -1,0 +1,12 @@
+name: shadow-ball
+name_en: shadow-ball
+type: ghost
+category: special
+power: 80
+accuracy: 100
+pp: 15
+priority: 0
+effects: []
+stat_changes:
+- stat: sp_defense
+  stages: -1
