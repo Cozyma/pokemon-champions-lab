@@ -1,0 +1,10 @@
+name: bullet-punch
+name_en: bullet-punch
+type: steel
+category: physical
+power: 40
+accuracy: 100
+pp: 30
+priority: 1
+effects: []
+stat_changes: []

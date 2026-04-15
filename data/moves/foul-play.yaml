@@ -1,0 +1,10 @@
+name: foul-play
+name_en: foul-play
+type: dark
+category: physical
+power: 95
+accuracy: 100
+pp: 15
+priority: 0
+effects: []
+stat_changes: []

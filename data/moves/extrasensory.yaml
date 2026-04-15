@@ -1,0 +1,10 @@
+name: extrasensory
+name_en: extrasensory
+type: psychic
+category: special
+power: 80
+accuracy: 100
+pp: 20
+priority: 0
+effects: []
+stat_changes: []

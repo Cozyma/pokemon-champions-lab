@@ -1,0 +1,43 @@
+name: メガハッサム軸サイクル
+pokemon:
+  - species: scizor
+    ability: technician
+    item: scizor-mega-stone
+    nature: adamant
+    evs: {attack: 32, hp: 32, speed: 2}
+    moves: [bullet-punch, close-combat, swords-dance, roost]
+
+  - species: greninja
+    ability: protean
+    item: greninja-mega-stone
+    nature: timid
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [surf, ice-beam, sludge-wave, extrasensory]
+
+  - species: garchomp
+    ability: rough-skin
+    item: sitrus-berry
+    nature: jolly
+    evs: {attack: 32, speed: 32, hp: 2}
+    moves: [earthquake, dragon-tail, poison-jab, stealth-rock]
+
+  - species: umbreon
+    ability: synchronize
+    item: leftovers
+    nature: calm
+    evs: {hp: 32, sp_defense: 32, defense: 2}
+    moves: [foul-play, moonblast, dark-pulse, protect]
+
+  - species: primarina
+    ability: torrent
+    item: sitrus-berry
+    nature: modest
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [moonblast, surf, aqua-jet, encore]
+
+  - species: aegislash-shield
+    ability: stance-change
+    item: focus-sash
+    nature: adamant
+    evs: {attack: 32, hp: 32, speed: 2}
+    moves: [poltergeist, close-combat, shadow-sneak, swords-dance]
