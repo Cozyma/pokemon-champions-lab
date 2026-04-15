@@ -624,6 +624,8 @@ def simulate_1v1(
     setup_move: Optional[str] = None,
     setup_turns: int = 0,
     n_trials: int = 1000,
+    hp_a: int | None = None,  # NEW: starting HP for a (None = full)
+    hp_b: int | None = None,  # NEW: starting HP for b (None = full)
 ) -> BattleResult:
     """1v1シミュレーションを実行し、勝率と平均残HPを返す。
 
@@ -707,8 +709,11 @@ def simulate_1v1(
     max_dmg_from_a = max(max(dr) for _, dr in all_moves_a) if all_moves_a else 0
 
     # 0ダメージ判定用に全技の最大ダメージを確認
-    hp_a = a.stats["hp"]
-    hp_b = b.stats["hp"]
+    max_hp_a = a.stats["hp"]
+    max_hp_b = b.stats["hp"]
+    # カスタム開始HPが指定されていれば使用 (Noneなら満タン)
+    hp_a = hp_a if hp_a is not None else max_hp_a
+    hp_b = hp_b if hp_b is not None else max_hp_b
 
     if max_dmg_from_a == 0 and max_dmg_from_b == 0:
         # 両者とも0ダメージ → 引き分けを50:50とする
@@ -755,8 +760,8 @@ def simulate_1v1(
     # アイテムフラグ
     leftovers_a = a.item == "leftovers"
     leftovers_b = b.item == "leftovers"
-    leftovers_heal_a = max(1, hp_a // 16)
-    leftovers_heal_b = max(1, hp_b // 16)
+    leftovers_heal_a = max(1, max_hp_a // 16)
+    leftovers_heal_b = max(1, max_hp_b // 16)
 
     for _ in range(n_trials):
         cur_hp_a = hp_a
@@ -765,8 +770,8 @@ def simulate_1v1(
         sash_b = b.item == "focus-sash"
         sitrus_a = a.item == "sitrus-berry"
         sitrus_b = b.item == "sitrus-berry"
-        sitrus_heal_a = max(1, hp_a // 4)
-        sitrus_heal_b = max(1, hp_b // 4)
+        sitrus_heal_a = max(1, max_hp_a // 4)
+        sitrus_heal_b = max(1, max_hp_b // 4)
 
         # アビリティフラグ (試行ごとにリセット)
         # マルチスケイル: HP満タン時に被ダメージ半減
@@ -820,12 +825,12 @@ def simulate_1v1(
 
             move_a, dmg_range_a_cur = _choose_move(
                 a, b, cur_hp_b, eff_speed_a, eff_speed_b,
-                all_moves_a, max_dmg_from_b, cur_hp_a, hp_a,
+                all_moves_a, max_dmg_from_b, cur_hp_a, max_hp_a,
                 turn_number=turn_number, setup_used=setup_used_a,
             )
             move_b, dmg_range_b_cur = _choose_move(
                 b, a, cur_hp_a, eff_speed_b, eff_speed_a,
-                all_moves_b, max_dmg_from_a, cur_hp_b, hp_b,
+                all_moves_b, max_dmg_from_a, cur_hp_b, max_hp_b,
                 turn_number=turn_number, setup_used=setup_used_b,
             )
 
@@ -894,10 +899,10 @@ def simulate_1v1(
 
             # HP閾値アビリティ (もうか/しんりょく/げきりゅう/むしのしらせ): HP1/3以下で技ダメージ1.5倍 (命中時のみ)
             if hit_a and a.ability in _HP_THRESHOLD_ABILITIES:
-                if cur_hp_a <= hp_a // 3 and move_a and move_a.type == _HP_THRESHOLD_ABILITIES[a.ability]:
+                if cur_hp_a <= max_hp_a // 3 and move_a and move_a.type == _HP_THRESHOLD_ABILITIES[a.ability]:
                     da = math.floor(da * 1.5)
             if hit_b and b.ability in _HP_THRESHOLD_ABILITIES:
-                if cur_hp_b <= hp_b // 3 and move_b and move_b.type == _HP_THRESHOLD_ABILITIES[b.ability]:
+                if cur_hp_b <= max_hp_b // 3 and move_b and move_b.type == _HP_THRESHOLD_ABILITIES[b.ability]:
                     db = math.floor(db * 1.5)
 
             # ぎゃくじょう: 発動済みなら特攻技ダメージに倍率適用 (命中時のみ)
@@ -955,14 +960,14 @@ def simulate_1v1(
             if first_is_a:
                 prev_hp_b = cur_hp_b
                 # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
-                if b.ability == "multiscale" and cur_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                if b.ability == "multiscale" and cur_hp_b == hp_b and hp_b == max_hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
                     da = math.floor(da * 0.5)
                 # ばけのかわ: 最初の1発を無効化 (かたやぶりで無効)
                 if disguise_b and a.ability not in _MOLD_BREAKER_ABILITIES:
                     da = 0
                     disguise_b = False
                     # ばけのかわ破壊時に最大HPの1/8ダメージ
-                    cur_hp_b -= max(1, hp_b // 8)
+                    cur_hp_b -= max(1, max_hp_b // 8)
                     if cur_hp_b <= 0:
                         break
                 elif disguise_b:
@@ -975,41 +980,41 @@ def simulate_1v1(
                 cur_hp_b -= da
                 # きあいのタスキ / がんじょう: HP満タンから一撃で倒される場合HP1で耐える
                 # (がんじょうはかたやぶりで無効; タスキはアイテムなので無効にしない)
-                if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
+                if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b and hp_b == max_hp_b:
                     cur_hp_b = 1
                     sash_b = False
-                if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b and hp_b == max_hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
                     cur_hp_b = 1
                     sturdy_b = False
                 if cur_hp_b <= 0:
                     break
                 # さめはだ: 接触技を受けたら攻撃側に1/8反動
                 if b.ability == "rough-skin" and move_a and _is_contact_move(move_a) and da > 0:
-                    cur_hp_a -= max(1, hp_a // 8)
+                    cur_hp_a -= max(1, max_hp_a // 8)
                     if cur_hp_a <= 0:
                         break
                 # じきゅうりょく: 被弾後に防御+1
                 if b.ability == "stamina" and da > 0:
                     stamina_boosts_b = min(6, stamina_boosts_b + 1)
                 # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
-                if b.ability == "berserk" and not berserk_triggered_b and cur_hp_b <= hp_b // 2 and cur_hp_b > 0:
+                if b.ability == "berserk" and not berserk_triggered_b and cur_hp_b <= max_hp_b // 2 and cur_hp_b > 0:
                     berserk_triggered_b = True
                     if move_b and move_b.category == "special":
                         berserk_mult_b = 1.5
                 # オボンのみ: HP半分以下で最大HPの1/4回復
-                if sitrus_b and cur_hp_b <= hp_b // 2:
-                    cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
+                if sitrus_b and cur_hp_b <= max_hp_b // 2:
+                    cur_hp_b = min(max_hp_b, cur_hp_b + sitrus_heal_b)
                     sitrus_b = False
 
                 prev_hp_a = cur_hp_a
                 # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
-                if a.ability == "multiscale" and cur_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                if a.ability == "multiscale" and cur_hp_a == hp_a and hp_a == max_hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
                     db = math.floor(db * 0.5)
                 # ばけのかわ: 最初の1発を無効化 (かたやぶりで無効)
                 if disguise_a and b.ability not in _MOLD_BREAKER_ABILITIES:
                     db = 0
                     disguise_a = False
-                    cur_hp_a -= max(1, hp_a // 8)
+                    cur_hp_a -= max(1, max_hp_a // 8)
                     if cur_hp_a <= 0:
                         break
                 elif disguise_a:
@@ -1019,40 +1024,40 @@ def simulate_1v1(
                     db = 0
                     flash_fire_active_a = True
                 cur_hp_a -= db
-                if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
+                if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a and hp_a == max_hp_a:
                     cur_hp_a = 1
                     sash_a = False
-                if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a and hp_a == max_hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
                     cur_hp_a = 1
                     sturdy_a = False
                 if cur_hp_a <= 0:
                     break
                 # さめはだ: 接触技を受けたら攻撃側に1/8反動
                 if a.ability == "rough-skin" and move_b and _is_contact_move(move_b) and db > 0:
-                    cur_hp_b -= max(1, hp_b // 8)
+                    cur_hp_b -= max(1, max_hp_b // 8)
                     if cur_hp_b <= 0:
                         break
                 # じきゅうりょく: 被弾後に防御+1
                 if a.ability == "stamina" and db > 0:
                     stamina_boosts_a = min(6, stamina_boosts_a + 1)
                 # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
-                if a.ability == "berserk" and not berserk_triggered_a and cur_hp_a <= hp_a // 2 and cur_hp_a > 0:
+                if a.ability == "berserk" and not berserk_triggered_a and cur_hp_a <= max_hp_a // 2 and cur_hp_a > 0:
                     berserk_triggered_a = True
                     if move_a and move_a.category == "special":
                         berserk_mult_a = 1.5
-                if sitrus_a and cur_hp_a <= hp_a // 2:
-                    cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
+                if sitrus_a and cur_hp_a <= max_hp_a // 2:
+                    cur_hp_a = min(max_hp_a, cur_hp_a + sitrus_heal_a)
                     sitrus_a = False
             else:
                 prev_hp_a = cur_hp_a
                 # マルチスケイル (かたやぶりで無効)
-                if a.ability == "multiscale" and cur_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                if a.ability == "multiscale" and cur_hp_a == hp_a and hp_a == max_hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
                     db = math.floor(db * 0.5)
                 # ばけのかわ (かたやぶりで無効)
                 if disguise_a and b.ability not in _MOLD_BREAKER_ABILITIES:
                     db = 0
                     disguise_a = False
-                    cur_hp_a -= max(1, hp_a // 8)
+                    cur_hp_a -= max(1, max_hp_a // 8)
                     if cur_hp_a <= 0:
                         break
                 elif disguise_a:
@@ -1062,40 +1067,40 @@ def simulate_1v1(
                     db = 0
                     flash_fire_active_a = True
                 cur_hp_a -= db
-                if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
+                if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a and hp_a == max_hp_a:
                     cur_hp_a = 1
                     sash_a = False
-                if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a and hp_a == max_hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
                     cur_hp_a = 1
                     sturdy_a = False
                 if cur_hp_a <= 0:
                     break
                 # さめはだ: 接触技を受けたら攻撃側に1/8反動
                 if a.ability == "rough-skin" and move_b and _is_contact_move(move_b) and db > 0:
-                    cur_hp_b -= max(1, hp_b // 8)
+                    cur_hp_b -= max(1, max_hp_b // 8)
                     if cur_hp_b <= 0:
                         break
                 # じきゅうりょく
                 if a.ability == "stamina" and db > 0:
                     stamina_boosts_a = min(6, stamina_boosts_a + 1)
                 # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
-                if a.ability == "berserk" and not berserk_triggered_a and cur_hp_a <= hp_a // 2 and cur_hp_a > 0:
+                if a.ability == "berserk" and not berserk_triggered_a and cur_hp_a <= max_hp_a // 2 and cur_hp_a > 0:
                     berserk_triggered_a = True
                     if move_a and move_a.category == "special":
                         berserk_mult_a = 1.5
-                if sitrus_a and cur_hp_a <= hp_a // 2:
-                    cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
+                if sitrus_a and cur_hp_a <= max_hp_a // 2:
+                    cur_hp_a = min(max_hp_a, cur_hp_a + sitrus_heal_a)
                     sitrus_a = False
 
                 prev_hp_b = cur_hp_b
                 # マルチスケイル (かたやぶりで無効)
-                if b.ability == "multiscale" and cur_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                if b.ability == "multiscale" and cur_hp_b == hp_b and hp_b == max_hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
                     da = math.floor(da * 0.5)
                 # ばけのかわ (かたやぶりで無効)
                 if disguise_b and a.ability not in _MOLD_BREAKER_ABILITIES:
                     da = 0
                     disguise_b = False
-                    cur_hp_b -= max(1, hp_b // 8)
+                    cur_hp_b -= max(1, max_hp_b // 8)
                     if cur_hp_b <= 0:
                         break
                 elif disguise_b:
@@ -1105,46 +1110,46 @@ def simulate_1v1(
                     da = 0
                     flash_fire_active_b = True
                 cur_hp_b -= da
-                if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
+                if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b and hp_b == max_hp_b:
                     cur_hp_b = 1
                     sash_b = False
-                if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b and hp_b == max_hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
                     cur_hp_b = 1
                     sturdy_b = False
                 if cur_hp_b <= 0:
                     break
                 # さめはだ: 接触技を受けたら攻撃側に1/8反動
                 if b.ability == "rough-skin" and move_a and _is_contact_move(move_a) and da > 0:
-                    cur_hp_a -= max(1, hp_a // 8)
+                    cur_hp_a -= max(1, max_hp_a // 8)
                     if cur_hp_a <= 0:
                         break
                 # じきゅうりょく
                 if b.ability == "stamina" and da > 0:
                     stamina_boosts_b = min(6, stamina_boosts_b + 1)
                 # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
-                if b.ability == "berserk" and not berserk_triggered_b and cur_hp_b <= hp_b // 2 and cur_hp_b > 0:
+                if b.ability == "berserk" and not berserk_triggered_b and cur_hp_b <= max_hp_b // 2 and cur_hp_b > 0:
                     berserk_triggered_b = True
                     if move_b and move_b.category == "special":
                         berserk_mult_b = 1.5
-                if sitrus_b and cur_hp_b <= hp_b // 2:
-                    cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
+                if sitrus_b and cur_hp_b <= max_hp_b // 2:
+                    cur_hp_b = min(max_hp_b, cur_hp_b + sitrus_heal_b)
                     sitrus_b = False
 
             # ターン終了時: たべのこし回復
             if leftovers_a and cur_hp_a > 0:
-                cur_hp_a = min(hp_a, cur_hp_a + leftovers_heal_a)
+                cur_hp_a = min(max_hp_a, cur_hp_a + leftovers_heal_a)
             if leftovers_b and cur_hp_b > 0:
-                cur_hp_b = min(hp_b, cur_hp_b + leftovers_heal_b)
+                cur_hp_b = min(max_hp_b, cur_hp_b + leftovers_heal_b)
 
             # ターン終了時: 砂嵐ダメージ (非岩・地・鋼タイプに最大HPの1/16)
             if weather == "sand":
                 if cur_hp_a > 0 and not (set(a.types) & _SAND_IMMUNE_TYPES) and a.ability not in _SAND_IMMUNE_ABILITIES:
-                    sand_dmg_a = max(1, hp_a // 16)
+                    sand_dmg_a = max(1, max_hp_a // 16)
                     cur_hp_a -= sand_dmg_a
                     if cur_hp_a <= 0:
                         break
                 if cur_hp_b > 0 and not (set(b.types) & _SAND_IMMUNE_TYPES) and b.ability not in _SAND_IMMUNE_ABILITIES:
-                    sand_dmg_b = max(1, hp_b // 16)
+                    sand_dmg_b = max(1, max_hp_b // 16)
                     cur_hp_b -= sand_dmg_b
                     if cur_hp_b <= 0:
                         break

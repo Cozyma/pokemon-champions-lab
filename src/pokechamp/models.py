@@ -193,6 +193,15 @@ class SetupEvaluation(BaseModel):
     delta: float
 
 
+class SequenceResult(BaseModel):
+    team_a_selection: list[str]  # 3 pokemon names
+    team_b_selection: list[str]  # 3 pokemon names
+    win_rate_a: float  # over N trials
+    avg_remaining_a: float  # average remaining pokemon count for a
+    avg_remaining_b: float
+    sample_log: list[str]  # one sample sequence log for display
+
+
 class MatchupResult(BaseModel):
     team_a: str
     team_b: str
@@ -200,3 +209,4 @@ class MatchupResult(BaseModel):
     setup_evaluations: list[SetupEvaluation]
     selection_ranking: list[SelectionScore]
     overall_score: float
+    sequence_results: list[SequenceResult] = Field(default_factory=list)

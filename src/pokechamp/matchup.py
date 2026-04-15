@@ -12,10 +12,12 @@ from pokechamp.models import (
     MatchupMatrix,
     MatchupResult,
     SelectionScore,
+    SequenceResult,
     SetupEvaluation,
     Team,
     TeamMember,
 )
+from pokechamp.sequence import evaluate_sequence
 
 
 def _is_mega_member(member: TeamMember) -> bool:
@@ -151,6 +153,20 @@ def evaluate_matchup(
     all_values = [matrix[i][j] for i in range(n) for j in range(m)]
     overall_score = sum(all_values) / len(all_values) if all_values else 0.5
 
+    # 選出上位3件についてシーケンスバトル評価
+    sequence_results: list[SequenceResult] = []
+    for sel in selection_ranking[:3]:
+        bp_sel_a = [
+            _member_to_battle_pokemon(members_a[names_a.index(name)])
+            for name in sel.team_a_selection
+        ]
+        bp_sel_b = [
+            _member_to_battle_pokemon(members_b[names_b.index(name)])
+            for name in sel.team_b_selection
+        ]
+        seq = evaluate_sequence(bp_sel_a, bp_sel_b, n_trials=200)
+        sequence_results.append(seq)
+
     return MatchupResult(
         team_a=team_a.name,
         team_b=team_b.name,
@@ -158,6 +174,7 @@ def evaluate_matchup(
         setup_evaluations=setup_evaluations,
         selection_ranking=selection_ranking,
         overall_score=overall_score,
+        sequence_results=sequence_results,
     )
 
 
