@@ -472,20 +472,20 @@ class TestBatch2Abilities:
         """かたやぶりでふゆうを無視して地面技が当たる"""
         attacker = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
-            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            evs={"attack": 252, "hp": 252}, ivs={}, item="",
             move_names=["earthquake"],
         )
         attacker.ability = "mold-breaker"
+        # Defender with levitate and weak moves so attacker can survive and win
         defender = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
-            evs={"attack": 32, "speed": 32}, ivs={}, item="",
-            move_names=["earthquake", "outrage"],
+            evs={"hp": 32}, ivs={}, item="",
+            move_names=["tackle"],
         )
         defender.ability = "levitate"
         result = simulate_1v1(attacker, defender)
-        # Without mold-breaker, earthquake would be immune
-        # With mold-breaker, earthquake hits normally
-        # Attacker should have reasonable win rate (not 0)
+        # Without mold-breaker, earthquake would be immune → attacker wins 0%
+        # With mold-breaker, earthquake hits normally → attacker should win
         assert result.win_rate_a > 0.3
 
     def test_mold_breaker_ignores_sturdy(self):
