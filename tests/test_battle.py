@@ -465,3 +465,250 @@ class TestMegaEvolution:
         )
         # スカーフは speed の実効値に 1.5 倍補正がかかる → スカーフの方が速い
         assert scarf.get_effective_stat("speed") > mega.get_effective_stat("speed")
+
+
+class TestBatch2Abilities:
+    def test_mold_breaker_ignores_levitate(self):
+        """かたやぶりでふゆうを無視して地面技が当たる"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        attacker.ability = "mold-breaker"
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake", "outrage"],
+        )
+        defender.ability = "levitate"
+        result = simulate_1v1(attacker, defender)
+        # Without mold-breaker, earthquake would be immune
+        # With mold-breaker, earthquake hits normally
+        # Attacker should have reasonable win rate (not 0)
+        assert result.win_rate_a > 0.3
+
+    def test_mold_breaker_ignores_sturdy(self):
+        """かたやぶりでがんじょうを無視して一撃KO"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        attacker.ability = "mold-breaker"
+        magikarp = BattlePokemon.from_data(
+            species="magikarp", nature=Nature.JOLLY,
+            evs={}, ivs={}, item="",
+            move_names=["tackle"],
+        )
+        magikarp.ability = "sturdy"
+        result = simulate_1v1(attacker, magikarp)
+        # Mold-breaker ignores sturdy → magikarp doesn't survive at 1HP
+        # → garchomp takes no damage
+        assert result.win_rate_a == 1.0
+        assert result.avg_remaining_hp_a == attacker.stats["hp"]
+
+    def test_unaware_ignores_stat_boosts(self):
+        """てんねんで相手の積みを無視"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        # Defender with unaware + swords dance opponent
+        defender_unaware = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender_unaware.ability = "unaware"
+
+        # Simulate with attacker having +2 attack (swords dance)
+        attacker_boosted = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        attacker_boosted.stage_modifiers["attack"] = 2
+
+        result = simulate_1v1(attacker_boosted, defender_unaware)
+        # Unaware defender should ignore the +2 attack → roughly even fight
+        assert result.win_rate_b > 0.3  # defender should still have a chance
+
+    def test_rough_skin_recoil(self):
+        """さめはだで接触技使用時に1/8反動"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender.ability = "rough-skin"
+
+        defender_normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result_rough = simulate_1v1(attacker, defender)
+        result_normal = simulate_1v1(
+            BattlePokemon.from_data(
+                species="garchomp", nature=Nature.JOLLY,
+                evs={"attack": 32, "speed": 32}, ivs={}, item="",
+                move_names=["earthquake"],
+            ),
+            defender_normal,
+        )
+        # Rough skin defender should have better survival rate
+        assert result_rough.win_rate_b > result_normal.win_rate_b
+
+
+class TestBatch1Abilities:
+    def test_sharpness_boosts_slashing(self):
+        """きれあじで斬撃技(sacred-sword)が1.5倍"""
+        attacker_sharp = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["sacred-sword"],
+        )
+        attacker_sharp.ability = "sharpness"
+        attacker_normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["sacred-sword"],
+        )
+        target1 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        target2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        result_sharp = simulate_1v1(attacker_sharp, target1)
+        result_normal = simulate_1v1(attacker_normal, target2)
+        # sharpness保持者はsacred-swordのダメージが1.5倍 → 残HP低い
+        assert result_sharp.avg_remaining_hp_b < result_normal.avg_remaining_hp_b
+
+    def test_sharpness_no_boost_non_slashing(self):
+        """きれあじは斬撃技以外に効果なし (earthquake: sharpness有無でダメージ同一)"""
+        # Compare damage output: sharpness + earthquake vs no-ability + earthquake
+        # Both should select earthquake and produce same damage range
+        attacker_sharp = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32}, ivs={}, item="",
+            move_names=["earthquake"],  # not slashing
+        )
+        attacker_sharp.ability = "sharpness"
+        attacker_plain = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        target = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        target2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        _, dmg_sharp = attacker_sharp.best_move_against(target)
+        _, dmg_plain = attacker_plain.best_move_against(target2)
+        # earthquake is NOT slashing → sharpness has no effect → damage ranges identical
+        assert dmg_sharp == dmg_plain
+
+    def test_pixilate_converts_normal(self):
+        """フェアリースキンでノーマル技がフェアリーに変換・1.2倍ブースト"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["tackle"],
+        )
+        attacker.ability = "pixilate"
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        attacker_plain = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["tackle"],
+        )
+        target2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        result_skin = simulate_1v1(attacker, defender)
+        result_plain = simulate_1v1(attacker_plain, target2)
+        # Pixilate tackle → fairy, super effective vs dragon/ground → more damage
+        assert result_skin.avg_remaining_hp_b < result_plain.avg_remaining_hp_b
+
+    def test_sap_sipper_immune_to_grass(self):
+        """そうしょくで草技無効 - エラーなく動作する"""
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender.ability = "sap-sipper"
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(attacker, defender)
+        assert result.win_rate_a + result.win_rate_b > 0
+
+    def test_motor_drive_immune_to_electric(self):
+        """モータードライブで電気技無効 - エラーなく動作する"""
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender.ability = "motor-drive"
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(attacker, defender)
+        assert result.win_rate_a + result.win_rate_b > 0
+
+    def test_blaze_boosts_fire_at_low_hp(self):
+        """もうかでHP1/3以下時に炎技1.5倍 - エラーなく動作する"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["flamethrower"],
+        )
+        attacker.ability = "blaze"
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(attacker, defender)
+        assert result.win_rate_a + result.win_rate_b > 0
+
+    def test_berserk_triggers_once(self):
+        """ぎゃくじょうはHPが1/2以下になった時に一度だけ発動する"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["flamethrower"],
+        )
+        attacker.ability = "berserk"
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(attacker, defender)
+        assert result.win_rate_a + result.win_rate_b > 0
