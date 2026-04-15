@@ -91,9 +91,14 @@ class BattlePokemon:
         ev_defaults.update(evs)
 
         # メガシンカ判定: メガストーンを持っている場合はメガシンカ種族値・タイプ・アビリティを使用
-        is_mega = pokemon.mega is not None and item == pokemon.mega.stone
+        # リザードン等の複数メガ形態にも対応 (mega, mega_x, mega_y)
+        mega = None
+        for mega_field in (pokemon.mega, pokemon.mega_x, pokemon.mega_y):
+            if mega_field is not None and item == mega_field.stone:
+                mega = mega_field
+                break
+        is_mega = mega is not None
         if is_mega:
-            mega = pokemon.mega
             stat_source = mega.base_stats  # type: ignore[union-attr]
             types_to_use = mega.types  # type: ignore[union-attr]
             # メガシンカ時: HP は元の種族値を使用（メガデータの hp は元と同値のはずだが念のため）

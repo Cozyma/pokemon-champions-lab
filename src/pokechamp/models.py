@@ -126,6 +126,8 @@ class Pokemon(BaseModel):
     abilities: list[str]
     learnable_moves: list[str]
     mega: MegaData | None = None  # optional mega data
+    mega_x: MegaData | None = None  # リザードンX等、複数メガ形態用
+    mega_y: MegaData | None = None
 
 
 class EVs(BaseModel):

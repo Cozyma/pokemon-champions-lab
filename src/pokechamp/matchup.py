@@ -22,7 +22,10 @@ def _is_mega_member(member: TeamMember) -> bool:
     """チームメンバーがメガストーンを持っているか判定する."""
     from pokechamp.loader import load_pokemon
     pokemon = load_pokemon(member.species)
-    return pokemon.mega is not None and pokemon.mega.stone == member.item
+    for mega_field in (pokemon.mega, pokemon.mega_x, pokemon.mega_y):
+        if mega_field is not None and mega_field.stone == member.item:
+            return True
+    return False
 
 
 def build_battle_pokemon_from_team(team: Team) -> list[BattlePokemon]:
