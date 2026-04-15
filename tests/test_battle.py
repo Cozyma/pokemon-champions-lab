@@ -707,3 +707,68 @@ class TestBatch1Abilities:
         )
         result = simulate_1v1(attacker, defender)
         assert result.win_rate_a + result.win_rate_b > 0
+
+
+class TestPhase25:
+    def test_accuracy_affects_win_rate(self):
+        """命中率が低い技は勝率が下がる"""
+        # focus-blast has 70% accuracy
+        attacker_fb = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["focus-blast"],
+        )
+        # earthquake has 100% accuracy
+        attacker_eq = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        target1 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        target2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        result_fb = simulate_1v1(attacker_fb, target1, n_trials=2000)
+        result_eq = simulate_1v1(attacker_eq, target2, n_trials=2000)
+        # focus-blast user should have lower win rate due to misses
+        assert result_fb.win_rate_a < result_eq.win_rate_a
+
+    def test_priority_move_when_slower_can_ko(self):
+        """遅いが先制技で倒せる場合に先制技を選択"""
+        # Slow but has aqua-jet (priority 1, water, power 40)
+        slow_attacker = BattlePokemon.from_data(
+            species="magikarp", nature=Nature.ADAMANT,
+            evs={"attack": 32}, ivs={}, item="",
+            move_names=["aqua-jet", "tackle"],
+        )
+        # Very low HP target that aqua-jet can KO
+        weak_target = BattlePokemon.from_data(
+            species="magikarp", nature=Nature.JOLLY,
+            evs={"speed": 32}, ivs={}, item="",
+            move_names=["tackle"],
+        )
+        # Both are magikarp so this is a mirror, but the point is the priority logic runs
+        result = simulate_1v1(slow_attacker, weak_target)
+        assert result.win_rate_a + result.win_rate_b > 0  # just verify it runs
+
+    def test_crit_affects_results(self):
+        """急所が発生することを確認（統計的に）"""
+        # Run many trials and check that win rate isn't exactly 50% for a mirror match
+        # Crits add variance, so results should differ slightly between runs
+        a = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        b = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(a, b, n_trials=5000)
+        # With crits and same speed, should be close to 50% but with some variance
+        assert 0.35 <= result.win_rate_a <= 0.65

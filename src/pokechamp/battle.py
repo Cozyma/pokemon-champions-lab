@@ -171,104 +171,11 @@ class BattlePokemon:
         ステータス技および完全無効な技はスキップ。
         全技がステータスか無効の場合は (None, [0]*16) を返す。
         """
-        best_move: Optional[Move] = None
-        best_dmg: list[int] = [0] * 16
-        best_avg = 0.0
-
-        for move in self.moves:
-            if move.category == "status":
-                continue
-            if move.power == 0:
-                continue
-
-            # スキン系アビリティ: ノーマル技を別タイプに変換
-            effective_type = move.type
-            skin_boost = 1.0
-            if self.ability in _SKIN_ABILITIES and move.type == TypeName.NORMAL:
-                effective_type = _SKIN_ABILITIES[self.ability]
-                skin_boost = 1.2
-
-            # アビリティによるタイプ無効チェック (変換後タイプで判定するため一時的なmoveラッパーではなく直接チェック)
-            # 変換後タイプが無効かチェック
-            if effective_type == move.type:
-                # タイプ変換なし: 通常チェック
-                if _is_type_immune(opponent, move):
-                    continue
-            else:
-                # タイプ変換あり: 変換後タイプでチェック
-                if _is_type_immune_by_type(opponent, effective_type):
-                    continue
-
-            # タイプ相性を計算（複合タイプ対応）
-            eff = 1.0
-            for defend_type in opponent.types:
-                eff *= type_effectiveness(effective_type, defend_type)
-
-            if eff == 0.0:
-                continue
-
-            # STAB判定 (adaptabilityは2.0、スキン変換後タイプで判定)
-            if effective_type in self.types:
-                stab_mult = 2.0 if self.ability == "adaptability" else 1.5
-            else:
-                stab_mult = 1.0
-            stab = stab_mult > 1.0
-
-            # 攻撃/特攻の選択
-            # てんねん: 攻撃側がてんねんなら相手の防御ランクを無視
-            #           防御側がてんねんなら自分の攻撃ランクを無視
-            if move.category == "physical":
-                ignore_opp_def = self.ability == "unaware"
-                ignore_my_atk = opponent.ability == "unaware"
-                atk_stat = self.get_effective_stat("attack", ignore_stages=ignore_my_atk)
-                def_stat = opponent.get_effective_stat("defense", ignore_stages=ignore_opp_def)
-            else:  # special
-                ignore_opp_def = self.ability == "unaware"
-                ignore_my_atk = opponent.ability == "unaware"
-                atk_stat = self.get_effective_stat("sp_attack", ignore_stages=ignore_my_atk)
-                def_stat = opponent.get_effective_stat("sp_defense", ignore_stages=ignore_opp_def)
-
-            # アビリティによる攻撃補正をatk_statに乗算
-            atk_mod = _get_attack_modifier(self, move)
-            atk_stat = math.floor(atk_stat * atk_mod)
-
-            # タイプ強化アイテムの補正
-            item_mod = 1.0
-            if self.item in _ITEM_EFFECTS:
-                effect = _ITEM_EFFECTS[self.item]
-                if effect["type"] == "type_boost" and effective_type.value == effect["boost_type"]:
-                    item_mod = effect["value"]
-
-            # スキン系アビリティの1.2倍補正
-            item_mod *= skin_boost
-
-            # アビリティによるダメージ補正をitem_modに乗算
-            item_mod *= _get_damage_modifier(self, move, opponent)
-
-            # adaptabilityのSTABは calc_damage_range の stab=False + item_mod で処理
-            # (1.5→2.0の差分をitem_modで追加する代わりに、stab引数はbool→実際の倍率に対応させる)
-            # 実装方針: stab=Trueで1.5倍、追加の差分をitem_modに乗算
-            if stab and stab_mult == 2.0:
-                # adaptability: 1.5倍ではなく2.0倍 → item_modに差分 (2.0/1.5) を乗算
-                item_mod *= 2.0 / 1.5
-
-            dmg_range = calc_damage_range(
-                level=50,
-                power=move.power,
-                attack_stat=atk_stat,
-                defense_stat=def_stat,
-                stab=stab,
-                type_eff=eff,
-                item_modifier=item_mod,
-            )
-
-            avg = sum(dmg_range) / len(dmg_range)
-            if avg > best_avg:
-                best_avg = avg
-                best_move = move
-                best_dmg = dmg_range
-
-        return best_move, best_dmg
+        all_moves = _calc_all_moves(self, opponent)
+        if not all_moves:
+            return None, [0] * 16
+        best = max(all_moves, key=lambda x: sum(x[1]) / len(x[1]))
+        return best
 
 
 # ---------------------------------------------------------------------------
@@ -463,6 +370,158 @@ def _apply_setup(pokemon: BattlePokemon, setup_move_name: str, turns: int) -> No
             pokemon.stage_modifiers[stat] = max(-6, min(6, current + stages))
 
 
+def _calc_all_moves(
+    attacker: BattlePokemon,
+    opponent: BattlePokemon,
+) -> list[tuple[Move, list[int]]]:
+    """攻撃側の全有効技とダメージ乱数リストを返す。
+
+    ステータス技・完全無効技を除く全技を計算して返す。
+    """
+    results: list[tuple[Move, list[int]]] = []
+
+    for move in attacker.moves:
+        if move.category == "status":
+            continue
+        if move.power == 0:
+            continue
+
+        # スキン系アビリティ: ノーマル技を別タイプに変換
+        effective_type = move.type
+        skin_boost = 1.0
+        if attacker.ability in _SKIN_ABILITIES and move.type == TypeName.NORMAL:
+            effective_type = _SKIN_ABILITIES[attacker.ability]
+            skin_boost = 1.2
+
+        # アビリティによるタイプ無効チェック
+        if effective_type == move.type:
+            if _is_type_immune(opponent, move):
+                continue
+        else:
+            if _is_type_immune_by_type(opponent, effective_type):
+                continue
+
+        # タイプ相性を計算（複合タイプ対応）
+        eff = 1.0
+        for defend_type in opponent.types:
+            eff *= type_effectiveness(effective_type, defend_type)
+
+        if eff == 0.0:
+            continue
+
+        # STAB判定 (adaptabilityは2.0、スキン変換後タイプで判定)
+        if effective_type in attacker.types:
+            stab_mult = 2.0 if attacker.ability == "adaptability" else 1.5
+        else:
+            stab_mult = 1.0
+        stab = stab_mult > 1.0
+
+        # 攻撃/特攻の選択
+        if move.category == "physical":
+            ignore_opp_def = attacker.ability == "unaware"
+            ignore_my_atk = opponent.ability == "unaware"
+            atk_stat = attacker.get_effective_stat("attack", ignore_stages=ignore_my_atk)
+            def_stat = opponent.get_effective_stat("defense", ignore_stages=ignore_opp_def)
+        else:  # special
+            ignore_opp_def = attacker.ability == "unaware"
+            ignore_my_atk = opponent.ability == "unaware"
+            atk_stat = attacker.get_effective_stat("sp_attack", ignore_stages=ignore_my_atk)
+            def_stat = opponent.get_effective_stat("sp_defense", ignore_stages=ignore_opp_def)
+
+        # アビリティによる攻撃補正をatk_statに乗算
+        atk_mod = _get_attack_modifier(attacker, move)
+        atk_stat = math.floor(atk_stat * atk_mod)
+
+        # タイプ強化アイテムの補正
+        item_mod = 1.0
+        if attacker.item in _ITEM_EFFECTS:
+            effect = _ITEM_EFFECTS[attacker.item]
+            if effect["type"] == "type_boost" and effective_type.value == effect["boost_type"]:
+                item_mod = effect["value"]
+
+        # スキン系アビリティの1.2倍補正
+        item_mod *= skin_boost
+
+        # アビリティによるダメージ補正をitem_modに乗算
+        item_mod *= _get_damage_modifier(attacker, move, opponent)
+
+        # adaptability: stab=Trueで1.5倍、差分(2.0/1.5)をitem_modに乗算
+        if stab and stab_mult == 2.0:
+            item_mod *= 2.0 / 1.5
+
+        dmg_range = calc_damage_range(
+            level=50,
+            power=move.power,
+            attack_stat=atk_stat,
+            defense_stat=def_stat,
+            stab=stab,
+            type_eff=eff,
+            item_modifier=item_mod,
+        )
+
+        results.append((move, dmg_range))
+
+    return results
+
+
+def _choose_move(
+    attacker: BattlePokemon,
+    opponent: BattlePokemon,
+    cur_hp_opponent: int,
+    my_speed: int,
+    opp_speed: int,
+    all_moves: list[tuple[Move, list[int]]],
+    max_incoming_dmg: int,
+    cur_hp_self: int,
+    max_hp_self: int,
+) -> tuple[Move | None, list[int]]:
+    """ターンごとの状況に応じて最適な技を選択する。
+
+    ロジック:
+    1. 全有効技のダメージ範囲はall_movesから取得（事前計算済み）
+    2. 自分が速い → 最大ダメージ技を選択
+    3. 自分が遅い場合:
+       a. 先制技でKOできるなら使用
+       b. 被弾で倒れる場合: 先制技+急所でKO可能なら先制技（博打）、不可なら最大ダメージ
+       c. 生存可能 → 最大ダメージ技
+    """
+    if not all_moves:
+        return None, [0] * 16
+
+    # 先制技と通常技に分類
+    priority_moves = [(m, dr) for m, dr in all_moves if m.priority > 0]
+
+    # 最大ダメージ技（平均ダメージ最大）
+    best_normal = max(all_moves, key=lambda x: sum(x[1]) / len(x[1]))
+
+    i_am_faster = my_speed > opp_speed
+
+    if i_am_faster or not priority_moves:
+        # 速い、または先制技なし → 最大ダメージ技
+        return best_normal
+
+    # 遅い & 先制技あり
+    for pmove, pdmg in priority_moves:
+        # 先制技でKO可能？
+        if min(pdmg) >= cur_hp_opponent:
+            return pmove, pdmg  # 確定KO
+
+    # このターン被弾で倒れるか？（相手が先攻なので）
+    will_die = max_incoming_dmg >= cur_hp_self
+
+    if will_die:
+        # 倒れる前提 → 先制技+急所でKO可能か博打
+        for pmove, pdmg in priority_moves:
+            crit_max = math.floor(max(pdmg) * 1.5)
+            if crit_max >= cur_hp_opponent:
+                return pmove, pdmg  # 急所博打
+        # 急所KOも不可 → 最大ダメージで削る
+        return best_normal
+
+    # 生存可能 → 最大ダメージ技（被弾後に攻撃できる）
+    return best_normal
+
+
 def simulate_1v1(
     a: BattlePokemon,
     b: BattlePokemon,
@@ -504,49 +563,37 @@ def simulate_1v1(
         elif a.ability == "competitive":
             a.stage_modifiers["sp_attack"] = min(6, a.stage_modifiers["sp_attack"] + 2)
 
-    # 各側の最善技・ダメージ乱数を取得
-    # かたやぶり系: 攻撃側がかたやぶりなら防御側のアビリティを一時無効化してダメージ計算
+    # 全技の事前計算（かたやぶり系対応）
+    # かたやぶり: 攻撃側がかたやぶりなら防御側のアビリティを一時無効化してダメージ計算
     if a.ability in _MOLD_BREAKER_ABILITIES:
         saved_ability_b = b.ability
         b.ability = ""
-        move_a, dmg_range_a = a.best_move_against(b)
+        all_moves_a = _calc_all_moves(a, b)
         b.ability = saved_ability_b
     else:
-        move_a, dmg_range_a = a.best_move_against(b)
+        all_moves_a = _calc_all_moves(a, b)
 
     if b.ability in _MOLD_BREAKER_ABILITIES:
         saved_ability_a = a.ability
         a.ability = ""
-        move_b, dmg_range_b = b.best_move_against(a)
+        all_moves_b = _calc_all_moves(b, a)
         a.ability = saved_ability_a
     else:
-        move_b, dmg_range_b = b.best_move_against(a)
+        all_moves_b = _calc_all_moves(b, a)
 
-    # 先攻判定
-    priority_a = move_a.priority if move_a else 0
-    priority_b = move_b.priority if move_b else 0
+    # 素早さ計算
     speed_a = a.get_effective_stat("speed")
     speed_b = b.get_effective_stat("speed")
 
-    # 先攻: 優先度が高い、同じなら素早さが高い方（同値は50%ずつ）
-    # セットアップ積み時は速度同値でもaが先攻（準備ターンでイニシアチブを掴む）
-    a_goes_first: Optional[bool]
-    if priority_a != priority_b:
-        a_goes_first = priority_a > priority_b
-    elif speed_a != speed_b:
-        a_goes_first = speed_a > speed_b
-    elif setup_applied:
-        a_goes_first = True  # 積みによる先攻イニシアチブ
-    else:
-        a_goes_first = None  # 同速: 試行ごとにランダム
+    # 事前の最大ダメージ（優先技選択の判断用）
+    max_dmg_from_b = max(max(dr) for _, dr in all_moves_b) if all_moves_b else 0
+    max_dmg_from_a = max(max(dr) for _, dr in all_moves_a) if all_moves_a else 0
 
-    # どちらかが0ダメージしか与えられない場合の特別処理
-    a_max_dmg = max(dmg_range_a)
-    b_max_dmg = max(dmg_range_b)
+    # 0ダメージ判定用に全技の最大ダメージを確認
     hp_a = a.stats["hp"]
     hp_b = b.stats["hp"]
 
-    if a_max_dmg == 0 and b_max_dmg == 0:
+    if max_dmg_from_a == 0 and max_dmg_from_b == 0:
         # 両者とも0ダメージ → 引き分けを50:50とする
         return BattleResult(
             pokemon_a=a.name,
@@ -557,7 +604,7 @@ def simulate_1v1(
             avg_remaining_hp_b=float(hp_b),
         )
 
-    if a_max_dmg == 0:
+    if max_dmg_from_a == 0:
         # aは何もできない → bが100%勝つ
         return BattleResult(
             pokemon_a=a.name,
@@ -568,7 +615,7 @@ def simulate_1v1(
             avg_remaining_hp_b=float(hp_b),
         )
 
-    if b_max_dmg == 0:
+    if max_dmg_from_b == 0:
         # bは何もできない → aが100%勝つ
         return BattleResult(
             pokemon_a=a.name,
@@ -579,368 +626,332 @@ def simulate_1v1(
             avg_remaining_hp_b=0.0,
         )
 
-    # アイテム効果があるためモンテカルロに一本化
-    # （全列挙は高速だがタスキ・たべのこし等の処理が複雑になるため）
-    if False:
-        # 16x16全列挙
-        wins_a = 0
-        wins_b = 0
-        total_remaining_hp_a = 0.0
-        total_remaining_hp_b = 0.0
-        n_combinations = len(dmg_range_a) * len(dmg_range_b)
+    # セットアップ先攻判定: セットアップ積み時は同速でもaが先攻
+    # (ターンごとに _choose_move + 優先度で再判定するが、同速タイブレーク用に保持)
 
-        for da in dmg_range_a:
-            for db in dmg_range_b:
-                if a_goes_first:
-                    # aが先攻
-                    remaining_b = hp_b - da
-                    if remaining_b <= 0:
-                        wins_a += 1
-                        total_remaining_hp_a += hp_a
-                        total_remaining_hp_b += 0
-                    else:
-                        remaining_a = hp_a - db
-                        if remaining_a <= 0:
-                            wins_b += 1
-                            total_remaining_hp_a += 0
-                            total_remaining_hp_b += remaining_b
-                        else:
-                            # 1ターン目で決着がつかない場合はモンテカルロで継続
-                            # ここでは単純に残HPを蓄積して引き分けとして処理
-                            # (1ターンで決着しなければ乱数の期待値で処理)
-                            # 厳密性よりシンプルさを優先: 継続ターンは期待値ベースで計算
-                            avg_a_dmg = sum(dmg_range_a) / len(dmg_range_a)
-                            avg_b_dmg = sum(dmg_range_b) / len(dmg_range_b)
-                            # 残りターン数(期待値)でどちらが先に倒れるか
-                            turns_to_ko_b = math.ceil(remaining_b / avg_a_dmg) if avg_a_dmg > 0 else float('inf')
-                            turns_to_ko_a = math.ceil(remaining_a / avg_b_dmg) if avg_b_dmg > 0 else float('inf')
-                            if turns_to_ko_b <= turns_to_ko_a:
-                                wins_a += 1
-                                remaining_after = max(0, remaining_a - avg_b_dmg * (turns_to_ko_b - 1))
-                                total_remaining_hp_a += remaining_after
-                                total_remaining_hp_b += 0
-                            else:
-                                wins_b += 1
-                                remaining_after = max(0, remaining_b - avg_a_dmg * (turns_to_ko_a - 1))
-                                total_remaining_hp_a += 0
-                                total_remaining_hp_b += remaining_after
-                else:
-                    # bが先攻
-                    remaining_a = hp_a - db
-                    if remaining_a <= 0:
-                        wins_b += 1
-                        total_remaining_hp_a += 0
-                        total_remaining_hp_b += hp_b
-                    else:
-                        remaining_b = hp_b - da
-                        if remaining_b <= 0:
-                            wins_a += 1
-                            total_remaining_hp_a += remaining_a
-                            total_remaining_hp_b += 0
-                        else:
-                            avg_a_dmg = sum(dmg_range_a) / len(dmg_range_a)
-                            avg_b_dmg = sum(dmg_range_b) / len(dmg_range_b)
-                            turns_to_ko_b = math.ceil(remaining_b / avg_a_dmg) if avg_a_dmg > 0 else float('inf')
-                            turns_to_ko_a = math.ceil(remaining_a / avg_b_dmg) if avg_b_dmg > 0 else float('inf')
-                            if turns_to_ko_b < turns_to_ko_a:
-                                wins_a += 1
-                                remaining_after = max(0, remaining_a - avg_b_dmg * (turns_to_ko_b - 1))
-                                total_remaining_hp_a += remaining_after
-                                total_remaining_hp_b += 0
-                            else:
-                                wins_b += 1
-                                remaining_after = max(0, remaining_b - avg_a_dmg * (turns_to_ko_a - 1))
-                                total_remaining_hp_a += 0
-                                total_remaining_hp_b += remaining_after
+    # モンテカルロシミュレーション
+    wins_a = 0
+    wins_b = 0
+    total_remaining_hp_a = 0.0
+    total_remaining_hp_b = 0.0
 
-        win_rate_a = wins_a / n_combinations
-        win_rate_b = wins_b / n_combinations
-        avg_hp_a = total_remaining_hp_a / n_combinations
-        avg_hp_b = total_remaining_hp_b / n_combinations
+    # アイテムフラグ
+    leftovers_a = a.item == "leftovers"
+    leftovers_b = b.item == "leftovers"
+    leftovers_heal_a = max(1, hp_a // 16)
+    leftovers_heal_b = max(1, hp_b // 16)
 
-    else:
-        # モンテカルロシミュレーション
-        wins_a = 0
-        wins_b = 0
-        total_remaining_hp_a = 0.0
-        total_remaining_hp_b = 0.0
+    for _ in range(n_trials):
+        cur_hp_a = hp_a
+        cur_hp_b = hp_b
+        sash_a = a.item == "focus-sash"
+        sash_b = b.item == "focus-sash"
+        sitrus_a = a.item == "sitrus-berry"
+        sitrus_b = b.item == "sitrus-berry"
+        sitrus_heal_a = max(1, hp_a // 4)
+        sitrus_heal_b = max(1, hp_b // 4)
 
-        # アイテムフラグ
-        leftovers_a = a.item == "leftovers"
-        leftovers_b = b.item == "leftovers"
-        leftovers_heal_a = max(1, hp_a // 16)
-        leftovers_heal_b = max(1, hp_b // 16)
+        # アビリティフラグ (試行ごとにリセット)
+        # マルチスケイル: HP満タン時に被ダメージ半減
+        # ばけのかわ: 最初の1発を無効化
+        disguise_a = a.ability == "disguise"
+        disguise_b = b.ability == "disguise"
+        # がんじょう: HP満タンから一撃KOを耐える (タスキと同様)
+        sturdy_a = a.ability == "sturdy"
+        sturdy_b = b.ability == "sturdy"
+        # もらいび: 炎技を受けると炎技が1.5倍に (炎は無効化)
+        flash_fire_active_a = False  # aのもらいびが発動中
+        flash_fire_active_b = False  # bのもらいびが発動中
+        # じきゅうりょく: 被弾のたびに防御+1 → ダメージ軽減として追跡
+        stamina_boosts_a = 0
+        stamina_boosts_b = 0
+        # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ発動)
+        berserk_triggered_a = False
+        berserk_triggered_b = False
+        # ぎゃくじょうの特攻ブーストによるダメージ倍率
+        berserk_mult_a = 1.0
+        berserk_mult_b = 1.0
+        # かそく: ターン終了後に発動するフラグ (発動後は速度を無視して先攻)
+        speed_boost_active_a = False
+        speed_boost_active_b = False
 
-        for _ in range(n_trials):
-            cur_hp_a = hp_a
-            cur_hp_b = hp_b
-            sash_a = a.item == "focus-sash"
-            sash_b = b.item == "focus-sash"
-            sitrus_a = a.item == "sitrus-berry"
-            sitrus_b = b.item == "sitrus-berry"
-            sitrus_heal_a = max(1, hp_a // 4)
-            sitrus_heal_b = max(1, hp_b // 4)
+        while cur_hp_a > 0 and cur_hp_b > 0:
+            # ターンごとに最適な技を選択
+            move_a, dmg_range_a_cur = _choose_move(
+                a, b, cur_hp_b, speed_a, speed_b,
+                all_moves_a, max_dmg_from_b, cur_hp_a, hp_a,
+            )
+            move_b, dmg_range_b_cur = _choose_move(
+                b, a, cur_hp_a, speed_b, speed_a,
+                all_moves_b, max_dmg_from_a, cur_hp_b, hp_b,
+            )
 
-            # アビリティフラグ (試行ごとにリセット)
-            # マルチスケイル: HP満タン時に被ダメージ半減
-            # ばけのかわ: 最初の1発を無効化
-            disguise_a = a.ability == "disguise"
-            disguise_b = b.ability == "disguise"
-            # がんじょう: HP満タンから一撃KOを耐える (タスキと同様)
-            sturdy_a = a.ability == "sturdy"
-            sturdy_b = b.ability == "sturdy"
-            # もらいび: 炎技を受けると炎技が1.5倍に (炎は無効化)
-            flash_fire_active_a = False  # aのもらいびが発動中
-            flash_fire_active_b = False  # bのもらいびが発動中
-            # じきゅうりょく: 被弾のたびに防御+1 → ダメージ軽減として追跡
-            stamina_boosts_a = 0
-            stamina_boosts_b = 0
-            # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ発動)
-            berserk_triggered_a = False
-            berserk_triggered_b = False
-            # ぎゃくじょうの特攻ブーストによるダメージ倍率
-            berserk_mult_a = 1.0
-            berserk_mult_b = 1.0
+            da = random.choice(dmg_range_a_cur)
+            db = random.choice(dmg_range_b_cur)
 
-            # 同速の場合は試行ごとにランダム決定
-            if a_goes_first is None:
-                first_is_a = random.random() < 0.5
-            else:
-                first_is_a = a_goes_first
+            # 命中チェック (accuracy=100は常に命中)
+            hit_a = True
+            if move_a and da > 0 and move_a.accuracy < 100 and random.random() * 100 >= move_a.accuracy:
+                da = 0
+                hit_a = False
 
-            while cur_hp_a > 0 and cur_hp_b > 0:
-                da = random.choice(dmg_range_a)
-                db = random.choice(dmg_range_b)
+            hit_b = True
+            if move_b and db > 0 and move_b.accuracy < 100 and random.random() * 100 >= move_b.accuracy:
+                db = 0
+                hit_b = False
 
-                # もらいび発動中なら炎技ダメージを1.5倍に
-                # (best_move_againstはループ前に計算済みのため、ここでインラインに補正)
-                if flash_fire_active_a and move_a and move_a.type == TypeName.FIRE:
+            # 急所: 6.25%の確率でダメージ×1.5
+            CRIT_RATE = 0.0625
+            if da > 0 and random.random() < CRIT_RATE:
+                da = math.floor(da * 1.5)
+            if db > 0 and random.random() < CRIT_RATE:
+                db = math.floor(db * 1.5)
+
+            # もらいび発動中なら炎技ダメージを1.5倍に (命中時のみ)
+            if hit_a and flash_fire_active_a and move_a and move_a.type == TypeName.FIRE:
+                da = math.floor(da * 1.5)
+            if hit_b and flash_fire_active_b and move_b and move_b.type == TypeName.FIRE:
+                db = math.floor(db * 1.5)
+
+            # HP閾値アビリティ (もうか/しんりょく/げきりゅう/むしのしらせ): HP1/3以下で技ダメージ1.5倍 (命中時のみ)
+            if hit_a and a.ability in _HP_THRESHOLD_ABILITIES:
+                if cur_hp_a <= hp_a // 3 and move_a and move_a.type == _HP_THRESHOLD_ABILITIES[a.ability]:
                     da = math.floor(da * 1.5)
-                if flash_fire_active_b and move_b and move_b.type == TypeName.FIRE:
+            if hit_b and b.ability in _HP_THRESHOLD_ABILITIES:
+                if cur_hp_b <= hp_b // 3 and move_b and move_b.type == _HP_THRESHOLD_ABILITIES[b.ability]:
                     db = math.floor(db * 1.5)
 
-                # HP閾値アビリティ (もうか/しんりょく/げきりゅう/むしのしらせ): HP1/3以下で技ダメージ1.5倍
-                if a.ability in _HP_THRESHOLD_ABILITIES:
-                    if cur_hp_a <= hp_a // 3 and move_a and move_a.type == _HP_THRESHOLD_ABILITIES[a.ability]:
-                        da = math.floor(da * 1.5)
-                if b.ability in _HP_THRESHOLD_ABILITIES:
-                    if cur_hp_b <= hp_b // 3 and move_b and move_b.type == _HP_THRESHOLD_ABILITIES[b.ability]:
-                        db = math.floor(db * 1.5)
+            # ぎゃくじょう: 発動済みなら特攻技ダメージに倍率適用 (命中時のみ)
+            if hit_a and berserk_mult_a > 1.0 and move_a and move_a.category == "special":
+                da = math.floor(da * berserk_mult_a)
+            if hit_b and berserk_mult_b > 1.0 and move_b and move_b.category == "special":
+                db = math.floor(db * berserk_mult_b)
 
-                # ぎゃくじょう: 発動済みなら特攻技ダメージに倍率適用
-                if berserk_mult_a > 1.0 and move_a and move_a.category == "special":
-                    da = math.floor(da * berserk_mult_a)
-                if berserk_mult_b > 1.0 and move_b and move_b.category == "special":
-                    db = math.floor(db * berserk_mult_b)
+            # じきゅうりょく: 蓄積した防御ブーストを軽減率として適用
+            # N回被弾後: 防御ステージ+N → 軽減率 2/(2+N)
+            if stamina_boosts_a > 0:
+                db = math.floor(db * 2 / (2 + stamina_boosts_a))
+            if stamina_boosts_b > 0:
+                da = math.floor(da * 2 / (2 + stamina_boosts_b))
 
-                # じきゅうりょく: 蓄積した防御ブーストを軽減率として適用
-                # N回被弾後: 防御ステージ+N → 軽減率 2/(2+N)
-                if stamina_boosts_a > 0:
-                    db = math.floor(db * 2 / (2 + stamina_boosts_a))
-                if stamina_boosts_b > 0:
-                    da = math.floor(da * 2 / (2 + stamina_boosts_b))
+            # 先攻判定: ターンごとに優先度と素早さで決定
+            # かそくが発動済みなら素早さを上書き (2ターン目以降)
+            cur_speed_a = speed_a if not speed_boost_active_a else 999999
+            cur_speed_b = speed_b if not speed_boost_active_b else 999999
 
-                if first_is_a:
-                    prev_hp_b = cur_hp_b
-                    # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
-                    if b.ability == "multiscale" and cur_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
-                        da = math.floor(da * 0.5)
-                    # ばけのかわ: 最初の1発を無効化 (かたやぶりで無効)
-                    if disguise_b and a.ability not in _MOLD_BREAKER_ABILITIES:
-                        da = 0
-                        disguise_b = False
-                        # ばけのかわ破壊時に最大HPの1/8ダメージ
-                        cur_hp_b -= max(1, hp_b // 8)
-                        if cur_hp_b <= 0:
-                            break
-                    elif disguise_b:
-                        # かたやぶりでばけのかわを貫通: フラグ消費するが無効化しない
-                        disguise_b = False
-                    # もらいびチェック: 炎技を受けた場合
-                    if b.ability == "flash-fire" and move_a and move_a.type == TypeName.FIRE:
-                        da = 0
-                        flash_fire_active_b = True
-                    cur_hp_b -= da
-                    # きあいのタスキ / がんじょう: HP満タンから一撃で倒される場合HP1で耐える
-                    # (がんじょうはかたやぶりで無効; タスキはアイテムなので無効にしない)
-                    if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
-                        cur_hp_b = 1
-                        sash_b = False
-                    if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
-                        cur_hp_b = 1
-                        sturdy_b = False
-                    if cur_hp_b <= 0:
-                        break
-                    # さめはだ: 接触技を受けたら攻撃側に1/8反動
-                    if b.ability == "rough-skin" and move_a and _is_contact_move(move_a) and da > 0:
-                        cur_hp_a -= max(1, hp_a // 8)
-                        if cur_hp_a <= 0:
-                            break
-                    # じきゅうりょく: 被弾後に防御+1
-                    if b.ability == "stamina" and da > 0:
-                        stamina_boosts_b = min(6, stamina_boosts_b + 1)
-                    # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
-                    if b.ability == "berserk" and not berserk_triggered_b and cur_hp_b <= hp_b // 2 and cur_hp_b > 0:
-                        berserk_triggered_b = True
-                        if move_b and move_b.category == "special":
-                            berserk_mult_b = 1.5
-                    # オボンのみ: HP半分以下で最大HPの1/4回復
-                    if sitrus_b and cur_hp_b <= hp_b // 2:
-                        cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
-                        sitrus_b = False
+            priority_a_cur = move_a.priority if move_a else 0
+            priority_b_cur = move_b.priority if move_b else 0
 
-                    prev_hp_a = cur_hp_a
-                    # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
-                    if a.ability == "multiscale" and cur_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
-                        db = math.floor(db * 0.5)
-                    # ばけのかわ: 最初の1発を無効化 (かたやぶりで無効)
-                    if disguise_a and b.ability not in _MOLD_BREAKER_ABILITIES:
-                        db = 0
-                        disguise_a = False
-                        cur_hp_a -= max(1, hp_a // 8)
-                        if cur_hp_a <= 0:
-                            break
-                    elif disguise_a:
-                        disguise_a = False
-                    # もらいびチェック: 炎技を受けた場合
-                    if a.ability == "flash-fire" and move_b and move_b.type == TypeName.FIRE:
-                        db = 0
-                        flash_fire_active_a = True
-                    cur_hp_a -= db
-                    if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
-                        cur_hp_a = 1
-                        sash_a = False
-                    if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
-                        cur_hp_a = 1
-                        sturdy_a = False
-                    if cur_hp_a <= 0:
-                        break
-                    # さめはだ: 接触技を受けたら攻撃側に1/8反動
-                    if a.ability == "rough-skin" and move_b and _is_contact_move(move_b) and db > 0:
-                        cur_hp_b -= max(1, hp_b // 8)
-                        if cur_hp_b <= 0:
-                            break
-                    # じきゅうりょく: 被弾後に防御+1
-                    if a.ability == "stamina" and db > 0:
-                        stamina_boosts_a = min(6, stamina_boosts_a + 1)
-                    # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
-                    if a.ability == "berserk" and not berserk_triggered_a and cur_hp_a <= hp_a // 2 and cur_hp_a > 0:
-                        berserk_triggered_a = True
-                        if move_a and move_a.category == "special":
-                            berserk_mult_a = 1.5
-                    if sitrus_a and cur_hp_a <= hp_a // 2:
-                        cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
-                        sitrus_a = False
-                else:
-                    prev_hp_a = cur_hp_a
-                    # マルチスケイル (かたやぶりで無効)
-                    if a.ability == "multiscale" and cur_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
-                        db = math.floor(db * 0.5)
-                    # ばけのかわ (かたやぶりで無効)
-                    if disguise_a and b.ability not in _MOLD_BREAKER_ABILITIES:
-                        db = 0
-                        disguise_a = False
-                        cur_hp_a -= max(1, hp_a // 8)
-                        if cur_hp_a <= 0:
-                            break
-                    elif disguise_a:
-                        disguise_a = False
-                    # もらいびチェック
-                    if a.ability == "flash-fire" and move_b and move_b.type == TypeName.FIRE:
-                        db = 0
-                        flash_fire_active_a = True
-                    cur_hp_a -= db
-                    if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
-                        cur_hp_a = 1
-                        sash_a = False
-                    if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
-                        cur_hp_a = 1
-                        sturdy_a = False
-                    if cur_hp_a <= 0:
-                        break
-                    # さめはだ: 接触技を受けたら攻撃側に1/8反動
-                    if a.ability == "rough-skin" and move_b and _is_contact_move(move_b) and db > 0:
-                        cur_hp_b -= max(1, hp_b // 8)
-                        if cur_hp_b <= 0:
-                            break
-                    # じきゅうりょく
-                    if a.ability == "stamina" and db > 0:
-                        stamina_boosts_a = min(6, stamina_boosts_a + 1)
-                    # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
-                    if a.ability == "berserk" and not berserk_triggered_a and cur_hp_a <= hp_a // 2 and cur_hp_a > 0:
-                        berserk_triggered_a = True
-                        if move_a and move_a.category == "special":
-                            berserk_mult_a = 1.5
-                    if sitrus_a and cur_hp_a <= hp_a // 2:
-                        cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
-                        sitrus_a = False
-
-                    prev_hp_b = cur_hp_b
-                    # マルチスケイル (かたやぶりで無効)
-                    if b.ability == "multiscale" and cur_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
-                        da = math.floor(da * 0.5)
-                    # ばけのかわ (かたやぶりで無効)
-                    if disguise_b and a.ability not in _MOLD_BREAKER_ABILITIES:
-                        da = 0
-                        disguise_b = False
-                        cur_hp_b -= max(1, hp_b // 8)
-                        if cur_hp_b <= 0:
-                            break
-                    elif disguise_b:
-                        disguise_b = False
-                    # もらいびチェック
-                    if b.ability == "flash-fire" and move_a and move_a.type == TypeName.FIRE:
-                        da = 0
-                        flash_fire_active_b = True
-                    cur_hp_b -= da
-                    if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
-                        cur_hp_b = 1
-                        sash_b = False
-                    if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
-                        cur_hp_b = 1
-                        sturdy_b = False
-                    if cur_hp_b <= 0:
-                        break
-                    # さめはだ: 接触技を受けたら攻撃側に1/8反動
-                    if b.ability == "rough-skin" and move_a and _is_contact_move(move_a) and da > 0:
-                        cur_hp_a -= max(1, hp_a // 8)
-                        if cur_hp_a <= 0:
-                            break
-                    # じきゅうりょく
-                    if b.ability == "stamina" and da > 0:
-                        stamina_boosts_b = min(6, stamina_boosts_b + 1)
-                    # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
-                    if b.ability == "berserk" and not berserk_triggered_b and cur_hp_b <= hp_b // 2 and cur_hp_b > 0:
-                        berserk_triggered_b = True
-                        if move_b and move_b.category == "special":
-                            berserk_mult_b = 1.5
-                    if sitrus_b and cur_hp_b <= hp_b // 2:
-                        cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
-                        sitrus_b = False
-
-                # ターン終了時: たべのこし回復
-                if leftovers_a and cur_hp_a > 0:
-                    cur_hp_a = min(hp_a, cur_hp_a + leftovers_heal_a)
-                if leftovers_b and cur_hp_b > 0:
-                    cur_hp_b = min(hp_b, cur_hp_b + leftovers_heal_b)
-
-                # かそく: ターン終了時に素早さ上昇 → 2ターン目以降は常に先攻になる
-                if a.ability == "speed-boost":
-                    first_is_a = True
-                if b.ability == "speed-boost":
-                    first_is_a = False
-
-            if cur_hp_a <= 0:
-                wins_b += 1
-                total_remaining_hp_b += max(0, cur_hp_b)
+            if priority_a_cur != priority_b_cur:
+                first_is_a = priority_a_cur > priority_b_cur
+            elif cur_speed_a != cur_speed_b:
+                first_is_a = cur_speed_a > cur_speed_b
+            elif setup_applied:
+                first_is_a = True  # 積みによる先攻イニシアチブ
             else:
-                wins_a += 1
-                total_remaining_hp_a += max(0, cur_hp_a)
+                first_is_a = random.random() < 0.5
 
-        win_rate_a = wins_a / n_trials
-        win_rate_b = wins_b / n_trials
-        avg_hp_a = total_remaining_hp_a / n_trials
-        avg_hp_b = total_remaining_hp_b / n_trials
+            if first_is_a:
+                prev_hp_b = cur_hp_b
+                # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
+                if b.ability == "multiscale" and cur_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                    da = math.floor(da * 0.5)
+                # ばけのかわ: 最初の1発を無効化 (かたやぶりで無効)
+                if disguise_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                    da = 0
+                    disguise_b = False
+                    # ばけのかわ破壊時に最大HPの1/8ダメージ
+                    cur_hp_b -= max(1, hp_b // 8)
+                    if cur_hp_b <= 0:
+                        break
+                elif disguise_b:
+                    # かたやぶりでばけのかわを貫通: フラグ消費するが無効化しない
+                    disguise_b = False
+                # もらいびチェック: 炎技を受けた場合
+                if b.ability == "flash-fire" and move_a and move_a.type == TypeName.FIRE:
+                    da = 0
+                    flash_fire_active_b = True
+                cur_hp_b -= da
+                # きあいのタスキ / がんじょう: HP満タンから一撃で倒される場合HP1で耐える
+                # (がんじょうはかたやぶりで無効; タスキはアイテムなので無効にしない)
+                if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
+                    cur_hp_b = 1
+                    sash_b = False
+                if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                    cur_hp_b = 1
+                    sturdy_b = False
+                if cur_hp_b <= 0:
+                    break
+                # さめはだ: 接触技を受けたら攻撃側に1/8反動
+                if b.ability == "rough-skin" and move_a and _is_contact_move(move_a) and da > 0:
+                    cur_hp_a -= max(1, hp_a // 8)
+                    if cur_hp_a <= 0:
+                        break
+                # じきゅうりょく: 被弾後に防御+1
+                if b.ability == "stamina" and da > 0:
+                    stamina_boosts_b = min(6, stamina_boosts_b + 1)
+                # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
+                if b.ability == "berserk" and not berserk_triggered_b and cur_hp_b <= hp_b // 2 and cur_hp_b > 0:
+                    berserk_triggered_b = True
+                    if move_b and move_b.category == "special":
+                        berserk_mult_b = 1.5
+                # オボンのみ: HP半分以下で最大HPの1/4回復
+                if sitrus_b and cur_hp_b <= hp_b // 2:
+                    cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
+                    sitrus_b = False
+
+                prev_hp_a = cur_hp_a
+                # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
+                if a.ability == "multiscale" and cur_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                    db = math.floor(db * 0.5)
+                # ばけのかわ: 最初の1発を無効化 (かたやぶりで無効)
+                if disguise_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                    db = 0
+                    disguise_a = False
+                    cur_hp_a -= max(1, hp_a // 8)
+                    if cur_hp_a <= 0:
+                        break
+                elif disguise_a:
+                    disguise_a = False
+                # もらいびチェック: 炎技を受けた場合
+                if a.ability == "flash-fire" and move_b and move_b.type == TypeName.FIRE:
+                    db = 0
+                    flash_fire_active_a = True
+                cur_hp_a -= db
+                if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
+                    cur_hp_a = 1
+                    sash_a = False
+                if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                    cur_hp_a = 1
+                    sturdy_a = False
+                if cur_hp_a <= 0:
+                    break
+                # さめはだ: 接触技を受けたら攻撃側に1/8反動
+                if a.ability == "rough-skin" and move_b and _is_contact_move(move_b) and db > 0:
+                    cur_hp_b -= max(1, hp_b // 8)
+                    if cur_hp_b <= 0:
+                        break
+                # じきゅうりょく: 被弾後に防御+1
+                if a.ability == "stamina" and db > 0:
+                    stamina_boosts_a = min(6, stamina_boosts_a + 1)
+                # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
+                if a.ability == "berserk" and not berserk_triggered_a and cur_hp_a <= hp_a // 2 and cur_hp_a > 0:
+                    berserk_triggered_a = True
+                    if move_a and move_a.category == "special":
+                        berserk_mult_a = 1.5
+                if sitrus_a and cur_hp_a <= hp_a // 2:
+                    cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
+                    sitrus_a = False
+            else:
+                prev_hp_a = cur_hp_a
+                # マルチスケイル (かたやぶりで無効)
+                if a.ability == "multiscale" and cur_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                    db = math.floor(db * 0.5)
+                # ばけのかわ (かたやぶりで無効)
+                if disguise_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                    db = 0
+                    disguise_a = False
+                    cur_hp_a -= max(1, hp_a // 8)
+                    if cur_hp_a <= 0:
+                        break
+                elif disguise_a:
+                    disguise_a = False
+                # もらいびチェック
+                if a.ability == "flash-fire" and move_b and move_b.type == TypeName.FIRE:
+                    db = 0
+                    flash_fire_active_a = True
+                cur_hp_a -= db
+                if cur_hp_a <= 0 and sash_a and prev_hp_a == hp_a:
+                    cur_hp_a = 1
+                    sash_a = False
+                if cur_hp_a <= 0 and sturdy_a and prev_hp_a == hp_a and b.ability not in _MOLD_BREAKER_ABILITIES:
+                    cur_hp_a = 1
+                    sturdy_a = False
+                if cur_hp_a <= 0:
+                    break
+                # さめはだ: 接触技を受けたら攻撃側に1/8反動
+                if a.ability == "rough-skin" and move_b and _is_contact_move(move_b) and db > 0:
+                    cur_hp_b -= max(1, hp_b // 8)
+                    if cur_hp_b <= 0:
+                        break
+                # じきゅうりょく
+                if a.ability == "stamina" and db > 0:
+                    stamina_boosts_a = min(6, stamina_boosts_a + 1)
+                # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
+                if a.ability == "berserk" and not berserk_triggered_a and cur_hp_a <= hp_a // 2 and cur_hp_a > 0:
+                    berserk_triggered_a = True
+                    if move_a and move_a.category == "special":
+                        berserk_mult_a = 1.5
+                if sitrus_a and cur_hp_a <= hp_a // 2:
+                    cur_hp_a = min(hp_a, cur_hp_a + sitrus_heal_a)
+                    sitrus_a = False
+
+                prev_hp_b = cur_hp_b
+                # マルチスケイル (かたやぶりで無効)
+                if b.ability == "multiscale" and cur_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                    da = math.floor(da * 0.5)
+                # ばけのかわ (かたやぶりで無効)
+                if disguise_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                    da = 0
+                    disguise_b = False
+                    cur_hp_b -= max(1, hp_b // 8)
+                    if cur_hp_b <= 0:
+                        break
+                elif disguise_b:
+                    disguise_b = False
+                # もらいびチェック
+                if b.ability == "flash-fire" and move_a and move_a.type == TypeName.FIRE:
+                    da = 0
+                    flash_fire_active_b = True
+                cur_hp_b -= da
+                if cur_hp_b <= 0 and sash_b and prev_hp_b == hp_b:
+                    cur_hp_b = 1
+                    sash_b = False
+                if cur_hp_b <= 0 and sturdy_b and prev_hp_b == hp_b and a.ability not in _MOLD_BREAKER_ABILITIES:
+                    cur_hp_b = 1
+                    sturdy_b = False
+                if cur_hp_b <= 0:
+                    break
+                # さめはだ: 接触技を受けたら攻撃側に1/8反動
+                if b.ability == "rough-skin" and move_a and _is_contact_move(move_a) and da > 0:
+                    cur_hp_a -= max(1, hp_a // 8)
+                    if cur_hp_a <= 0:
+                        break
+                # じきゅうりょく
+                if b.ability == "stamina" and da > 0:
+                    stamina_boosts_b = min(6, stamina_boosts_b + 1)
+                # ぎゃくじょう: HP1/2以下で特攻+1 (一度のみ)
+                if b.ability == "berserk" and not berserk_triggered_b and cur_hp_b <= hp_b // 2 and cur_hp_b > 0:
+                    berserk_triggered_b = True
+                    if move_b and move_b.category == "special":
+                        berserk_mult_b = 1.5
+                if sitrus_b and cur_hp_b <= hp_b // 2:
+                    cur_hp_b = min(hp_b, cur_hp_b + sitrus_heal_b)
+                    sitrus_b = False
+
+            # ターン終了時: たべのこし回復
+            if leftovers_a and cur_hp_a > 0:
+                cur_hp_a = min(hp_a, cur_hp_a + leftovers_heal_a)
+            if leftovers_b and cur_hp_b > 0:
+                cur_hp_b = min(hp_b, cur_hp_b + leftovers_heal_b)
+
+            # かそく: ターン終了時に素早さ上昇 → 次ターンから速度ブースト発動
+            if a.ability == "speed-boost":
+                speed_boost_active_a = True
+            if b.ability == "speed-boost":
+                speed_boost_active_b = True
+
+        if cur_hp_a <= 0:
+            wins_b += 1
+            total_remaining_hp_b += max(0, cur_hp_b)
+        else:
+            wins_a += 1
+            total_remaining_hp_a += max(0, cur_hp_a)
+
+    win_rate_a = wins_a / n_trials
+    win_rate_b = wins_b / n_trials
+    avg_hp_a = total_remaining_hp_a / n_trials
+    avg_hp_b = total_remaining_hp_b / n_trials
 
     return BattleResult(
         pokemon_a=a.name,
