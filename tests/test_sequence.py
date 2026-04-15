@@ -1,7 +1,6 @@
 """3v3シーケンス評価のテスト"""
 from __future__ import annotations
 
-import pytest
 
 from pokechamp.battle import BattlePokemon
 from pokechamp.models import Nature
