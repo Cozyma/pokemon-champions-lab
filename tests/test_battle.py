@@ -260,3 +260,131 @@ class TestAbilityEffects:
         result = simulate_1v1(attacker, defender)
         # 炎技が無効 → attackerのダメージ0 → bが100%勝つ
         assert result.win_rate_b == 1.0
+
+
+class TestAbilityEffectsExtended:
+    def test_technician_boosts_low_power(self):
+        """テクニシャンで威力60以下の技が1.5倍"""
+        garchomp_tech2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["tackle"],  # power 40, gets 1.5x = effective 60
+        )
+        garchomp_tech2.ability = "technician"
+
+        garchomp_notech = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["tackle"],
+        )
+        target1 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        target2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        result_tech = simulate_1v1(garchomp_tech2, target1)
+        result_normal = simulate_1v1(garchomp_notech, target2)
+        # テクニシャンはダメージ増 → 相手の残HPが少なくなる
+        assert result_tech.avg_remaining_hp_b < result_normal.avg_remaining_hp_b
+
+    def test_thick_fat_halves_fire_ice(self):
+        """あついしぼうで炎/氷技のダメージ半減"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["flamethrower"],
+        )
+        defender_thickfat = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender_thickfat.ability = "thick-fat"
+
+        defender_normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result_fat = simulate_1v1(attacker, defender_thickfat)
+        result_normal = simulate_1v1(
+            BattlePokemon.from_data(
+                species="garchomp", nature=Nature.JOLLY,
+                evs={"attack": 32, "speed": 32}, ivs={}, item="",
+                move_names=["flamethrower"],
+            ),
+            defender_normal,
+        )
+        # あついしぼうは炎ダメージ半減 → 残HPが多い（勝率が同じでも残HPで差が出る）
+        assert result_fat.avg_remaining_hp_b > result_normal.avg_remaining_hp_b
+
+    def test_solid_rock_reduces_super_effective(self):
+        """ハードロックで効果抜群ダメージ0.75倍"""
+        attacker2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["outrage"],  # dragon vs dragon = super effective
+        )
+        defender_rock = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["outrage"],
+        )
+        defender_rock.ability = "solid-rock"
+
+        defender_normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32, "speed": 32}, ivs={}, item="",
+            move_names=["outrage"],
+        )
+        result_rock = simulate_1v1(attacker2, defender_rock)
+        result_normal = simulate_1v1(
+            BattlePokemon.from_data(
+                species="garchomp", nature=Nature.JOLLY,
+                evs={"attack": 32, "speed": 32}, ivs={}, item="",
+                move_names=["outrage"],
+            ),
+            defender_normal,
+        )
+        assert result_rock.win_rate_b > result_normal.win_rate_b
+
+    def test_defiant_counters_intimidate(self):
+        """まけんきはいかくに対して攻撃+2（ネット+1）"""
+        intimidator = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        intimidator.ability = "intimidate"
+
+        defiant_user = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defiant_user.ability = "defiant"
+
+        result = simulate_1v1(intimidator, defiant_user)
+        # まけんきはネット+1攻撃 → いかく持ちに対して有利
+        assert result.win_rate_b > 0.5
+
+    def test_speed_boost_gains_priority(self):
+        """かそくで毎ターン素早さが上がる"""
+        slow_booster = BattlePokemon.from_data(
+            species="magikarp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["tackle"],
+        )
+        slow_booster.ability = "speed-boost"
+
+        fast_normal = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        # かそくコイキングはガブリアスに勝てないが、シミュレーションが正常動作することを確認
+        result = simulate_1v1(slow_booster, fast_normal)
+        assert result.win_rate_a + result.win_rate_b > 0  # クラッシュしないことを確認

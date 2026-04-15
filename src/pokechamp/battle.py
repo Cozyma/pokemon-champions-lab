@@ -253,6 +253,18 @@ def _get_damage_modifier(attacker: "BattlePokemon", move: Move, defender: "Battl
     # 攻撃側アビリティ
     if attacker.ability == "water-bubble" and move.type == TypeName.WATER:
         mod *= 2.0
+    if attacker.ability == "technician" and move.power <= 60:
+        mod *= 1.5
+    if attacker.ability == "sheer-force":
+        mod *= 1.3
+    if attacker.ability == "strong-jaw" and _is_biting_move(move):
+        mod *= 1.5
+    if attacker.ability == "iron-fist" and _is_punching_move(move):
+        mod *= 1.2
+    if attacker.ability == "tough-claws" and _is_contact_move(move):
+        mod *= 1.3
+    if attacker.ability == "mega-launcher" and _is_pulse_move(move):
+        mod *= 1.5
     # 防御側アビリティ
     if defender.ability == "fur-coat" and move.category == "physical":
         mod *= 0.5
@@ -260,7 +272,70 @@ def _get_damage_modifier(attacker: "BattlePokemon", move: Move, defender: "Battl
         mod *= 0.5
     if defender.ability == "dry-skin" and move.type == TypeName.FIRE:
         mod *= 1.25
+    if defender.ability == "thick-fat" and move.type in (TypeName.FIRE, TypeName.ICE):
+        mod *= 0.5
+    if defender.ability in ("solid-rock", "filter") and _is_super_effective(move, defender):
+        mod *= 0.75
+    if defender.ability == "purifying-salt" and move.type == TypeName.GHOST:
+        mod *= 0.5
     return mod
+
+
+# ---------------------------------------------------------------------------
+# 技カテゴリ判定ヘルパー
+# ---------------------------------------------------------------------------
+
+_BITING_MOVES: set[str] = {
+    "crunch", "bite", "fire-fang", "ice-fang", "thunder-fang", "poison-fang",
+    "psychic-fangs", "hyper-fang", "jaw-lock", "fishious-rend",
+}
+
+_PUNCHING_MOVES: set[str] = {
+    "mach-punch", "mega-punch", "fire-punch", "ice-punch", "thunder-punch",
+    "drain-punch", "focus-punch", "hammer-arm", "shadow-punch", "sky-uppercut",
+    "dynamic-punch", "power-up-punch", "bullet-punch", "meteor-mash",
+    "comet-punch", "dizzy-punch",
+}
+
+_PULSE_MOVES: set[str] = {
+    "aura-sphere", "dark-pulse", "dragon-pulse", "water-pulse", "origin-pulse",
+    "heal-pulse", "terrain-pulse",
+}
+
+_BALL_BOMB_MOVES: set[str] = {
+    "shadow-ball", "energy-ball", "sludge-bomb", "focus-blast", "weather-ball",
+    "electro-ball", "gyro-ball", "acid-spray", "aura-sphere", "seed-bomb",
+    "mud-bomb", "barrage", "bullet-seed", "egg-bomb", "ice-ball",
+    "magnet-bomb", "mist-ball", "rock-blast", "zap-cannon",
+}
+
+
+def _is_biting_move(move: Move) -> bool:
+    return move.name_en in _BITING_MOVES
+
+
+def _is_punching_move(move: Move) -> bool:
+    return move.name_en in _PUNCHING_MOVES
+
+
+def _is_contact_move(move: Move) -> bool:
+    """物理技を接触技として近似する（ほとんどの物理技は接触技）。"""
+    return move.category == "physical"
+
+
+def _is_pulse_move(move: Move) -> bool:
+    return move.name_en in _PULSE_MOVES
+
+
+def _is_ball_bomb_move(move: Move) -> bool:
+    return move.name_en in _BALL_BOMB_MOVES
+
+
+def _is_super_effective(move: Move, defender: "BattlePokemon") -> bool:
+    eff = 1.0
+    for def_type in defender.types:
+        eff *= type_effectiveness(move.type, def_type)
+    return eff > 1.0
 
 
 def _is_type_immune(defender: "BattlePokemon", move: Move) -> bool:
@@ -274,6 +349,10 @@ def _is_type_immune(defender: "BattlePokemon", move: Move) -> bool:
     if ability == "levitate" and move_type == TypeName.GROUND:
         return True
     if ability == "flash-fire" and move_type == TypeName.FIRE:
+        return True
+    if ability == "bulletproof" and _is_ball_bomb_move(move):
+        return True
+    if ability == "earth-eater" and move_type == TypeName.GROUND:
         return True
     return False
 
@@ -316,10 +395,19 @@ def simulate_1v1(
         setup_applied = True
 
     # いかく: 対戦開始時に相手の攻撃ランクを-1
+    # まけんき/かちきはいかくに反応して攻撃/特攻+2（いかく後に発動）
     if a.ability == "intimidate":
         b.stage_modifiers["attack"] = max(-6, b.stage_modifiers["attack"] - 1)
+        if b.ability == "defiant":
+            b.stage_modifiers["attack"] = min(6, b.stage_modifiers["attack"] + 2)
+        elif b.ability == "competitive":
+            b.stage_modifiers["sp_attack"] = min(6, b.stage_modifiers["sp_attack"] + 2)
     if b.ability == "intimidate":
         a.stage_modifiers["attack"] = max(-6, a.stage_modifiers["attack"] - 1)
+        if a.ability == "defiant":
+            a.stage_modifiers["attack"] = min(6, a.stage_modifiers["attack"] + 2)
+        elif a.ability == "competitive":
+            a.stage_modifiers["sp_attack"] = min(6, a.stage_modifiers["sp_attack"] + 2)
 
     # 各側の最善技・ダメージ乱数を取得
     move_a, dmg_range_a = a.best_move_against(b)
@@ -656,6 +744,12 @@ def simulate_1v1(
                     cur_hp_a = min(hp_a, cur_hp_a + leftovers_heal_a)
                 if leftovers_b and cur_hp_b > 0:
                     cur_hp_b = min(hp_b, cur_hp_b + leftovers_heal_b)
+
+                # かそく: ターン終了時に素早さ上昇 → 2ターン目以降は常に先攻になる
+                if a.ability == "speed-boost":
+                    first_is_a = True
+                if b.ability == "speed-boost":
+                    first_is_a = False
 
             if cur_hp_a <= 0:
                 wins_b += 1
