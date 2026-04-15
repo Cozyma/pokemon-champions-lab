@@ -1,0 +1,12 @@
+name: nitro-charge
+name_en: nitro-charge
+type: fire
+category: physical
+power: 50
+accuracy: 100
+pp: 20
+priority: 0
+effects: []
+stat_changes:
+- stat: speed
+  stages: 1

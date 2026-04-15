@@ -1,0 +1,10 @@
+name: leech-seed
+name_en: leech-seed
+type: grass
+category: status
+power: 0
+accuracy: 90
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

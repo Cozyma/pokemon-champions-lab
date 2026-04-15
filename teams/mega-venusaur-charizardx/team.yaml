@@ -1,0 +1,43 @@
+name: メガフシギバナ+メガリザードンX
+pokemon:
+  - species: venusaur
+    ability: chlorophyll
+    item: venusaur-mega-stone
+    nature: modest
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [giga-drain, earth-power, leech-seed, synthesis]
+
+  - species: charizard
+    ability: blaze
+    item: charizard-mega-stone-x
+    nature: adamant
+    evs: {attack: 32, speed: 32, hp: 2}
+    moves: [dragon-claw, nitro-charge, will-o-wisp, roost]
+
+  - species: garchomp
+    ability: rough-skin
+    item: focus-sash
+    nature: jolly
+    evs: {attack: 32, speed: 32, hp: 2}
+    moves: [scale-shot, earthquake, swords-dance, stealth-rock]
+
+  - species: aegislash-shield
+    ability: stance-change
+    item: leftovers
+    nature: modest
+    evs: {sp_attack: 32, hp: 32, sp_defense: 2}
+    moves: [shadow-ball, flash-cannon, kings-shield, substitute]
+
+  - species: azumarill
+    ability: huge-power
+    item: sitrus-berry
+    nature: adamant
+    evs: {attack: 32, hp: 32, speed: 2}
+    moves: [play-rough, aqua-jet, bulldoze, belly-drum]
+
+  - species: corviknight
+    ability: pressure
+    item: sitrus-berry
+    nature: impish
+    evs: {hp: 32, defense: 32, sp_defense: 2}
+    moves: [body-press, u-turn, iron-defense, roost]

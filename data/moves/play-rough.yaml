@@ -1,0 +1,12 @@
+name: play-rough
+name_en: play-rough
+type: fairy
+category: physical
+power: 90
+accuracy: 90
+pp: 10
+priority: 0
+effects: []
+stat_changes:
+- stat: attack
+  stages: -1

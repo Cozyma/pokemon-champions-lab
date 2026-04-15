@@ -1,0 +1,10 @@
+name: dragon-claw
+name_en: dragon-claw
+type: dragon
+category: physical
+power: 80
+accuracy: 100
+pp: 15
+priority: 0
+effects: []
+stat_changes: []
