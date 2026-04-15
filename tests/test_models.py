@@ -1,5 +1,5 @@
 import pytest
-from pokechamp.models import BaseStats, Move, Pokemon, Nature, TypeName
+from pokechamp.models import BaseStats, Move, Pokemon, Nature, TypeName, TeamMember, Team, EVs
 
 
 class TestBaseStats:
@@ -42,9 +42,6 @@ class TestPokemon:
         )
         assert pokemon.name_en == "garchomp"
         assert len(pokemon.types) == 2
-
-
-from pokechamp.models import TeamMember, Team, EVs, IVs
 
 
 class TestTeamMember:

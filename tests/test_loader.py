@@ -1,5 +1,4 @@
-from pathlib import Path
-from pokechamp.loader import load_pokemon, load_move, load_team, load_item, get_data_dir
+from pokechamp.loader import load_pokemon, load_move, load_team, load_item
 
 
 class TestLoadPokemon:

@@ -1,7 +1,7 @@
 from __future__ import annotations
 import typer
 from pokechamp.battle import BattlePokemon, simulate_1v1
-from pokechamp.loader import list_pokemon, list_teams, load_pokemon, load_team
+from pokechamp.loader import list_pokemon, list_teams, load_pokemon
 from pokechamp.matchup import evaluate_matchup
 from pokechamp.models import Nature
 from pokechamp.output import format_battle_result, format_matchup_result

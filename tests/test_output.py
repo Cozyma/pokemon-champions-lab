@@ -1,6 +1,6 @@
 import json
 from pokechamp.output import format_battle_result, format_matchup_result
-from pokechamp.models import BattleResult, MatchupResult, MatchupMatrix, SelectionScore, SetupEvaluation
+from pokechamp.models import BattleResult, MatchupResult, MatchupMatrix, SelectionScore
 
 
 class TestFormatBattleResult:
