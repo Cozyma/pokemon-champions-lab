@@ -40,6 +40,19 @@ def format_matchup_result(result: MatchupResult, as_json: bool = False) -> str:
         for rank, sel in enumerate(result.selection_ranking, 1):
             a_str = " / ".join(sel.team_a_selection)
             lines.append(f"  {rank}. {a_str}  スコア: {sel.score * 100:.1f}")
-    lines.append("")
+    if result.sequence_results:
+        lines.append("")
+        lines.append("【3v3シーケンス評価】")
+        for i, seq in enumerate(result.sequence_results, 1):
+            a_str = " / ".join(seq.team_a_selection)
+            b_str = " / ".join(seq.team_b_selection)
+            lines.append(f"  {i}. {a_str} vs {b_str}")
+            lines.append(f"     勝率: {seq.win_rate_a * 100:.1f}%  残ポケ: A={seq.avg_remaining_a:.1f} B={seq.avg_remaining_b:.1f}")
+            if seq.sample_log:
+                lines.append("     ログ:")
+                for log_line in seq.sample_log:
+                    lines.append(f"       {log_line}")
+            lines.append("")
+
     lines.append(f"総合スコア: {result.overall_score * 100:.1f}")
     return "\n".join(lines)
