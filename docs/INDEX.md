@@ -14,6 +14,7 @@ tags: [index, docs]
 | ファイル | 概要 | タグ |
 |---------|------|------|
 | [POLICY.md](POLICY.md) | 開発ポリシー（SSOT方針・コミット規約） | policy |
+| [guide.md](guide.md) | ユーザーガイド（構築定義・シミュ・考察の進め方） | guide, usage |
 
 ## design/ — 設計ドキュメント
 
