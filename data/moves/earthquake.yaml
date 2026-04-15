@@ -1,0 +1,10 @@
+name: じしん
+name_en: earthquake
+type: ground
+category: physical
+power: 100
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

@@ -1,0 +1,12 @@
+name: ガブリアス
+name_en: garchomp
+types: [ground, dragon]
+base_stats:
+  hp: 108
+  attack: 130
+  defense: 95
+  sp_attack: 80
+  sp_defense: 85
+  speed: 102
+abilities: [sand-veil, rough-skin]
+learnable_moves: [earthquake, outrage, swords-dance, scale-shot, iron-head, stone-edge, fire-fang, dragon-claw]

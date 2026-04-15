@@ -1,0 +1,8 @@
+name: サンプル構築
+pokemon:
+  - species: garchomp
+    ability: rough-skin
+    item: choice-scarf
+    nature: jolly
+    evs: {hp: 4, attack: 252, speed: 252}
+    moves: [earthquake, outrage, iron-head, stone-edge]
