@@ -1,0 +1,10 @@
+name: sucker-punch
+name_en: sucker-punch
+type: dark
+category: physical
+power: 70
+accuracy: 100
+pp: 5
+priority: 1
+effects: []
+stat_changes: []

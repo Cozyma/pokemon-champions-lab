@@ -1,0 +1,43 @@
+name: メガガルーラ+メガメガニウム晴れ
+pokemon:
+  - species: kangaskhan
+    ability: scrappy
+    item: kangaskhan-mega-stone
+    nature: adamant
+    evs: {attack: 32, speed: 32, hp: 2}
+    moves: [fake-out, sucker-punch, ice-punch, earthquake]
+
+  - species: meganium
+    ability: leaf-guard
+    item: meganium-mega-stone
+    nature: modest
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [solar-beam, weather-ball, earth-power, synthesis]
+
+  - species: hippowdon
+    ability: sand-stream
+    item: sitrus-berry
+    nature: impish
+    evs: {hp: 32, defense: 32, sp_defense: 2}
+    moves: [earthquake, stealth-rock, roost, stone-edge]
+
+  - species: aegislash-shield
+    ability: stance-change
+    item: spell-tag
+    nature: adamant
+    evs: {attack: 32, hp: 32, speed: 2}
+    moves: [poltergeist, shadow-sneak, kings-shield, swords-dance]
+
+  - species: greninja
+    ability: protean
+    item: focus-sash
+    nature: timid
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [sludge-wave, ice-beam, dark-pulse, water-shuriken]
+
+  - species: volcarona
+    ability: flame-body
+    item: leftovers
+    nature: timid
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [flamethrower, giga-drain, quiver-dance, morning-sun]

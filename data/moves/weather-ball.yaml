@@ -1,0 +1,10 @@
+name: weather-ball
+name_en: weather-ball
+type: normal
+category: special
+power: 50
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

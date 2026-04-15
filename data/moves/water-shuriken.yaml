@@ -1,0 +1,10 @@
+name: water-shuriken
+name_en: water-shuriken
+type: water
+category: special
+power: 15
+accuracy: 100
+pp: 20
+priority: 1
+effects: []
+stat_changes: []

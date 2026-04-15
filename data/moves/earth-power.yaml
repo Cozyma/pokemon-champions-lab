@@ -1,0 +1,12 @@
+name: earth-power
+name_en: earth-power
+type: ground
+category: special
+power: 90
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes:
+- stat: sp_defense
+  stages: -1

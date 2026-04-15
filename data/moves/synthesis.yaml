@@ -1,0 +1,10 @@
+name: synthesis
+name_en: synthesis
+type: grass
+category: status
+power: 0
+accuracy: 100
+pp: 5
+priority: 0
+effects: []
+stat_changes: []
