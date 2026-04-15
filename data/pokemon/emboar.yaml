@@ -1,0 +1,66 @@
+name: emboar
+name_en: emboar
+types:
+- fire
+- fighting
+base_stats:
+  hp: 110
+  attack: 123
+  defense: 65
+  sp_attack: 100
+  sp_defense: 65
+  speed: 65
+abilities:
+- blaze
+- reckless
+learnable_moves:
+- fire-punch
+- thunder-punch
+- tackle
+- body-slam
+- take-down
+- thrash
+- double-edge
+- tail-whip
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- low-kick
+- strength
+- solar-beam
+- fire-spin
+- earthquake
+- dig
+- toxic
+- double-team
+- defense-curl
+- smog
+- fire-blast
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- reversal
+- protect
+- scary-face
+- mud-slap
+- endure
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- sunny-day
+- rock-smash
+- heat-wave
+- will-o-wisp
+- facade
+- focus-punch
+- taunt
+- helping-hand
+- superpower

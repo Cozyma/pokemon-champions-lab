@@ -1,0 +1,66 @@
+name: espathra
+name_en: espathra
+types:
+- psychic
+base_stats:
+  hp: 95
+  attack: 60
+  defense: 60
+  sp_attack: 101
+  sp_defense: 60
+  speed: 105
+abilities:
+- opportunist
+- frisk
+- speed-boost
+learnable_moves:
+- body-slam
+- take-down
+- double-edge
+- growl
+- psybeam
+- hyper-beam
+- peck
+- drill-peck
+- low-kick
+- confusion
+- psychic
+- agility
+- quick-attack
+- night-shade
+- confuse-ray
+- light-screen
+- reflect
+- swift
+- rest
+- substitute
+- thief
+- protect
+- mud-slap
+- sandstorm
+- endure
+- sleep-talk
+- baton-pass
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- uproar
+- facade
+- helping-hand
+- trick
+- skill-swap
+- feather-dance
+- hyper-voice
+- aerial-ace
+- calm-mind
+- pluck
+- u-turn
+- last-resort
+- seed-bomb
+- energy-ball
+- brave-bird
+- giga-impact
+- zen-headbutt
+- flash-cannon
+- trick-room

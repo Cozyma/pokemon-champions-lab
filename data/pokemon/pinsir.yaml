@@ -1,0 +1,79 @@
+name: pinsir
+name_en: pinsir
+types:
+- bug
+base_stats:
+  hp: 65
+  attack: 125
+  defense: 100
+  sp_attack: 55
+  sp_defense: 70
+  speed: 85
+abilities:
+- hyper-cutter
+- mold-breaker
+- moxie
+learnable_moves:
+- vice-grip
+- guillotine
+- swords-dance
+- cut
+- bind
+- headbutt
+- fury-attack
+- body-slam
+- take-down
+- thrash
+- double-edge
+- hyper-beam
+- submission
+- seismic-toss
+- strength
+- string-shot
+- earthquake
+- dig
+- toxic
+- quick-attack
+- rage
+- mimic
+- double-team
+- harden
+- focus-energy
+- bide
+- rest
+- rock-slide
+- slash
+- substitute
+- thief
+- snore
+- curse
+- flail
+- reversal
+- protect
+- feint-attack
+- outrage
+- endure
+- false-swipe
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- vital-throw
+- hidden-power
+- rain-dance
+- sunny-day
+mega:
+  stone: pinsir-mega-stone
+  types:
+  - bug
+  - flying
+  ability: aerilate
+  base_stats:
+    hp: 65
+    attack: 155
+    defense: 120
+    sp_attack: 65
+    sp_defense: 90
+    speed: 105

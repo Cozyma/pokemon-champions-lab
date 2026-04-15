@@ -1,0 +1,64 @@
+name: palafin
+name_en: palafin
+types:
+- water
+base_stats:
+  hp: 100
+  attack: 160
+  defense: 97
+  sp_attack: 106
+  sp_defense: 87
+  speed: 100
+abilities:
+- zero-to-hero
+learnable_moves:
+- ice-punch
+- body-slam
+- take-down
+- supersonic
+- mist
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- agility
+- haze
+- focus-energy
+- waterfall
+- swift
+- rest
+- substitute
+- reversal
+- protect
+- icy-wind
+- outrage
+- endure
+- charm
+- sleep-talk
+- encore
+- rain-dance
+- psych-up
+- whirlpool
+- facade
+- focus-punch
+- taunt
+- helping-hand
+- endeavor
+- dive
+- hyper-voice
+- astonish
+- bulk-up
+- water-pulse
+- close-combat
+- fling
+- aura-sphere
+- aqua-tail
+- drain-punch
+- focus-blast
+- giga-impact
+- zen-headbutt
+- iron-head
+- grass-knot
+- aqua-jet

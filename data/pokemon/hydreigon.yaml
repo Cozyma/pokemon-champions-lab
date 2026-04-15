@@ -1,0 +1,65 @@
+name: hydreigon
+name_en: hydreigon
+types:
+- dark
+- dragon
+base_stats:
+  hp: 92
+  attack: 105
+  defense: 90
+  sp_attack: 125
+  sp_defense: 90
+  speed: 98
+abilities:
+- levitate
+learnable_moves:
+- fly
+- slam
+- headbutt
+- tackle
+- body-slam
+- take-down
+- bite
+- roar
+- flamethrower
+- hydro-pump
+- surf
+- hyper-beam
+- strength
+- dragon-rage
+- fire-spin
+- thunder-wave
+- earthquake
+- toxic
+- screech
+- double-team
+- reflect
+- focus-energy
+- fire-blast
+- rest
+- rock-slide
+- tri-attack
+- substitute
+- thief
+- snore
+- spite
+- protect
+- scary-face
+- outrage
+- endure
+- swagger
+- steel-wing
+- attract
+- sleep-talk
+- return
+- frustration
+- dragon-breath
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- crunch
+- psych-up
+- rock-smash
+- beat-up
+- uproar

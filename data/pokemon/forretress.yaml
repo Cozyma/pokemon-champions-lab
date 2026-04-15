@@ -1,0 +1,66 @@
+name: forretress
+name_en: forretress
+types:
+- bug
+- steel
+base_stats:
+  hp: 75
+  attack: 90
+  defense: 140
+  sp_attack: 60
+  sp_defense: 60
+  speed: 40
+abilities:
+- sturdy
+- overcoat
+learnable_moves:
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- hyper-beam
+- counter
+- strength
+- solar-beam
+- string-shot
+- thunder-wave
+- earthquake
+- dig
+- toxic
+- mimic
+- double-team
+- defense-curl
+- light-screen
+- reflect
+- bide
+- self-destruct
+- swift
+- explosion
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- reversal
+- protect
+- spikes
+- zap-cannon
+- sandstorm
+- giga-drain
+- endure
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- pain-split
+- rapid-spin
+- sweet-scent
+- hidden-power
+- rain-dance
+- sunny-day
+- rock-smash
+- facade
+- helping-hand

@@ -1,0 +1,67 @@
+name: toxicroak
+name_en: toxicroak
+types:
+- poison
+- fighting
+base_stats:
+  hp: 83
+  attack: 106
+  defense: 65
+  sp_attack: 86
+  sp_defense: 65
+  speed: 85
+abilities:
+- anticipation
+- dry-skin
+- poison-touch
+learnable_moves:
+- mega-punch
+- ice-punch
+- thunder-punch
+- swords-dance
+- cut
+- mega-kick
+- headbutt
+- take-down
+- poison-sting
+- hyper-beam
+- low-kick
+- strength
+- earthquake
+- dig
+- toxic
+- screech
+- double-team
+- rest
+- rock-slide
+- super-fang
+- substitute
+- thief
+- snore
+- reversal
+- spite
+- protect
+- scary-face
+- feint-attack
+- sludge-bomb
+- mud-slap
+- icy-wind
+- endure
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- encore
+- pursuit
+- hidden-power
+- rain-dance
+- sunny-day
+- shadow-ball
+- rock-smash
+- torment
+- flatter
+- facade
+- focus-punch

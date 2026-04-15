@@ -1,0 +1,67 @@
+name: oranguru
+name_en: oranguru
+types:
+- normal
+- psychic
+base_stats:
+  hp: 90
+  attack: 60
+  defense: 80
+  sp_attack: 90
+  sp_defense: 110
+  speed: 60
+abilities:
+- inner-focus
+- telepathy
+- symbiosis
+learnable_moves:
+- mega-punch
+- mega-kick
+- body-slam
+- take-down
+- psybeam
+- hyper-beam
+- thunderbolt
+- thunder
+- earthquake
+- toxic
+- confusion
+- psychic
+- double-team
+- light-screen
+- reflect
+- swift
+- dream-eater
+- rest
+- rock-slide
+- substitute
+- snore
+- spite
+- protect
+- scary-face
+- feint-attack
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- pain-split
+- encore
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- future-sight
+- facade
+- nature-power
+- taunt
+- trick
+- magic-coat
+- brick-break
+- yawn
+- knock-off
+- endeavor
+- skill-swap

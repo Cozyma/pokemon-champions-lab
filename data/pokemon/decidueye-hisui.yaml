@@ -1,0 +1,66 @@
+name: decidueye-hisui
+name_en: decidueye-hisui
+types:
+- grass
+- fighting
+base_stats:
+  hp: 88
+  attack: 112
+  defense: 80
+  sp_attack: 95
+  sp_defense: 95
+  speed: 60
+abilities:
+- overgrow
+- scrappy
+learnable_moves:
+- swords-dance
+- gust
+- tackle
+- take-down
+- growl
+- hyper-beam
+- peck
+- low-kick
+- razor-leaf
+- solar-beam
+- night-shade
+- double-team
+- confuse-ray
+- light-screen
+- haze
+- focus-energy
+- swift
+- rest
+- substitute
+- reversal
+- protect
+- scary-face
+- spikes
+- giga-drain
+- endure
+- false-swipe
+- sleep-talk
+- baton-pass
+- synthesis
+- rain-dance
+- sunny-day
+- rock-smash
+- facade
+- focus-punch
+- taunt
+- helping-hand
+- brick-break
+- knock-off
+- feather-dance
+- air-cutter
+- rock-tomb
+- bullet-seed
+- aerial-ace
+- frenzy-plant
+- bulk-up
+- magical-leaf
+- leaf-blade
+- roost
+- pluck
+- tailwind

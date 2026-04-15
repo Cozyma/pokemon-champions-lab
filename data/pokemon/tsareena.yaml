@@ -1,0 +1,66 @@
+name: tsareena
+name_en: tsareena
+types:
+- grass
+base_stats:
+  hp: 72
+  attack: 120
+  defense: 98
+  sp_attack: 50
+  sp_defense: 98
+  speed: 72
+abilities:
+- leaf-guard
+- queenly-majesty
+- sweet-veil
+learnable_moves:
+- double-slap
+- stomp
+- mega-kick
+- take-down
+- hyper-beam
+- low-kick
+- razor-leaf
+- solar-beam
+- toxic
+- double-team
+- light-screen
+- reflect
+- swift
+- high-jump-kick
+- splash
+- rest
+- substitute
+- snore
+- flail
+- protect
+- giga-drain
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- rapid-spin
+- sweet-scent
+- synthesis
+- hidden-power
+- sunny-day
+- facade
+- nature-power
+- taunt
+- helping-hand
+- knock-off
+- endeavor
+- teeter-dance
+- aromatherapy
+- bullet-seed
+- bounce
+- covet
+- magical-leaf
+- u-turn
+- payback
+- fling
+- punishment

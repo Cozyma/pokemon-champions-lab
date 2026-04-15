@@ -1,0 +1,66 @@
+name: chesnaught
+name_en: chesnaught
+types:
+- grass
+- fighting
+base_stats:
+  hp: 88
+  attack: 107
+  defense: 122
+  sp_attack: 74
+  sp_defense: 75
+  speed: 64
+abilities:
+- overgrow
+- bulletproof
+learnable_moves:
+- thunder-punch
+- swords-dance
+- cut
+- vine-whip
+- tackle
+- body-slam
+- take-down
+- double-edge
+- pin-missile
+- bite
+- growl
+- roar
+- hyper-beam
+- low-kick
+- strength
+- leech-seed
+- solar-beam
+- earthquake
+- dig
+- toxic
+- double-team
+- reflect
+- swift
+- flash
+- rest
+- rock-slide
+- super-fang
+- substitute
+- snore
+- curse
+- reversal
+- protect
+- scary-face
+- belly-drum
+- sludge-bomb
+- mud-slap
+- spikes
+- giga-drain
+- endure
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- pain-split
+- iron-tail
+- metal-claw
+- synthesis
+- hidden-power

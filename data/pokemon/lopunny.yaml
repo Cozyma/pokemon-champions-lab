@@ -1,0 +1,79 @@
+name: lopunny
+name_en: lopunny
+types:
+- normal
+base_stats:
+  hp: 65
+  attack: 76
+  defense: 84
+  sp_attack: 54
+  sp_defense: 96
+  speed: 105
+abilities:
+- cute-charm
+- klutz
+- limber
+learnable_moves:
+- pound
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- cut
+- double-kick
+- mega-kick
+- jump-kick
+- headbutt
+- double-edge
+- ice-beam
+- blizzard
+- hyper-beam
+- low-kick
+- strength
+- solar-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- agility
+- quick-attack
+- double-team
+- defense-curl
+- swift
+- high-jump-kick
+- dizzy-punch
+- splash
+- rest
+- substitute
+- snore
+- reversal
+- protect
+- mach-punch
+- mud-slap
+- foresight
+- endure
+- charm
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- baton-pass
+- encore
+- iron-tail
+mega:
+  stone: lopunny-mega-stone
+  types:
+  - normal
+  - fighting
+  ability: scrappy
+  base_stats:
+    hp: 65
+    attack: 136
+    defense: 94
+    sp_attack: 54
+    sp_defense: 96
+    speed: 135

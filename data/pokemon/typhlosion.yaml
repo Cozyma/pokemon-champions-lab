@@ -1,0 +1,65 @@
+name: typhlosion
+name_en: typhlosion
+types:
+- fire
+base_stats:
+  hp: 78
+  attack: 84
+  defense: 78
+  sp_attack: 109
+  sp_defense: 85
+  speed: 100
+abilities:
+- blaze
+- flash-fire
+learnable_moves:
+- mega-punch
+- fire-punch
+- thunder-punch
+- cut
+- double-kick
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- leer
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- low-kick
+- counter
+- seismic-toss
+- strength
+- solar-beam
+- fire-spin
+- earthquake
+- dig
+- toxic
+- quick-attack
+- night-shade
+- mimic
+- double-team
+- smokescreen
+- confuse-ray
+- defense-curl
+- fire-blast
+- swift
+- rest
+- rock-slide
+- substitute
+- flame-wheel
+- snore
+- curse
+- reversal
+- spite
+- protect
+- mud-slap
+- detect
+- endure
+- rollout
+- swagger
+- fury-cutter
+- attract

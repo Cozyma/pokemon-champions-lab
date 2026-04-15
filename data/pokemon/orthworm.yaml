@@ -1,0 +1,59 @@
+name: orthworm
+name_en: orthworm
+types:
+- steel
+base_stats:
+  hp: 70
+  attack: 85
+  defense: 145
+  sp_attack: 60
+  sp_defense: 55
+  speed: 65
+abilities:
+- earth-eater
+- sand-veil
+learnable_moves:
+- tackle
+- body-slam
+- wrap
+- take-down
+- double-edge
+- hyper-beam
+- earthquake
+- dig
+- harden
+- rest
+- rock-slide
+- substitute
+- curse
+- protect
+- mud-slap
+- spikes
+- sandstorm
+- endure
+- sleep-talk
+- iron-tail
+- facade
+- helping-hand
+- rock-tomb
+- metal-sound
+- sand-tomb
+- iron-defense
+- mud-shot
+- rock-blast
+- metal-burst
+- earth-power
+- giga-impact
+- flash-cannon
+- iron-head
+- stealth-rock
+- smack-down
+- heavy-slam
+- coil
+- bulldoze
+- high-horsepower
+- stomping-tantrum
+- body-press
+- steel-beam
+- tera-blast
+- shed-tail

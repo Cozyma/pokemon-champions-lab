@@ -1,0 +1,65 @@
+name: polteageist
+name_en: polteageist
+types:
+- ghost
+base_stats:
+  hp: 60
+  attack: 65
+  defense: 65
+  sp_attack: 134
+  sp_defense: 114
+  speed: 70
+abilities:
+- weak-armor
+- cursed-body
+learnable_moves:
+- psybeam
+- hyper-beam
+- mega-drain
+- psychic
+- night-shade
+- confuse-ray
+- withdraw
+- light-screen
+- reflect
+- metronome
+- self-destruct
+- rest
+- substitute
+- snore
+- curse
+- spite
+- protect
+- giga-drain
+- endure
+- sleep-talk
+- pain-split
+- baton-pass
+- sweet-scent
+- shadow-ball
+- will-o-wisp
+- memento
+- facade
+- trick
+- skill-swap
+- imprison
+- astonish
+- aromatherapy
+- magical-leaf
+- calm-mind
+- payback
+- sucker-punch
+- dark-pulse
+- giga-impact
+- nasty-plot
+- trick-room
+- wonder-room
+- psyshock
+- foul-play
+- round
+- stored-power
+- ally-switch
+- shell-smash
+- hex
+- phantom-force
+- aromatic-mist

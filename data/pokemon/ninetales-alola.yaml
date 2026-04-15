@@ -1,0 +1,66 @@
+name: ninetales-alola
+name_en: ninetales-alola
+types:
+- ice
+- fairy
+base_stats:
+  hp: 73
+  attack: 67
+  defense: 75
+  sp_attack: 81
+  sp_defense: 100
+  speed: 109
+abilities:
+- snow-cloak
+- snow-warning
+learnable_moves:
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- roar
+- disable
+- mist
+- ice-beam
+- blizzard
+- aurora-beam
+- hyper-beam
+- solar-beam
+- dig
+- toxic
+- hypnosis
+- agility
+- double-team
+- confuse-ray
+- reflect
+- swift
+- dream-eater
+- rest
+- substitute
+- snore
+- flail
+- spite
+- powder-snow
+- protect
+- icy-wind
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- safeguard
+- pain-split
+- baton-pass
+- encore
+- iron-tail
+- hidden-power
+- rain-dance
+- psych-up
+- hail
+- facade
+- helping-hand

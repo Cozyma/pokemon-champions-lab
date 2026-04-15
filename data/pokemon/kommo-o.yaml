@@ -1,0 +1,67 @@
+name: kommo-o
+name_en: kommo-o
+types:
+- dragon
+- fighting
+base_stats:
+  hp: 75
+  attack: 110
+  defense: 125
+  sp_attack: 100
+  sp_defense: 105
+  speed: 85
+abilities:
+- bulletproof
+- soundproof
+- overcoat
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- swords-dance
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- leer
+- roar
+- flamethrower
+- hyper-beam
+- low-kick
+- counter
+- earthquake
+- toxic
+- screech
+- double-team
+- bide
+- rest
+- rock-slide
+- substitute
+- snore
+- reversal
+- protect
+- scary-face
+- belly-drum
+- outrage
+- sandstorm
+- endure
+- false-swipe
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- dragon-breath
+- iron-tail
+- metal-claw
+- hidden-power
+- rain-dance
+- sunny-day
+- uproar
+- facade
+- focus-punch
+- taunt

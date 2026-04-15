@@ -1,0 +1,79 @@
+name: tyranitar
+name_en: tyranitar
+types:
+- rock
+- dark
+base_stats:
+  hp: 100
+  attack: 134
+  defense: 110
+  sp_attack: 95
+  sp_defense: 100
+  speed: 61
+abilities:
+- sand-stream
+- unnerve
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- cut
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- thrash
+- double-edge
+- leer
+- bite
+- roar
+- flamethrower
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- low-kick
+- counter
+- seismic-toss
+- strength
+- thunderbolt
+- thunder-wave
+- thunder
+- rock-throw
+- earthquake
+- dig
+- toxic
+- mimic
+- screech
+- double-team
+- focus-energy
+- fire-blast
+- rest
+- rock-slide
+- substitute
+- nightmare
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- mud-slap
+- icy-wind
+- detect
+- outrage
+mega:
+  stone: tyranitar-mega-stone
+  types:
+  - rock
+  - dark
+  ability: sand-stream
+  base_stats:
+    hp: 100
+    attack: 164
+    defense: 150
+    sp_attack: 95
+    sp_defense: 120
+    speed: 71

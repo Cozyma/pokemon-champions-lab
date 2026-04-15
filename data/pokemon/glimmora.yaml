@@ -1,0 +1,63 @@
+name: glimmora
+name_en: glimmora
+types:
+- rock
+- poison
+base_stats:
+  hp: 83
+  attack: 55
+  defense: 90
+  sp_attack: 130
+  sp_defense: 81
+  speed: 86
+abilities:
+- toxic-debris
+- corrosion
+learnable_moves:
+- hyper-beam
+- solar-beam
+- rock-throw
+- toxic
+- harden
+- confuse-ray
+- light-screen
+- reflect
+- self-destruct
+- acid-armor
+- rest
+- rock-slide
+- substitute
+- protect
+- sludge-bomb
+- spikes
+- sandstorm
+- endure
+- sleep-talk
+- rain-dance
+- sunny-day
+- ancient-power
+- facade
+- rock-tomb
+- sand-tomb
+- iron-defense
+- mud-shot
+- rock-blast
+- toxic-spikes
+- rock-polish
+- power-gem
+- energy-ball
+- earth-power
+- giga-impact
+- flash-cannon
+- gunk-shot
+- stone-edge
+- stealth-rock
+- venoshock
+- smack-down
+- sludge-wave
+- acid-spray
+- spiky-shield
+- dazzling-gleam
+- meteor-beam
+- tera-blast
+- mortal-spin

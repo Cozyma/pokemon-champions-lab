@@ -1,0 +1,67 @@
+name: slowking-galar
+name_en: slowking-galar
+types:
+- poison
+- psychic
+base_stats:
+  hp: 95
+  attack: 65
+  defense: 80
+  sp_attack: 110
+  sp_defense: 110
+  speed: 30
+abilities:
+- curious-medicine
+- own-tempo
+- regenerator
+learnable_moves:
+- mega-punch
+- pay-day
+- fire-punch
+- ice-punch
+- thunder-punch
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- growl
+- disable
+- acid
+- flamethrower
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- psybeam
+- hyper-beam
+- thunder-wave
+- earthquake
+- dig
+- toxic
+- confusion
+- psychic
+- light-screen
+- metronome
+- fire-blast
+- waterfall
+- swift
+- amnesia
+- rest
+- tri-attack
+- substitute
+- snore
+- curse
+- protect
+- scary-face
+- sludge-bomb
+- icy-wind
+- endure
+- swagger
+- attract
+- sleep-talk
+- safeguard
+- iron-tail
+- rain-dance
+- sunny-day
+- psych-up

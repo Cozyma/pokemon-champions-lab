@@ -1,0 +1,64 @@
+name: castform
+name_en: castform
+types:
+- normal
+base_stats:
+  hp: 70
+  attack: 70
+  defense: 70
+  sp_attack: 70
+  sp_defense: 70
+  speed: 70
+abilities:
+- forecast
+learnable_moves:
+- headbutt
+- tackle
+- body-slam
+- double-edge
+- disable
+- ember
+- flamethrower
+- water-gun
+- hydro-pump
+- ice-beam
+- blizzard
+- solar-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- mimic
+- double-team
+- defense-curl
+- fire-blast
+- swift
+- amnesia
+- flash
+- rest
+- substitute
+- thief
+- snore
+- powder-snow
+- protect
+- icy-wind
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- future-sight
+- hail
+- facade
+- secret-power
+- weather-ball
+- cosmic-power
+- shock-wave
+- water-pulse

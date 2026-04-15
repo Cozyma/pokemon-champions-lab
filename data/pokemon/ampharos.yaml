@@ -1,0 +1,78 @@
+name: ampharos
+name_en: ampharos
+types:
+- electric
+base_stats:
+  hp: 90
+  attack: 75
+  defense: 85
+  sp_attack: 115
+  sp_defense: 90
+  speed: 55
+abilities:
+- static
+- plus
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- growl
+- roar
+- hyper-beam
+- low-kick
+- counter
+- seismic-toss
+- strength
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- agility
+- mimic
+- double-team
+- confuse-ray
+- defense-curl
+- light-screen
+- reflect
+- swift
+- flash
+- rest
+- substitute
+- snore
+- curse
+- cotton-spore
+- protect
+- zap-cannon
+- outrage
+- endure
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- safeguard
+- dynamic-punch
+- iron-tail
+mega:
+  stone: ampharos-mega-stone
+  types:
+  - electric
+  - dragon
+  ability: mold-breaker
+  base_stats:
+    hp: 90
+    attack: 95
+    defense: 105
+    sp_attack: 165
+    sp_defense: 110
+    speed: 45

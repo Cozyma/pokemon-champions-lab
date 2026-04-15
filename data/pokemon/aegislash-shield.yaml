@@ -1,0 +1,65 @@
+name: aegislash-shield
+name_en: aegislash-shield
+types:
+- steel
+- ghost
+base_stats:
+  hp: 60
+  attack: 50
+  defense: 140
+  sp_attack: 50
+  sp_defense: 140
+  speed: 60
+abilities:
+- stance-change
+learnable_moves:
+- swords-dance
+- cut
+- tackle
+- hyper-beam
+- toxic
+- screech
+- double-team
+- reflect
+- rest
+- rock-slide
+- slash
+- substitute
+- snore
+- reversal
+- spite
+- protect
+- endure
+- false-swipe
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- pursuit
+- hidden-power
+- rain-dance
+- sunny-day
+- shadow-ball
+- rock-smash
+- facade
+- brick-break
+- secret-power
+- metal-sound
+- aerial-ace
+- iron-defense
+- block
+- shock-wave
+- gyro-ball
+- close-combat
+- power-trick
+- magnet-rise
+- night-slash
+- air-slash
+- giga-impact
+- shadow-claw
+- shadow-sneak
+- psycho-cut
+- flash-cannon
+- iron-head

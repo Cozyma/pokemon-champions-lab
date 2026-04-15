@@ -1,0 +1,64 @@
+name: clawitzer
+name_en: clawitzer
+types:
+- water
+base_stats:
+  hp: 71
+  attack: 73
+  defense: 88
+  sp_attack: 120
+  sp_defense: 89
+  speed: 59
+abilities:
+- mega-launcher
+learnable_moves:
+- vice-grip
+- swords-dance
+- cut
+- body-slam
+- take-down
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- toxic
+- double-team
+- waterfall
+- bubble
+- splash
+- crabhammer
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- flail
+- protect
+- scary-face
+- sludge-bomb
+- mud-slap
+- icy-wind
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- rain-dance
+- shadow-ball
+- facade
+- helping-hand
+- secret-power
+- dive
+- weather-ball
+- muddy-water
+- bounce
+- mud-shot
+- water-sport
+- water-pulse
+- u-turn

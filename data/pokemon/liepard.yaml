@@ -1,0 +1,66 @@
+name: liepard
+name_en: liepard
+types:
+- dark
+base_stats:
+  hp: 64
+  attack: 88
+  defense: 50
+  sp_attack: 88
+  sp_defense: 50
+  speed: 106
+abilities:
+- limber
+- unburden
+- prankster
+learnable_moves:
+- pay-day
+- scratch
+- cut
+- sand-attack
+- growl
+- hyper-beam
+- thunder-wave
+- toxic
+- screech
+- double-team
+- swift
+- dream-eater
+- fury-swipes
+- rest
+- slash
+- substitute
+- thief
+- snore
+- spite
+- protect
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- encore
+- pursuit
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- rock-smash
+- fake-out
+- torment
+- facade
+- taunt
+- trick
+- role-play
+- assist
+- knock-off
+- snatch
+- secret-power
+- hyper-voice
+- fake-tears
+- aerial-ace

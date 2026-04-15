@@ -1,0 +1,66 @@
+name: araquanid
+name_en: araquanid
+types:
+- water
+- bug
+base_stats:
+  hp: 68
+  attack: 70
+  defense: 92
+  sp_attack: 50
+  sp_defense: 132
+  speed: 42
+abilities:
+- water-bubble
+- water-absorb
+learnable_moves:
+- headbutt
+- body-slam
+- bite
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- toxic
+- double-team
+- reflect
+- waterfall
+- leech-life
+- bubble
+- rest
+- substitute
+- spider-web
+- snore
+- protect
+- scary-face
+- icy-wind
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- hidden-power
+- rain-dance
+- crunch
+- mirror-coat
+- stockpile
+- spit-up
+- facade
+- magic-coat
+- endeavor
+- dive
+- signal-beam
+- iron-defense
+- water-pulse
+- aqua-ring
+- poison-jab
+- x-scissor
+- bug-buzz
+- giga-impact
+- bug-bite

@@ -1,0 +1,67 @@
+name: mr-rime
+name_en: mr-rime
+types:
+- ice
+- psychic
+base_stats:
+  hp: 80
+  attack: 85
+  defense: 75
+  sp_attack: 110
+  sp_defense: 100
+  speed: 70
+abilities:
+- tangled-feet
+- screen-cleaner
+- ice-body
+learnable_moves:
+- pound
+- mega-punch
+- ice-punch
+- double-kick
+- mega-kick
+- body-slam
+- ice-beam
+- blizzard
+- psybeam
+- hyper-beam
+- solar-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- confusion
+- psychic
+- hypnosis
+- mimic
+- screech
+- light-screen
+- reflect
+- metronome
+- rest
+- substitute
+- thief
+- snore
+- protect
+- icy-wind
+- endure
+- charm
+- attract
+- sleep-talk
+- safeguard
+- baton-pass
+- encore
+- rapid-spin
+- rain-dance
+- sunny-day
+- mirror-coat
+- shadow-ball
+- future-sight
+- uproar
+- hail
+- facade
+- taunt
+- helping-hand
+- trick
+- role-play
+- recycle
+- brick-break

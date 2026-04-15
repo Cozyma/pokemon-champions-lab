@@ -1,0 +1,65 @@
+name: simipour
+name_en: simipour
+types:
+- water
+base_stats:
+  hp: 75
+  attack: 98
+  defense: 63
+  sp_attack: 98
+  sp_defense: 63
+  speed: 101
+abilities:
+- gluttony
+- torrent
+learnable_moves:
+- ice-punch
+- cut
+- leer
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- low-kick
+- dig
+- toxic
+- double-team
+- lick
+- waterfall
+- fury-swipes
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- protect
+- icy-wind
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- rain-dance
+- rock-smash
+- uproar
+- hail
+- torment
+- facade
+- focus-punch
+- taunt
+- helping-hand
+- role-play
+- superpower
+- recycle
+- brick-break
+- knock-off
+- endeavor
+- secret-power
+- dive
+- rock-tomb
+- covet
+- water-pulse
+- payback
+- fling

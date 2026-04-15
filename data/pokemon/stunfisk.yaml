@@ -1,0 +1,67 @@
+name: stunfisk
+name_en: stunfisk
+types:
+- ground
+- electric
+base_stats:
+  hp: 109
+  attack: 66
+  defense: 84
+  sp_attack: 81
+  sp_defense: 99
+  speed: 32
+abilities:
+- static
+- limber
+- sand-veil
+learnable_moves:
+- tackle
+- water-gun
+- surf
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- earthquake
+- fissure
+- dig
+- toxic
+- double-team
+- bide
+- flash
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- flail
+- spite
+- protect
+- sludge-bomb
+- mud-slap
+- sandstorm
+- endure
+- swagger
+- spark
+- attract
+- sleep-talk
+- return
+- frustration
+- pain-split
+- hidden-power
+- rain-dance
+- uproar
+- facade
+- charge
+- revenge
+- yawn
+- endeavor
+- secret-power
+- camouflage
+- mud-sport
+- astonish
+- rock-tomb
+- muddy-water
+- bounce
+- mud-shot
+- shock-wave

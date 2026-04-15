@@ -1,0 +1,67 @@
+name: slowking
+name_en: slowking
+types:
+- water
+- psychic
+base_stats:
+  hp: 95
+  attack: 75
+  defense: 80
+  sp_attack: 100
+  sp_defense: 110
+  speed: 30
+abilities:
+- oblivious
+- own-tempo
+- regenerator
+learnable_moves:
+- mega-punch
+- pay-day
+- fire-punch
+- ice-punch
+- thunder-punch
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- growl
+- disable
+- flamethrower
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- psybeam
+- hyper-beam
+- counter
+- seismic-toss
+- strength
+- thunder-wave
+- earthquake
+- dig
+- toxic
+- confusion
+- psychic
+- mimic
+- double-team
+- light-screen
+- reflect
+- metronome
+- fire-blast
+- waterfall
+- swift
+- amnesia
+- dream-eater
+- flash
+- rest
+- rock-slide
+- tri-attack
+- substitute
+- nightmare
+- snore
+- curse
+- protect
+- mud-slap

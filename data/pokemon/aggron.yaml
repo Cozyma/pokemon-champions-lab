@@ -1,0 +1,79 @@
+name: aggron
+name_en: aggron
+types:
+- steel
+- rock
+base_stats:
+  hp: 70
+  attack: 110
+  defense: 180
+  sp_attack: 60
+  sp_defense: 60
+  speed: 50
+abilities:
+- sturdy
+- rock-head
+- heavy-metal
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- cut
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- roar
+- flamethrower
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- low-kick
+- counter
+- seismic-toss
+- strength
+- solar-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- earthquake
+- dig
+- toxic
+- mimic
+- screech
+- double-team
+- harden
+- defense-curl
+- fire-blast
+- rest
+- rock-slide
+- substitute
+- snore
+- reversal
+- spite
+- protect
+- scary-face
+- mud-slap
+- icy-wind
+- outrage
+- sandstorm
+- endure
+- rollout
+- swagger
+mega:
+  stone: aggron-mega-stone
+  types:
+  - steel
+  ability: filter
+  base_stats:
+    hp: 70
+    attack: 140
+    defense: 230
+    sp_attack: 60
+    sp_defense: 80
+    speed: 50

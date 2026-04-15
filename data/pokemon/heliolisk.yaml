@@ -1,0 +1,67 @@
+name: heliolisk
+name_en: heliolisk
+types:
+- electric
+- normal
+base_stats:
+  hp: 62
+  attack: 55
+  defense: 52
+  sp_attack: 109
+  sp_defense: 94
+  speed: 109
+abilities:
+- dry-skin
+- sand-veil
+- solar-power
+learnable_moves:
+- pound
+- mega-punch
+- fire-punch
+- thunder-punch
+- razor-wind
+- cut
+- mega-kick
+- tail-whip
+- surf
+- hyper-beam
+- low-kick
+- solar-beam
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- agility
+- quick-attack
+- double-team
+- light-screen
+- swift
+- flash
+- rest
+- rock-slide
+- substitute
+- snore
+- protect
+- mud-slap
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- facade
+- charge
+- secret-power
+- hyper-voice
+- weather-ball
+- rock-tomb
+- signal-beam
+- shock-wave

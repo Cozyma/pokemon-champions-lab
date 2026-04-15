@@ -1,0 +1,78 @@
+name: kangaskhan
+name_en: kangaskhan
+types:
+- normal
+base_stats:
+  hp: 105
+  attack: 95
+  defense: 80
+  sp_attack: 40
+  sp_defense: 80
+  speed: 90
+abilities:
+- early-bird
+- scrappy
+- inner-focus
+learnable_moves:
+- pound
+- comet-punch
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- cut
+- stomp
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- leer
+- bite
+- growl
+- roar
+- sing
+- disable
+- flamethrower
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- submission
+- low-kick
+- counter
+- seismic-toss
+- strength
+- solar-beam
+- thunderbolt
+- thunder
+- earthquake
+- fissure
+- dig
+- toxic
+- rage
+- mimic
+- double-team
+- focus-energy
+- bide
+- fire-blast
+- skull-bash
+- dizzy-punch
+- rest
+- rock-slide
+mega:
+  stone: kangaskhan-mega-stone
+  types:
+  - normal
+  ability: parental-bond
+  base_stats:
+    hp: 105
+    attack: 125
+    defense: 100
+    sp_attack: 60
+    sp_defense: 100
+    speed: 100

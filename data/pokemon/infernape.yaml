@@ -1,0 +1,66 @@
+name: infernape
+name_en: infernape
+types:
+- fire
+- fighting
+base_stats:
+  hp: 76
+  attack: 104
+  defense: 71
+  sp_attack: 104
+  sp_defense: 71
+  speed: 108
+abilities:
+- blaze
+- iron-fist
+learnable_moves:
+- fire-punch
+- thunder-punch
+- scratch
+- swords-dance
+- cut
+- double-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- leer
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- low-kick
+- counter
+- strength
+- solar-beam
+- fire-spin
+- earthquake
+- dig
+- toxic
+- agility
+- double-team
+- focus-energy
+- metronome
+- fire-blast
+- swift
+- fury-swipes
+- rest
+- rock-slide
+- substitute
+- thief
+- flame-wheel
+- snore
+- reversal
+- protect
+- mach-punch
+- scary-face
+- mud-slap
+- endure
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- encore

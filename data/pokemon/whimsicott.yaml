@@ -1,0 +1,67 @@
+name: whimsicott
+name_en: whimsicott
+types:
+- grass
+- fairy
+base_stats:
+  hp: 60
+  attack: 67
+  defense: 85
+  sp_attack: 77
+  sp_defense: 75
+  speed: 116
+abilities:
+- prankster
+- infiltrator
+- chlorophyll
+learnable_moves:
+- gust
+- hyper-beam
+- absorb
+- mega-drain
+- leech-seed
+- growth
+- razor-leaf
+- solar-beam
+- poison-powder
+- stun-spore
+- toxic
+- psychic
+- double-team
+- light-screen
+- swift
+- dream-eater
+- flash
+- rest
+- substitute
+- thief
+- snore
+- cotton-spore
+- protect
+- giga-drain
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- encore
+- hidden-power
+- sunny-day
+- shadow-ball
+- beat-up
+- memento
+- facade
+- nature-power
+- taunt
+- helping-hand
+- knock-off
+- endeavor
+- secret-power
+- fake-tears
+- tickle
+- covet
+- tailwind
+- u-turn

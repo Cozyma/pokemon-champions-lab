@@ -1,0 +1,57 @@
+name: sinistcha
+name_en: sinistcha
+types:
+- grass
+- ghost
+base_stats:
+  hp: 71
+  attack: 60
+  defense: 106
+  sp_attack: 121
+  sp_defense: 80
+  speed: 70
+abilities:
+- hospitality
+- heatproof
+learnable_moves:
+- hyper-beam
+- absorb
+- mega-drain
+- solar-beam
+- stun-spore
+- night-shade
+- withdraw
+- reflect
+- rest
+- substitute
+- curse
+- spite
+- protect
+- giga-drain
+- endure
+- sleep-talk
+- pain-split
+- psych-up
+- shadow-ball
+- uproar
+- memento
+- imprison
+- astonish
+- iron-defense
+- magical-leaf
+- calm-mind
+- energy-ball
+- nasty-plot
+- trick-room
+- leaf-storm
+- rage-powder
+- foul-play
+- scald
+- hex
+- phantom-force
+- grassy-terrain
+- strength-sap
+- life-dew
+- poltergeist
+- tera-blast
+- matcha-gotcha

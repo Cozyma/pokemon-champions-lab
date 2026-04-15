@@ -1,0 +1,66 @@
+name: quaquaval
+name_en: quaquaval
+types:
+- water
+- fighting
+base_stats:
+  hp: 85
+  attack: 120
+  defense: 80
+  sp_attack: 85
+  sp_defense: 75
+  speed: 85
+abilities:
+- torrent
+- moxie
+learnable_moves:
+- pound
+- swords-dance
+- wing-attack
+- mega-kick
+- take-down
+- growl
+- water-gun
+- hydro-pump
+- surf
+- hyper-beam
+- low-kick
+- counter
+- agility
+- focus-energy
+- swift
+- rest
+- substitute
+- reversal
+- protect
+- icy-wind
+- endure
+- sleep-talk
+- baton-pass
+- encore
+- rain-dance
+- psych-up
+- whirlpool
+- facade
+- taunt
+- helping-hand
+- brick-break
+- knock-off
+- endeavor
+- feather-dance
+- hydro-cannon
+- air-cutter
+- aerial-ace
+- bulk-up
+- water-pulse
+- u-turn
+- close-combat
+- fling
+- air-slash
+- brave-bird
+- giga-impact
+- aqua-jet
+- double-hit
+- low-sweep
+- acrobatics
+- water-pledge

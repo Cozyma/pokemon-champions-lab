@@ -1,0 +1,66 @@
+name: samurott-hisui
+name_en: samurott-hisui
+types:
+- water
+- dark
+base_stats:
+  hp: 90
+  attack: 108
+  defense: 80
+  sp_attack: 100
+  sp_defense: 65
+  speed: 85
+abilities:
+- torrent
+- sharpness
+learnable_moves:
+- swords-dance
+- tackle
+- body-slam
+- take-down
+- tail-whip
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- dig
+- focus-energy
+- waterfall
+- swift
+- rest
+- slash
+- substitute
+- thief
+- protect
+- scary-face
+- icy-wind
+- endure
+- false-swipe
+- fury-cutter
+- sleep-talk
+- megahorn
+- encore
+- rain-dance
+- whirlpool
+- facade
+- taunt
+- helping-hand
+- brick-break
+- knock-off
+- hydro-cannon
+- aerial-ace
+- water-pulse
+- fling
+- sucker-punch
+- dark-pulse
+- night-slash
+- aqua-tail
+- air-slash
+- x-scissor
+- vacuum-wave
+- giga-impact
+- avalanche
+- grass-knot
+- aqua-jet

@@ -1,0 +1,66 @@
+name: delphox
+name_en: delphox
+types:
+- fire
+- psychic
+base_stats:
+  hp: 75
+  attack: 69
+  defense: 72
+  sp_attack: 114
+  sp_defense: 100
+  speed: 104
+abilities:
+- blaze
+- magician
+learnable_moves:
+- fire-punch
+- thunder-punch
+- scratch
+- cut
+- take-down
+- tail-whip
+- ember
+- flamethrower
+- psybeam
+- hyper-beam
+- low-kick
+- solar-beam
+- fire-spin
+- toxic
+- psychic
+- hypnosis
+- agility
+- night-shade
+- double-team
+- confuse-ray
+- light-screen
+- reflect
+- metronome
+- fire-blast
+- swift
+- dream-eater
+- rest
+- substitute
+- thief
+- snore
+- protect
+- mud-slap
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- encore
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- future-sight
+- heat-wave
+- will-o-wisp

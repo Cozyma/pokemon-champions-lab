@@ -1,0 +1,66 @@
+name: avalugg
+name_en: avalugg
+types:
+- ice
+base_stats:
+  hp: 95
+  attack: 117
+  defense: 184
+  sp_attack: 44
+  sp_defense: 46
+  speed: 28
+abilities:
+- own-tempo
+- ice-body
+- sturdy
+learnable_moves:
+- tackle
+- body-slam
+- take-down
+- double-edge
+- bite
+- roar
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- strength
+- earthquake
+- toxic
+- double-team
+- recover
+- harden
+- skull-bash
+- flash
+- rest
+- rock-slide
+- sharpen
+- substitute
+- snore
+- curse
+- powder-snow
+- protect
+- scary-face
+- icy-wind
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- rapid-spin
+- hidden-power
+- rain-dance
+- crunch
+- rock-smash
+- hail
+- facade
+- superpower
+- secret-power
+- ice-ball
+- rock-tomb
+- icicle-spear
+- iron-defense
+- block

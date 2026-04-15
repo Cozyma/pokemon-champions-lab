@@ -1,0 +1,66 @@
+name: skeledirge
+name_en: skeledirge
+types:
+- fire
+- ghost
+base_stats:
+  hp: 104
+  attack: 75
+  defense: 100
+  sp_attack: 110
+  sp_defense: 75
+  speed: 66
+abilities:
+- blaze
+- unaware
+learnable_moves:
+- tackle
+- body-slam
+- take-down
+- leer
+- bite
+- roar
+- sing
+- ember
+- flamethrower
+- hyper-beam
+- solar-beam
+- fire-spin
+- earthquake
+- dig
+- night-shade
+- lick
+- fire-blast
+- rest
+- substitute
+- curse
+- protect
+- scary-face
+- mud-slap
+- outrage
+- endure
+- sleep-talk
+- encore
+- sunny-day
+- crunch
+- shadow-ball
+- heat-wave
+- will-o-wisp
+- facade
+- helping-hand
+- imprison
+- hyper-voice
+- blast-burn
+- overheat
+- flare-blitz
+- seed-bomb
+- earth-power
+- giga-impact
+- shadow-claw
+- thunder-fang
+- fire-fang
+- zen-headbutt
+- flame-charge
+- round
+- hex
+- incinerate

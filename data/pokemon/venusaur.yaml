@@ -1,0 +1,79 @@
+name: venusaur
+name_en: venusaur
+types:
+- grass
+- poison
+base_stats:
+  hp: 80
+  attack: 82
+  defense: 83
+  sp_attack: 100
+  sp_defense: 100
+  speed: 80
+abilities:
+- overgrow
+- chlorophyll
+learnable_moves:
+- swords-dance
+- cut
+- bind
+- vine-whip
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- growl
+- roar
+- hyper-beam
+- strength
+- mega-drain
+- leech-seed
+- growth
+- razor-leaf
+- solar-beam
+- poison-powder
+- sleep-powder
+- petal-dance
+- string-shot
+- earthquake
+- toxic
+- rage
+- mimic
+- double-team
+- defense-curl
+- light-screen
+- reflect
+- bide
+- amnesia
+- flash
+- rest
+- substitute
+- snore
+- curse
+- protect
+- scary-face
+- sludge-bomb
+- mud-slap
+- outrage
+- giga-drain
+- endure
+- charm
+- false-swipe
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+mega:
+  stone: venusaur-mega-stone
+  types:
+  - grass
+  - poison
+  ability: thick-fat
+  base_stats:
+    hp: 80
+    attack: 100
+    defense: 123
+    sp_attack: 122
+    sp_defense: 120
+    speed: 80

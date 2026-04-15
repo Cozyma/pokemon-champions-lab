@@ -1,0 +1,66 @@
+name: politoed
+name_en: politoed
+types:
+- water
+base_stats:
+  hp: 90
+  attack: 75
+  defense: 75
+  sp_attack: 90
+  sp_defense: 100
+  speed: 70
+abilities:
+- water-absorb
+- damp
+- drizzle
+learnable_moves:
+- pound
+- double-slap
+- mega-punch
+- ice-punch
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- mist
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- low-kick
+- counter
+- seismic-toss
+- strength
+- earthquake
+- dig
+- toxic
+- psychic
+- hypnosis
+- mimic
+- screech
+- double-team
+- defense-curl
+- haze
+- metronome
+- waterfall
+- swift
+- amnesia
+- splash
+- rest
+- substitute
+- thief
+- snore
+- curse
+- protect
+- belly-drum
+- mud-slap
+- perish-song
+- icy-wind
+- detect
+- endure
+- swagger
+- attract

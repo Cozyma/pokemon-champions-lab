@@ -1,0 +1,66 @@
+name: sandaconda
+name_en: sandaconda
+types:
+- ground
+base_stats:
+  hp: 72
+  attack: 107
+  defense: 125
+  sp_attack: 65
+  sp_defense: 70
+  speed: 71
+abilities:
+- sand-spit
+- shed-skin
+- sand-veil
+learnable_moves:
+- slam
+- sand-attack
+- headbutt
+- body-slam
+- wrap
+- take-down
+- hyper-beam
+- earthquake
+- dig
+- screech
+- minimize
+- skull-bash
+- glare
+- rest
+- rock-slide
+- substitute
+- snore
+- protect
+- scary-face
+- mud-slap
+- outrage
+- sandstorm
+- endure
+- attract
+- sleep-talk
+- facade
+- endeavor
+- rock-tomb
+- sand-tomb
+- iron-defense
+- mud-shot
+- poison-tail
+- rock-blast
+- earth-power
+- giga-impact
+- thunder-fang
+- fire-fang
+- zen-headbutt
+- iron-head
+- stone-edge
+- stealth-rock
+- coil
+- round
+- bulldoze
+- drill-run
+- hurricane
+- high-horsepower
+- brutal-swing
+- body-press
+- scale-shot

@@ -1,79 +1,80 @@
-name: garchomp
-name_en: garchomp
+name: steelix
+name_en: steelix
 types:
-- dragon
+- steel
 - ground
 base_stats:
-  hp: 108
-  attack: 130
-  defense: 95
-  sp_attack: 80
-  sp_defense: 85
-  speed: 102
+  hp: 75
+  attack: 85
+  defense: 200
+  sp_attack: 55
+  sp_defense: 65
+  speed: 30
 abilities:
-- sand-veil
-- rough-skin
+- rock-head
+- sturdy
+- sheer-force
 learnable_moves:
-- swords-dance
 - cut
-- sand-attack
+- bind
+- slam
 - headbutt
 - tackle
 - body-slam
-- take-down
 - double-edge
-- bite
 - roar
-- flamethrower
-- surf
 - hyper-beam
 - strength
-- dragon-rage
+- rock-throw
 - earthquake
 - dig
 - toxic
+- rage
+- mimic
+- screech
 - double-team
-- fire-blast
-- swift
+- harden
+- defense-curl
+- self-destruct
+- explosion
 - rest
 - rock-slide
-- slash
 - substitute
 - snore
+- curse
 - protect
 - scary-face
 - mud-slap
-- spikes
-- outrage
 - sandstorm
 - endure
-- false-swipe
+- rollout
 - swagger
-- fury-cutter
 - attract
 - sleep-talk
 - return
 - frustration
 - dragon-breath
 - iron-tail
-- metal-claw
 - hidden-power
 - twister
-- rain-dance
 - sunny-day
 - crunch
+- psych-up
+- ancient-power
 - rock-smash
-- whirlpool
+- torment
+- facade
+- nature-power
 mega:
-  stone: garchomp-mega-stone
+  stone: steelix-mega-stone
   types:
+  - steel
   - ground
-  - dragon
   ability: sand-force
   base_stats:
-    hp: 108
-    attack: 170
-    defense: 115
-    sp_attack: 120
+    hp: 75
+    attack: 125
+    defense: 230
+    sp_attack: 55
     sp_defense: 95
-    speed: 92
+    speed: 30

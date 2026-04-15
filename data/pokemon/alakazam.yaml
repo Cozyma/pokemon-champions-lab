@@ -1,0 +1,78 @@
+name: alakazam
+name_en: alakazam
+types:
+- psychic
+base_stats:
+  hp: 55
+  attack: 50
+  defense: 45
+  sp_attack: 135
+  sp_defense: 95
+  speed: 120
+abilities:
+- synchronize
+- inner-focus
+- magic-guard
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- disable
+- psybeam
+- hyper-beam
+- submission
+- counter
+- seismic-toss
+- thunder-wave
+- dig
+- toxic
+- confusion
+- psychic
+- hypnosis
+- rage
+- teleport
+- night-shade
+- mimic
+- double-team
+- recover
+- barrier
+- light-screen
+- reflect
+- bide
+- metronome
+- swift
+- skull-bash
+- kinesis
+- dream-eater
+- flash
+- psywave
+- rest
+- tri-attack
+- substitute
+- thief
+- nightmare
+- snore
+- curse
+- protect
+- zap-cannon
+- endure
+- swagger
+- attract
+mega:
+  stone: alakazam-mega-stone
+  types:
+  - psychic
+  ability: trace
+  base_stats:
+    hp: 55
+    attack: 50
+    defense: 65
+    sp_attack: 175
+    sp_defense: 105
+    speed: 150

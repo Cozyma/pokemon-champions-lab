@@ -1,0 +1,80 @@
+name: gardevoir
+name_en: gardevoir
+types:
+- psychic
+- fairy
+base_stats:
+  hp: 68
+  attack: 65
+  defense: 65
+  sp_attack: 125
+  sp_defense: 115
+  speed: 80
+abilities:
+- synchronize
+- trace
+- telepathy
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- mega-kick
+- headbutt
+- body-slam
+- double-edge
+- growl
+- psybeam
+- hyper-beam
+- thunderbolt
+- thunder-wave
+- toxic
+- confusion
+- psychic
+- hypnosis
+- teleport
+- night-shade
+- mimic
+- double-team
+- recover
+- confuse-ray
+- defense-curl
+- light-screen
+- reflect
+- metronome
+- swift
+- dream-eater
+- flash
+- rest
+- substitute
+- thief
+- nightmare
+- snore
+- protect
+- mud-slap
+- icy-wind
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- safeguard
+- pain-split
+- encore
+- hidden-power
+mega:
+  stone: gardevoir-mega-stone
+  types:
+  - psychic
+  - fairy
+  ability: pixilate
+  base_stats:
+    hp: 68
+    attack: 85
+    defense: 65
+    sp_attack: 165
+    sp_defense: 135
+    speed: 100

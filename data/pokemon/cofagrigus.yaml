@@ -1,0 +1,64 @@
+name: cofagrigus
+name_en: cofagrigus
+types:
+- ghost
+base_stats:
+  hp: 58
+  attack: 50
+  defense: 145
+  sp_attack: 95
+  sp_defense: 105
+  speed: 30
+abilities:
+- mummy
+learnable_moves:
+- disable
+- hyper-beam
+- toxic
+- psychic
+- night-shade
+- double-team
+- haze
+- dream-eater
+- flash
+- rest
+- substitute
+- thief
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- destiny-bond
+- endure
+- swagger
+- mean-look
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- pain-split
+- hidden-power
+- rain-dance
+- psych-up
+- shadow-ball
+- will-o-wisp
+- facade
+- trick
+- role-play
+- magic-coat
+- revenge
+- knock-off
+- skill-swap
+- imprison
+- grudge
+- snatch
+- secret-power
+- astonish
+- fake-tears
+- iron-defense
+- block
+- calm-mind
+- shock-wave
+- payback

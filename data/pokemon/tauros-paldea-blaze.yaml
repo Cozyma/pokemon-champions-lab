@@ -1,0 +1,67 @@
+name: tauros-paldea-blaze
+name_en: tauros-paldea-blaze
+types:
+- fighting
+- fire
+base_stats:
+  hp: 75
+  attack: 110
+  defense: 105
+  sp_attack: 30
+  sp_defense: 70
+  speed: 100
+abilities:
+- intimidate
+- anger-point
+- cud-chew
+learnable_moves:
+- double-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- thrash
+- double-edge
+- tail-whip
+- flamethrower
+- hyper-beam
+- fire-spin
+- earthquake
+- dig
+- fire-blast
+- rest
+- rock-slide
+- substitute
+- thief
+- curse
+- reversal
+- protect
+- scary-face
+- outrage
+- sandstorm
+- endure
+- swagger
+- sleep-talk
+- rain-dance
+- sunny-day
+- will-o-wisp
+- facade
+- endeavor
+- overheat
+- rock-tomb
+- bulk-up
+- close-combat
+- flare-blitz
+- giga-impact
+- zen-headbutt
+- iron-head
+- stone-edge
+- flame-charge
+- bulldoze
+- work-up
+- wild-charge
+- drill-run
+- high-horsepower
+- smart-strike
+- stomping-tantrum
+- body-press

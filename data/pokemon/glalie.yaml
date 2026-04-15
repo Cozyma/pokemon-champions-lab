@@ -1,0 +1,78 @@
+name: glalie
+name_en: glalie
+types:
+- ice
+base_stats:
+  hp: 80
+  attack: 80
+  defense: 80
+  sp_attack: 80
+  sp_defense: 80
+  speed: 80
+abilities:
+- inner-focus
+- ice-body
+- moody
+learnable_moves:
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- leer
+- bite
+- ice-beam
+- blizzard
+- hyper-beam
+- earthquake
+- toxic
+- mimic
+- double-team
+- defense-curl
+- light-screen
+- self-destruct
+- flash
+- explosion
+- rest
+- super-fang
+- substitute
+- snore
+- spite
+- powder-snow
+- protect
+- scary-face
+- spikes
+- icy-wind
+- endure
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- hidden-power
+- rain-dance
+- crunch
+- shadow-ball
+- hail
+- torment
+- facade
+- taunt
+- helping-hand
+- secret-power
+- ice-ball
+- astonish
+- weather-ball
+- fake-tears
+mega:
+  stone: glalie-mega-stone
+  types:
+  - ice
+  ability: refrigerate
+  base_stats:
+    hp: 80
+    attack: 120
+    defense: 80
+    sp_attack: 120
+    sp_defense: 80
+    speed: 100

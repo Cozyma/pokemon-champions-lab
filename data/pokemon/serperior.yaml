@@ -1,0 +1,65 @@
+name: serperior
+name_en: serperior
+types:
+- grass
+base_stats:
+  hp: 75
+  attack: 75
+  defense: 95
+  sp_attack: 75
+  sp_defense: 95
+  speed: 113
+abilities:
+- overgrow
+- contrary
+learnable_moves:
+- swords-dance
+- cut
+- bind
+- slam
+- vine-whip
+- tackle
+- body-slam
+- wrap
+- take-down
+- double-edge
+- leer
+- hyper-beam
+- strength
+- mega-drain
+- leech-seed
+- growth
+- solar-beam
+- toxic
+- double-team
+- light-screen
+- reflect
+- swift
+- glare
+- flash
+- rest
+- substitute
+- snore
+- protect
+- scary-face
+- outrage
+- giga-drain
+- endure
+- swagger
+- mean-look
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- sweet-scent
+- iron-tail
+- synthesis
+- hidden-power
+- twister
+- sunny-day
+- mirror-coat
+- rock-smash
+- torment
+- facade
+- nature-power

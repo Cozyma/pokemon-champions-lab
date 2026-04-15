@@ -1,0 +1,65 @@
+name: raichu-alola
+name_en: raichu-alola
+types:
+- electric
+- psychic
+base_stats:
+  hp: 60
+  attack: 85
+  defense: 50
+  sp_attack: 95
+  sp_defense: 85
+  speed: 110
+abilities:
+- surge-surfer
+learnable_moves:
+- mega-punch
+- pay-day
+- thunder-punch
+- slam
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- tail-whip
+- growl
+- surf
+- hyper-beam
+- seismic-toss
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- psychic
+- agility
+- quick-attack
+- teleport
+- double-team
+- light-screen
+- reflect
+- swift
+- rest
+- substitute
+- thief
+- snore
+- reversal
+- protect
+- sweet-kiss
+- endure
+- charm
+- swagger
+- spark
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- encore
+- iron-tail
+- hidden-power
+- rain-dance
+- future-sight
+- fake-out
+- uproar

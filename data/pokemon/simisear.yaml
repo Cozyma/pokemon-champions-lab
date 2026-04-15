@@ -1,0 +1,65 @@
+name: simisear
+name_en: simisear
+types:
+- fire
+base_stats:
+  hp: 75
+  attack: 98
+  defense: 63
+  sp_attack: 98
+  sp_defense: 63
+  speed: 101
+abilities:
+- gluttony
+- blaze
+learnable_moves:
+- fire-punch
+- cut
+- leer
+- flamethrower
+- hyper-beam
+- low-kick
+- solar-beam
+- dig
+- toxic
+- double-team
+- lick
+- fire-blast
+- fury-swipes
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- protect
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- sunny-day
+- rock-smash
+- uproar
+- heat-wave
+- torment
+- will-o-wisp
+- facade
+- focus-punch
+- taunt
+- helping-hand
+- role-play
+- superpower
+- recycle
+- brick-break
+- knock-off
+- endeavor
+- secret-power
+- overheat
+- rock-tomb
+- covet
+- payback
+- fling
+- gastro-acid
+- focus-blast

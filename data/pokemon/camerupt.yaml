@@ -1,0 +1,80 @@
+name: camerupt
+name_en: camerupt
+types:
+- fire
+- ground
+base_stats:
+  hp: 70
+  attack: 100
+  defense: 70
+  sp_attack: 105
+  sp_defense: 75
+  speed: 40
+abilities:
+- magma-armor
+- solid-rock
+- anger-point
+learnable_moves:
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- growl
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- strength
+- solar-beam
+- fire-spin
+- earthquake
+- fissure
+- dig
+- toxic
+- mimic
+- double-team
+- defense-curl
+- focus-energy
+- self-destruct
+- fire-blast
+- amnesia
+- explosion
+- rest
+- rock-slide
+- substitute
+- flame-wheel
+- snore
+- curse
+- protect
+- scary-face
+- mud-slap
+- sandstorm
+- endure
+- charm
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- magnitude
+- hidden-power
+- rain-dance
+- sunny-day
+- rock-smash
+- heat-wave
+- will-o-wisp
+mega:
+  stone: camerupt-mega-stone
+  types:
+  - fire
+  - ground
+  ability: sheer-force
+  base_stats:
+    hp: 70
+    attack: 120
+    defense: 100
+    sp_attack: 145
+    sp_defense: 105
+    speed: 20

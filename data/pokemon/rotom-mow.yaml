@@ -1,0 +1,65 @@
+name: rotom-mow
+name_en: rotom-mow
+types:
+- electric
+- grass
+base_stats:
+  hp: 50
+  attack: 65
+  defense: 107
+  sp_attack: 105
+  sp_defense: 107
+  speed: 86
+abilities:
+- levitate
+learnable_moves:
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- night-shade
+- double-team
+- confuse-ray
+- light-screen
+- reflect
+- swift
+- dream-eater
+- flash
+- rest
+- substitute
+- thief
+- snore
+- spite
+- protect
+- mud-slap
+- endure
+- swagger
+- sleep-talk
+- return
+- frustration
+- pain-split
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- uproar
+- will-o-wisp
+- facade
+- charge
+- helping-hand
+- trick
+- snatch
+- secret-power
+- hyper-voice
+- astonish
+- signal-beam
+- shock-wave
+- natural-gift
+- sucker-punch
+- dark-pulse
+- nasty-plot
+- defog
+- discharge
+- leaf-storm

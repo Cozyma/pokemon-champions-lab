@@ -1,0 +1,65 @@
+name: hippowdon
+name_en: hippowdon
+types:
+- ground
+base_stats:
+  hp: 108
+  attack: 112
+  defense: 118
+  sp_attack: 68
+  sp_defense: 72
+  speed: 47
+abilities:
+- sand-stream
+- sand-force
+learnable_moves:
+- sand-attack
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- bite
+- roar
+- hyper-beam
+- strength
+- earthquake
+- fissure
+- dig
+- toxic
+- double-team
+- amnesia
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- protect
+- mud-slap
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- sunny-day
+- crunch
+- rock-smash
+- facade
+- helping-hand
+- superpower
+- revenge
+- yawn
+- secret-power
+- slack-off
+- hyper-voice
+- weather-ball
+- rock-tomb
+- sand-tomb
+- muddy-water
+- mud-shot
+- water-pulse
+- natural-gift

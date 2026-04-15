@@ -1,0 +1,67 @@
+name: chandelure
+name_en: chandelure
+types:
+- ghost
+- fire
+base_stats:
+  hp: 60
+  attack: 55
+  defense: 90
+  sp_attack: 145
+  sp_defense: 90
+  speed: 80
+abilities:
+- flash-fire
+- flame-body
+- infiltrator
+learnable_moves:
+- ember
+- flamethrower
+- hyper-beam
+- solar-beam
+- fire-spin
+- toxic
+- psychic
+- night-shade
+- double-team
+- minimize
+- confuse-ray
+- haze
+- smog
+- fire-blast
+- dream-eater
+- flash
+- acid-armor
+- rest
+- substitute
+- thief
+- snore
+- curse
+- spite
+- protect
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- pain-split
+- hidden-power
+- sunny-day
+- psych-up
+- shadow-ball
+- heat-wave
+- will-o-wisp
+- memento
+- facade
+- taunt
+- trick
+- imprison
+- secret-power
+- astonish
+- overheat
+- calm-mind
+- shock-wave
+- payback
+- embargo

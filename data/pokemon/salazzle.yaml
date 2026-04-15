@@ -1,0 +1,66 @@
+name: salazzle
+name_en: salazzle
+types:
+- poison
+- fire
+base_stats:
+  hp: 68
+  attack: 64
+  defense: 60
+  sp_attack: 111
+  sp_defense: 60
+  speed: 117
+abilities:
+- corrosion
+- oblivious
+learnable_moves:
+- pound
+- double-slap
+- scratch
+- body-slam
+- take-down
+- disable
+- ember
+- flamethrower
+- hyper-beam
+- dragon-rage
+- thunder-wave
+- toxic
+- agility
+- double-team
+- smog
+- fire-blast
+- swift
+- poison-gas
+- leech-life
+- rest
+- substitute
+- thief
+- snore
+- protect
+- scary-face
+- sludge-bomb
+- mud-slap
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- encore
+- sweet-scent
+- iron-tail
+- hidden-power
+- sunny-day
+- beat-up
+- heat-wave
+- torment
+- will-o-wisp
+- facade
+- taunt
+- helping-hand
+- knock-off
+- endeavor
+- snatch
+- hyper-voice
+- poison-fang

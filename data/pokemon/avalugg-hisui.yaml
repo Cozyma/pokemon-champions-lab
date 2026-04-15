@@ -1,0 +1,67 @@
+name: avalugg-hisui
+name_en: avalugg-hisui
+types:
+- ice
+- rock
+base_stats:
+  hp: 95
+  attack: 127
+  defense: 184
+  sp_attack: 34
+  sp_defense: 36
+  speed: 38
+abilities:
+- strong-jaw
+- ice-body
+- sturdy
+learnable_moves:
+- tackle
+- body-slam
+- take-down
+- double-edge
+- bite
+- ice-beam
+- blizzard
+- hyper-beam
+- earthquake
+- dig
+- recover
+- harden
+- rest
+- rock-slide
+- substitute
+- curse
+- powder-snow
+- protect
+- scary-face
+- icy-wind
+- sandstorm
+- endure
+- sleep-talk
+- rapid-spin
+- rain-dance
+- crunch
+- rock-smash
+- facade
+- ice-ball
+- rock-tomb
+- icicle-spear
+- iron-defense
+- rock-blast
+- water-pulse
+- gyro-ball
+- earth-power
+- giga-impact
+- avalanche
+- ice-shard
+- ice-fang
+- flash-cannon
+- iron-head
+- stone-edge
+- stealth-rock
+- wide-guard
+- heavy-slam
+- bulldoze
+- high-horsepower
+- stomping-tantrum
+- body-press

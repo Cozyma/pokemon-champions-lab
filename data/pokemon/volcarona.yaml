@@ -1,0 +1,66 @@
+name: volcarona
+name_en: volcarona
+types:
+- bug
+- fire
+base_stats:
+  hp: 85
+  attack: 60
+  defense: 65
+  sp_attack: 135
+  sp_defense: 105
+  speed: 100
+abilities:
+- flame-body
+- swarm
+learnable_moves:
+- gust
+- whirlwind
+- fly
+- body-slam
+- take-down
+- thrash
+- double-edge
+- ember
+- flamethrower
+- hyper-beam
+- absorb
+- solar-beam
+- string-shot
+- fire-spin
+- toxic
+- psychic
+- screech
+- double-team
+- light-screen
+- fire-blast
+- amnesia
+- leech-life
+- rest
+- substitute
+- flame-wheel
+- snore
+- protect
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- hidden-power
+- rain-dance
+- sunny-day
+- heat-wave
+- will-o-wisp
+- facade
+- secret-power
+- air-cutter
+- overheat
+- silver-wind
+- signal-beam
+- aerial-ace
+- calm-mind
+- roost
+- tailwind

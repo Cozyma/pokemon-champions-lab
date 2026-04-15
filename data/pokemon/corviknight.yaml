@@ -1,0 +1,67 @@
+name: corviknight
+name_en: corviknight
+types:
+- flying
+- steel
+base_stats:
+  hp: 98
+  attack: 87
+  defense: 105
+  sp_attack: 53
+  sp_defense: 85
+  speed: 67
+abilities:
+- pressure
+- unnerve
+- mirror-armor
+learnable_moves:
+- fly
+- sand-attack
+- fury-attack
+- body-slam
+- take-down
+- double-edge
+- leer
+- hyper-beam
+- peck
+- drill-peck
+- agility
+- screech
+- light-screen
+- reflect
+- focus-energy
+- swift
+- sky-attack
+- rest
+- substitute
+- thief
+- snore
+- curse
+- reversal
+- spite
+- protect
+- scary-face
+- endure
+- swagger
+- steel-wing
+- attract
+- sleep-talk
+- metal-claw
+- rain-dance
+- sunny-day
+- rock-smash
+- facade
+- taunt
+- revenge
+- fake-tears
+- air-cutter
+- metal-sound
+- aerial-ace
+- iron-defense
+- bulk-up
+- roost
+- pluck
+- tailwind
+- u-turn
+- payback
+- assurance

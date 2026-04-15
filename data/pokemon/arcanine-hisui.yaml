@@ -1,0 +1,67 @@
+name: arcanine-hisui
+name_en: arcanine-hisui
+types:
+- fire
+- rock
+base_stats:
+  hp: 95
+  attack: 115
+  defense: 80
+  sp_attack: 95
+  sp_defense: 80
+  speed: 90
+abilities:
+- intimidate
+- flash-fire
+- rock-head
+learnable_moves:
+- tackle
+- body-slam
+- take-down
+- double-edge
+- leer
+- bite
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- solar-beam
+- fire-spin
+- rock-throw
+- dig
+- agility
+- fire-blast
+- swift
+- rest
+- rock-slide
+- substitute
+- thief
+- flame-wheel
+- reversal
+- protect
+- scary-face
+- outrage
+- sandstorm
+- endure
+- sleep-talk
+- iron-tail
+- sunny-day
+- crunch
+- extreme-speed
+- rock-smash
+- heat-wave
+- will-o-wisp
+- facade
+- helping-hand
+- hyper-voice
+- overheat
+- rock-tomb
+- aerial-ace
+- howl
+- rock-blast
+- close-combat
+- flare-blitz
+- dragon-pulse
+- power-gem
+- giga-impact
+- thunder-fang

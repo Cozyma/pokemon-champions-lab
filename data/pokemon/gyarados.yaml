@@ -1,0 +1,79 @@
+name: gyarados
+name_en: gyarados
+types:
+- water
+- flying
+base_stats:
+  hp: 95
+  attack: 125
+  defense: 79
+  sp_attack: 60
+  sp_defense: 100
+  speed: 81
+abilities:
+- intimidate
+- moxie
+learnable_moves:
+- bind
+- headbutt
+- tackle
+- body-slam
+- take-down
+- thrash
+- double-edge
+- leer
+- bite
+- roar
+- flamethrower
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- strength
+- dragon-rage
+- thunderbolt
+- thunder-wave
+- thunder
+- earthquake
+- toxic
+- rage
+- mimic
+- double-team
+- reflect
+- focus-energy
+- bide
+- fire-blast
+- waterfall
+- skull-bash
+- splash
+- rest
+- substitute
+- snore
+- curse
+- flail
+- spite
+- protect
+- scary-face
+- zap-cannon
+- icy-wind
+- outrage
+- sandstorm
+- endure
+- swagger
+- attract
+mega:
+  stone: gyarados-mega-stone
+  types:
+  - water
+  - dark
+  ability: mold-breaker
+  base_stats:
+    hp: 95
+    attack: 155
+    defense: 109
+    sp_attack: 70
+    sp_defense: 130
+    speed: 81

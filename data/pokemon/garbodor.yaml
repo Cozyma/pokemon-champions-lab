@@ -1,0 +1,66 @@
+name: garbodor
+name_en: garbodor
+types:
+- poison
+base_stats:
+  hp: 80
+  attack: 95
+  defense: 82
+  sp_attack: 60
+  sp_defense: 82
+  speed: 75
+abilities:
+- stench
+- weak-armor
+- aftermath
+learnable_moves:
+- pound
+- double-slap
+- body-slam
+- take-down
+- hyper-beam
+- solar-beam
+- thunderbolt
+- toxic
+- psychic
+- screech
+- double-team
+- self-destruct
+- sludge
+- amnesia
+- poison-gas
+- explosion
+- rest
+- substitute
+- thief
+- snore
+- spite
+- protect
+- sludge-bomb
+- spikes
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- pain-split
+- metal-claw
+- hidden-power
+- rain-dance
+- sunny-day
+- stockpile
+- swallow
+- facade
+- recycle
+- secret-power
+- rock-blast
+- payback
+- fling
+- toxic-spikes
+- rock-polish
+- dark-pulse
+- seed-bomb
+- drain-punch
+- focus-blast

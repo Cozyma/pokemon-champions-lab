@@ -1,0 +1,65 @@
+name: leafeon
+name_en: leafeon
+types:
+- grass
+base_stats:
+  hp: 65
+  attack: 110
+  defense: 130
+  sp_attack: 60
+  sp_defense: 65
+  speed: 95
+abilities:
+- leaf-guard
+- chlorophyll
+learnable_moves:
+- pay-day
+- swords-dance
+- sand-attack
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- bite
+- growl
+- roar
+- hyper-beam
+- strength
+- leech-seed
+- razor-leaf
+- solar-beam
+- dig
+- toxic
+- quick-attack
+- mimic
+- double-team
+- focus-energy
+- swift
+- flash
+- rest
+- substitute
+- snore
+- curse
+- protect
+- mud-slap
+- giga-drain
+- endure
+- charm
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- baton-pass
+- iron-tail
+- synthesis
+- hidden-power
+- rain-dance
+- sunny-day
+- shadow-ball
+- rock-smash
+- facade

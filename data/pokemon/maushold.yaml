@@ -1,0 +1,65 @@
+name: maushold
+name_en: maushold
+types:
+- normal
+base_stats:
+  hp: 74
+  attack: 75
+  defense: 70
+  sp_attack: 65
+  sp_defense: 75
+  speed: 111
+abilities:
+- friend-guard
+- cheek-pouch
+- technician
+learnable_moves:
+- pound
+- take-down
+- double-edge
+- hyper-beam
+- low-kick
+- thunder-wave
+- dig
+- agility
+- swift
+- rest
+- super-fang
+- substitute
+- thief
+- protect
+- mud-slap
+- endure
+- charm
+- sleep-talk
+- encore
+- rain-dance
+- sunny-day
+- crunch
+- beat-up
+- facade
+- follow-me
+- taunt
+- helping-hand
+- hyper-voice
+- fake-tears
+- bullet-seed
+- aerial-ace
+- mud-shot
+- water-pulse
+- u-turn
+- copycat
+- seed-bomb
+- giga-impact
+- shadow-claw
+- grass-knot
+- double-hit
+- low-sweep
+- echoed-voice
+- play-rough
+- baby-doll-eyes
+- tera-blast
+- population-bomb
+- tidy-up
+- trailblaze
+- chilling-water

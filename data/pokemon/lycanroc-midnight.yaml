@@ -1,0 +1,66 @@
+name: lycanroc-midnight
+name_en: lycanroc-midnight
+types:
+- rock
+base_stats:
+  hp: 85
+  attack: 115
+  defense: 75
+  sp_attack: 55
+  sp_defense: 75
+  speed: 82
+abilities:
+- keen-eye
+- vital-spirit
+- no-guard
+learnable_moves:
+- mega-punch
+- fire-punch
+- thunder-punch
+- swords-dance
+- mega-kick
+- sand-attack
+- tackle
+- body-slam
+- take-down
+- double-edge
+- leer
+- bite
+- roar
+- counter
+- rock-throw
+- dig
+- toxic
+- double-team
+- rest
+- rock-slide
+- substitute
+- snore
+- reversal
+- protect
+- scary-face
+- mud-slap
+- outrage
+- sandstorm
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- sunny-day
+- crunch
+- uproar
+- facade
+- focus-punch
+- taunt
+- helping-hand
+- revenge
+- brick-break
+- knock-off
+- endeavor
+- hyper-voice
+- odor-sleuth

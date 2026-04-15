@@ -1,0 +1,66 @@
+name: greninja
+name_en: greninja
+types:
+- water
+- dark
+base_stats:
+  hp: 72
+  attack: 95
+  defense: 67
+  sp_attack: 103
+  sp_defense: 71
+  speed: 122
+abilities:
+- torrent
+- protean
+learnable_moves:
+- pound
+- ice-punch
+- swords-dance
+- cut
+- take-down
+- growl
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- low-kick
+- counter
+- strength
+- dig
+- toxic
+- quick-attack
+- double-team
+- smokescreen
+- haze
+- lick
+- waterfall
+- swift
+- bubble
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- spite
+- protect
+- feint-attack
+- mud-slap
+- spikes
+- icy-wind
+- endure
+- false-swipe
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- hidden-power
+- rain-dance
+- rock-smash
+- facade
+- taunt
+- helping-hand
+- role-play

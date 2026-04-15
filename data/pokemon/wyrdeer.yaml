@@ -1,0 +1,67 @@
+name: wyrdeer
+name_en: wyrdeer
+types:
+- normal
+- psychic
+base_stats:
+  hp: 103
+  attack: 105
+  defense: 72
+  sp_attack: 105
+  sp_defense: 75
+  speed: 65
+abilities:
+- intimidate
+- frisk
+- sap-sipper
+learnable_moves:
+- stomp
+- sand-attack
+- tackle
+- body-slam
+- take-down
+- double-edge
+- leer
+- roar
+- psybeam
+- hyper-beam
+- solar-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- earthquake
+- dig
+- confusion
+- psychic
+- hypnosis
+- agility
+- confuse-ray
+- light-screen
+- reflect
+- swift
+- rest
+- substitute
+- thief
+- curse
+- spite
+- protect
+- scary-face
+- endure
+- sleep-talk
+- megahorn
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- future-sight
+- uproar
+- facade
+- helping-hand
+- trick
+- role-play
+- skill-swap
+- imprison
+- astonish
+- extrasensory
+- calm-mind
+- gravity

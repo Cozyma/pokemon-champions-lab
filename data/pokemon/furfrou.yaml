@@ -1,0 +1,64 @@
+name: furfrou
+name_en: furfrou
+types:
+- normal
+base_stats:
+  hp: 75
+  attack: 80
+  defense: 60
+  sp_attack: 65
+  sp_defense: 90
+  speed: 102
+abilities:
+- fur-coat
+learnable_moves:
+- sand-attack
+- headbutt
+- tackle
+- take-down
+- tail-whip
+- bite
+- growl
+- roar
+- surf
+- thunder-wave
+- dig
+- toxic
+- mimic
+- double-team
+- flash
+- rest
+- substitute
+- snore
+- protect
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- rock-smash
+- uproar
+- facade
+- helping-hand
+- role-play
+- endeavor
+- refresh
+- secret-power
+- hyper-voice
+- odor-sleuth
+- u-turn
+- last-resort
+- sucker-punch
+- dark-pulse
+- giga-impact
+- zen-headbutt
+- captivate
+- grass-knot
+- charge-beam
+- round
+- echoed-voice

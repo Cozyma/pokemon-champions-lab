@@ -1,0 +1,80 @@
+name: gallade
+name_en: gallade
+types:
+- psychic
+- fighting
+base_stats:
+  hp: 68
+  attack: 125
+  defense: 65
+  sp_attack: 65
+  sp_defense: 115
+  speed: 80
+abilities:
+- steadfast
+- sharpness
+- justified
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- swords-dance
+- cut
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- leer
+- growl
+- psybeam
+- hyper-beam
+- low-kick
+- strength
+- thunderbolt
+- thunder-wave
+- earthquake
+- toxic
+- confusion
+- psychic
+- hypnosis
+- agility
+- teleport
+- night-shade
+- double-team
+- confuse-ray
+- light-screen
+- reflect
+- swift
+- dream-eater
+- flash
+- rest
+- rock-slide
+- slash
+- substitute
+- thief
+- snore
+- reversal
+- protect
+- mud-slap
+- icy-wind
+- endure
+- charm
+- false-swipe
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+mega:
+  stone: gallade-mega-stone
+  types:
+  - psychic
+  - fighting
+  ability: inner-focus
+  base_stats:
+    hp: 68
+    attack: 165
+    defense: 95
+    sp_attack: 65
+    sp_defense: 115
+    speed: 110

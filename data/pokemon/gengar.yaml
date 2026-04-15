@@ -1,0 +1,78 @@
+name: gengar
+name_en: gengar
+types:
+- ghost
+- poison
+base_stats:
+  hp: 60
+  attack: 65
+  defense: 60
+  sp_attack: 130
+  sp_defense: 75
+  speed: 110
+abilities:
+- cursed-body
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- disable
+- hyper-beam
+- submission
+- counter
+- seismic-toss
+- strength
+- mega-drain
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- psychic
+- hypnosis
+- rage
+- night-shade
+- mimic
+- double-team
+- confuse-ray
+- haze
+- bide
+- metronome
+- self-destruct
+- lick
+- smog
+- skull-bash
+- dream-eater
+- poison-gas
+- psywave
+- explosion
+- rest
+- substitute
+- thief
+- nightmare
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- sludge-bomb
+- zap-cannon
+- destiny-bond
+mega:
+  stone: gengar-mega-stone
+  types:
+  - ghost
+  - poison
+  ability: shadow-tag
+  base_stats:
+    hp: 60
+    attack: 65
+    defense: 80
+    sp_attack: 170
+    sp_defense: 95
+    speed: 130

@@ -1,0 +1,67 @@
+name: goodra-hisui
+name_en: goodra-hisui
+types:
+- steel
+- dragon
+base_stats:
+  hp: 80
+  attack: 100
+  defense: 100
+  sp_attack: 110
+  sp_defense: 150
+  speed: 60
+abilities:
+- sap-sipper
+- shell-armor
+- gooey
+learnable_moves:
+- fire-punch
+- thunder-punch
+- tackle
+- body-slam
+- take-down
+- flamethrower
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- absorb
+- thunderbolt
+- thunder
+- earthquake
+- fire-blast
+- bubble
+- acid-armor
+- rest
+- rock-slide
+- substitute
+- curse
+- flail
+- protect
+- scary-face
+- sludge-bomb
+- outrage
+- sandstorm
+- endure
+- charm
+- sleep-talk
+- dragon-breath
+- iron-tail
+- rain-dance
+- sunny-day
+- rock-smash
+- facade
+- knock-off
+- weather-ball
+- rock-tomb
+- muddy-water
+- dragon-claw
+- mud-shot
+- water-pulse
+- gyro-ball
+- feint
+- dragon-pulse
+- giga-impact
+- flash-cannon

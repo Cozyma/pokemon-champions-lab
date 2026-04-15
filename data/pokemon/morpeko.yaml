@@ -1,0 +1,65 @@
+name: morpeko
+name_en: morpeko
+types:
+- electric
+- dark
+base_stats:
+  hp: 58
+  attack: 95
+  defense: 58
+  sp_attack: 70
+  sp_defense: 58
+  speed: 97
+abilities:
+- hunger-switch
+learnable_moves:
+- thunder-punch
+- take-down
+- thrash
+- double-edge
+- tail-whip
+- leer
+- bite
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- agility
+- quick-attack
+- swift
+- rest
+- super-fang
+- substitute
+- thief
+- snore
+- reversal
+- spite
+- protect
+- scary-face
+- outrage
+- endure
+- swagger
+- spark
+- attract
+- sleep-talk
+- baton-pass
+- rapid-spin
+- crunch
+- fake-out
+- uproar
+- torment
+- flatter
+- facade
+- charge
+- taunt
+- revenge
+- brick-break
+- knock-off
+- endeavor
+- fake-tears
+- tickle
+- bullet-seed
+- payback
+- assurance
+- fling
+- dark-pulse

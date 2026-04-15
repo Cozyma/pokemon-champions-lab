@@ -1,0 +1,67 @@
+name: noivern
+name_en: noivern
+types:
+- flying
+- dragon
+base_stats:
+  hp: 85
+  attack: 70
+  defense: 80
+  sp_attack: 97
+  sp_defense: 80
+  speed: 123
+abilities:
+- frisk
+- infiltrator
+- telepathy
+learnable_moves:
+- razor-wind
+- cut
+- gust
+- wing-attack
+- whirlwind
+- fly
+- tackle
+- body-slam
+- take-down
+- double-edge
+- bite
+- supersonic
+- flamethrower
+- hyper-beam
+- absorb
+- solar-beam
+- toxic
+- psychic
+- agility
+- screech
+- double-team
+- swift
+- dream-eater
+- leech-life
+- sky-attack
+- rest
+- super-fang
+- substitute
+- thief
+- snore
+- protect
+- scary-face
+- outrage
+- endure
+- swagger
+- steel-wing
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- moonlight
+- hidden-power
+- sunny-day
+- shadow-ball
+- uproar
+- heat-wave
+- torment
+- facade
+- taunt

@@ -1,0 +1,66 @@
+name: arcanine
+name_en: arcanine
+types:
+- fire
+base_stats:
+  hp: 90
+  attack: 110
+  defense: 80
+  sp_attack: 100
+  sp_defense: 80
+  speed: 95
+abilities:
+- intimidate
+- flash-fire
+- justified
+learnable_moves:
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- leer
+- bite
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- strength
+- solar-beam
+- dragon-rage
+- fire-spin
+- dig
+- toxic
+- agility
+- rage
+- teleport
+- mimic
+- double-team
+- reflect
+- bide
+- fire-blast
+- swift
+- skull-bash
+- rest
+- substitute
+- thief
+- flame-wheel
+- snore
+- curse
+- reversal
+- protect
+- scary-face
+- mud-slap
+- outrage
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- dragon-breath
+- iron-tail
+- hidden-power
+- sunny-day
+- crunch

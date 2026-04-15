@@ -1,0 +1,59 @@
+name: bellibolt
+name_en: bellibolt
+types:
+- electric
+base_stats:
+  hp: 109
+  attack: 64
+  defense: 91
+  sp_attack: 103
+  sp_defense: 83
+  speed: 45
+abilities:
+- electromorphosis
+- static
+- damp
+learnable_moves:
+- tackle
+- water-gun
+- hyper-beam
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- confuse-ray
+- light-screen
+- reflect
+- swift
+- rest
+- substitute
+- flail
+- protect
+- mud-slap
+- zap-cannon
+- endure
+- spark
+- sleep-talk
+- rain-dance
+- charge
+- slack-off
+- hyper-voice
+- weather-ball
+- muddy-water
+- mud-shot
+- water-pulse
+- sucker-punch
+- giga-impact
+- discharge
+- charge-beam
+- electro-ball
+- acid-spray
+- volt-switch
+- electroweb
+- wild-charge
+- eerie-impulse
+- electric-terrain
+- tera-blast
+- chilling-water
+- supercell-slam

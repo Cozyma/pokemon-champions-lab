@@ -1,0 +1,65 @@
+name: glaceon
+name_en: glaceon
+types:
+- ice
+base_stats:
+  hp: 65
+  attack: 60
+  defense: 110
+  sp_attack: 130
+  sp_defense: 95
+  speed: 65
+abilities:
+- snow-cloak
+- ice-body
+learnable_moves:
+- pay-day
+- sand-attack
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- bite
+- growl
+- roar
+- ice-beam
+- blizzard
+- hyper-beam
+- strength
+- dig
+- toxic
+- quick-attack
+- mimic
+- double-team
+- barrier
+- haze
+- focus-energy
+- swift
+- rest
+- substitute
+- snore
+- curse
+- powder-snow
+- protect
+- mud-slap
+- icy-wind
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- baton-pass
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- mirror-coat
+- shadow-ball
+- rock-smash
+- hail
+- facade

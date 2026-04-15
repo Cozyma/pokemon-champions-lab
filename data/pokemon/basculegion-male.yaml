@@ -1,0 +1,67 @@
+name: basculegion-male
+name_en: basculegion-male
+types:
+- water
+- ghost
+base_stats:
+  hp: 120
+  attack: 112
+  defense: 65
+  sp_attack: 80
+  sp_defense: 75
+  speed: 78
+abilities:
+- swift-swim
+- adaptability
+- mold-breaker
+learnable_moves:
+- headbutt
+- tackle
+- take-down
+- thrash
+- double-edge
+- tail-whip
+- bite
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- agility
+- night-shade
+- confuse-ray
+- waterfall
+- rest
+- substitute
+- flail
+- spite
+- protect
+- scary-face
+- icy-wind
+- outrage
+- sleep-talk
+- pain-split
+- rain-dance
+- crunch
+- shadow-ball
+- whirlpool
+- uproar
+- facade
+- endeavor
+- muddy-water
+- mud-shot
+- water-pulse
+- giga-impact
+- ice-fang
+- zen-headbutt
+- aqua-jet
+- head-smash
+- soak
+- hex
+- phantom-force
+- psychic-fangs
+- liquidation
+- scale-shot
+- flip-turn
+- wave-crash

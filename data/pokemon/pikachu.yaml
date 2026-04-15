@@ -1,0 +1,65 @@
+name: pikachu
+name_en: pikachu
+types:
+- electric
+base_stats:
+  hp: 35
+  attack: 55
+  defense: 40
+  sp_attack: 50
+  sp_defense: 50
+  speed: 90
+abilities:
+- static
+- lightning-rod
+learnable_moves:
+- mega-punch
+- pay-day
+- thunder-punch
+- slam
+- double-kick
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- growl
+- surf
+- submission
+- counter
+- seismic-toss
+- strength
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- agility
+- quick-attack
+- rage
+- mimic
+- double-team
+- defense-curl
+- light-screen
+- reflect
+- bide
+- swift
+- skull-bash
+- flash
+- rest
+- substitute
+- thief
+- snore
+- curse
+- reversal
+- protect
+- sweet-kiss
+- mud-slap
+- zap-cannon
+- detect
+- endure
+- charm
+- rollout
+- swagger

@@ -1,0 +1,67 @@
+name: rhyperior
+name_en: rhyperior
+types:
+- ground
+- rock
+base_stats:
+  hp: 115
+  attack: 140
+  defense: 130
+  sp_attack: 55
+  sp_defense: 55
+  speed: 40
+abilities:
+- lightning-rod
+- solid-rock
+- reckless
+learnable_moves:
+- mega-punch
+- pay-day
+- fire-punch
+- ice-punch
+- thunder-punch
+- swords-dance
+- cut
+- stomp
+- mega-kick
+- headbutt
+- horn-attack
+- fury-attack
+- horn-drill
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- roar
+- flamethrower
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- counter
+- strength
+- thunderbolt
+- thunder
+- earthquake
+- dig
+- toxic
+- double-team
+- fire-blast
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- reversal
+- spite
+- protect
+- scary-face
+- mud-slap
+- icy-wind
+- outrage
+- sandstorm
+- endure
+- rollout

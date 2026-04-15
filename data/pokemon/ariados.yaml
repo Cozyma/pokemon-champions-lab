@@ -1,0 +1,67 @@
+name: ariados
+name_en: ariados
+types:
+- bug
+- poison
+base_stats:
+  hp: 70
+  attack: 90
+  defense: 70
+  sp_attack: 60
+  sp_defense: 70
+  speed: 40
+abilities:
+- swarm
+- insomnia
+- sniper
+learnable_moves:
+- swords-dance
+- body-slam
+- double-edge
+- poison-sting
+- pin-missile
+- disable
+- hyper-beam
+- absorb
+- solar-beam
+- string-shot
+- dig
+- toxic
+- psychic
+- agility
+- night-shade
+- mimic
+- screech
+- double-team
+- focus-energy
+- constrict
+- leech-life
+- flash
+- fury-swipes
+- rest
+- substitute
+- thief
+- spider-web
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- sludge-bomb
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- megahorn
+- baton-pass
+- hidden-power
+- sunny-day
+- facade
+- knock-off
+- secret-power
+- signal-beam
+- bounce
+- natural-gift

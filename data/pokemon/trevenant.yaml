@@ -1,0 +1,67 @@
+name: trevenant
+name_en: trevenant
+types:
+- ghost
+- grass
+base_stats:
+  hp: 85
+  attack: 110
+  defense: 76
+  sp_attack: 65
+  sp_defense: 82
+  speed: 56
+abilities:
+- natural-cure
+- frisk
+- harvest
+learnable_moves:
+- cut
+- tackle
+- take-down
+- disable
+- hyper-beam
+- strength
+- leech-seed
+- growth
+- solar-beam
+- earthquake
+- dig
+- toxic
+- psychic
+- night-shade
+- double-team
+- confuse-ray
+- haze
+- reflect
+- dream-eater
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- feint-attack
+- destiny-bond
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- pain-split
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- rock-smash
+- will-o-wisp
+- facade
+- nature-power
+- trick
+- role-play

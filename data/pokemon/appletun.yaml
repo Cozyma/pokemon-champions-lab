@@ -1,0 +1,67 @@
+name: appletun
+name_en: appletun
+types:
+- grass
+- dragon
+base_stats:
+  hp: 110
+  attack: 85
+  defense: 80
+  sp_attack: 100
+  sp_defense: 80
+  speed: 30
+abilities:
+- ripen
+- gluttony
+- thick-fat
+learnable_moves:
+- stomp
+- headbutt
+- body-slam
+- take-down
+- hyper-beam
+- leech-seed
+- growth
+- solar-beam
+- earthquake
+- recover
+- withdraw
+- light-screen
+- reflect
+- amnesia
+- rest
+- substitute
+- snore
+- curse
+- protect
+- outrage
+- giga-drain
+- endure
+- attract
+- sleep-talk
+- safeguard
+- sweet-scent
+- rain-dance
+- sunny-day
+- facade
+- helping-hand
+- superpower
+- recycle
+- astonish
+- bullet-seed
+- iron-defense
+- magical-leaf
+- gyro-ball
+- payback
+- seed-bomb
+- dragon-pulse
+- energy-ball
+- giga-impact
+- zen-headbutt
+- draco-meteor
+- leaf-storm
+- iron-head
+- grass-knot
+- heavy-slam
+- round
+- bulldoze

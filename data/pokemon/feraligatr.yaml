@@ -1,0 +1,65 @@
+name: feraligatr
+name_en: feraligatr
+types:
+- water
+base_stats:
+  hp: 85
+  attack: 105
+  defense: 100
+  sp_attack: 79
+  sp_defense: 83
+  speed: 78
+abilities:
+- torrent
+- sheer-force
+learnable_moves:
+- mega-punch
+- ice-punch
+- scratch
+- swords-dance
+- cut
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- thrash
+- double-edge
+- leer
+- bite
+- roar
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- low-kick
+- counter
+- seismic-toss
+- strength
+- earthquake
+- dig
+- toxic
+- agility
+- rage
+- mimic
+- screech
+- double-team
+- waterfall
+- rest
+- rock-slide
+- slash
+- substitute
+- thief
+- snore
+- curse
+- flail
+- spite
+- protect
+- scary-face
+- mud-slap
+- icy-wind
+- detect
+- outrage
+- endure
+- swagger

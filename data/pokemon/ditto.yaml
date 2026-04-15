@@ -1,0 +1,16 @@
+name: ditto
+name_en: ditto
+types:
+- normal
+base_stats:
+  hp: 48
+  attack: 48
+  defense: 48
+  sp_attack: 48
+  sp_defense: 48
+  speed: 48
+abilities:
+- limber
+- imposter
+learnable_moves:
+- transform

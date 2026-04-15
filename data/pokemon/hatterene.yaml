@@ -1,0 +1,67 @@
+name: hatterene
+name_en: hatterene
+types:
+- psychic
+- fairy
+base_stats:
+  hp: 57
+  attack: 90
+  defense: 95
+  sp_attack: 136
+  sp_defense: 103
+  speed: 29
+abilities:
+- healer
+- anticipation
+- magic-bounce
+learnable_moves:
+- swords-dance
+- psybeam
+- hyper-beam
+- thunder-wave
+- confusion
+- psychic
+- agility
+- light-screen
+- reflect
+- metronome
+- swift
+- rest
+- substitute
+- snore
+- protect
+- giga-drain
+- endure
+- charm
+- attract
+- sleep-talk
+- safeguard
+- pain-split
+- baton-pass
+- psych-up
+- shadow-ball
+- future-sight
+- facade
+- helping-hand
+- trick
+- skill-swap
+- imprison
+- aromatherapy
+- magical-leaf
+- calm-mind
+- gravity
+- healing-wish
+- power-swap
+- guard-swap
+- dark-pulse
+- giga-impact
+- shadow-claw
+- psycho-cut
+- trick-room
+- power-whip
+- wonder-room
+- psyshock
+- magic-room
+- round
+- stored-power
+- heal-pulse

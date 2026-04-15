@@ -1,0 +1,65 @@
+name: simisage
+name_en: simisage
+types:
+- grass
+base_stats:
+  hp: 75
+  attack: 98
+  defense: 63
+  sp_attack: 98
+  sp_defense: 63
+  speed: 101
+abilities:
+- gluttony
+- overgrow
+learnable_moves:
+- cut
+- leer
+- hyper-beam
+- low-kick
+- solar-beam
+- dig
+- toxic
+- double-team
+- lick
+- flash
+- fury-swipes
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- protect
+- giga-drain
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- synthesis
+- hidden-power
+- sunny-day
+- rock-smash
+- uproar
+- torment
+- facade
+- focus-punch
+- nature-power
+- taunt
+- helping-hand
+- role-play
+- superpower
+- recycle
+- brick-break
+- knock-off
+- endeavor
+- secret-power
+- rock-tomb
+- covet
+- payback
+- fling
+- gastro-acid
+- worry-seed
+- seed-bomb
+- focus-blast

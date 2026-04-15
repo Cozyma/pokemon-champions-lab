@@ -1,0 +1,67 @@
+name: sneasler
+name_en: sneasler
+types:
+- fighting
+- poison
+base_stats:
+  hp: 80
+  attack: 130
+  defense: 60
+  sp_attack: 40
+  sp_defense: 80
+  speed: 120
+abilities:
+- pressure
+- unburden
+- poison-touch
+learnable_moves:
+- fire-punch
+- scratch
+- swords-dance
+- take-down
+- leer
+- hyper-beam
+- low-kick
+- dig
+- toxic
+- agility
+- quick-attack
+- screech
+- swift
+- rest
+- rock-slide
+- slash
+- substitute
+- thief
+- reversal
+- spite
+- protect
+- sludge-bomb
+- endure
+- false-swipe
+- sleep-talk
+- metal-claw
+- rain-dance
+- sunny-day
+- shadow-ball
+- rock-smash
+- facade
+- focus-punch
+- taunt
+- brick-break
+- rock-tomb
+- aerial-ace
+- bulk-up
+- poison-tail
+- calm-mind
+- u-turn
+- close-combat
+- fling
+- toxic-spikes
+- poison-jab
+- x-scissor
+- vacuum-wave
+- focus-blast
+- giga-impact
+- nasty-plot
+- shadow-claw

@@ -1,0 +1,80 @@
+name: slowbro
+name_en: slowbro
+types:
+- water
+- psychic
+base_stats:
+  hp: 95
+  attack: 75
+  defense: 110
+  sp_attack: 100
+  sp_defense: 80
+  speed: 30
+abilities:
+- oblivious
+- own-tempo
+- regenerator
+learnable_moves:
+- mega-punch
+- pay-day
+- ice-punch
+- stomp
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- growl
+- disable
+- flamethrower
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- psybeam
+- bubble-beam
+- hyper-beam
+- submission
+- counter
+- seismic-toss
+- strength
+- thunder-wave
+- earthquake
+- fissure
+- dig
+- toxic
+- confusion
+- psychic
+- rage
+- teleport
+- mimic
+- double-team
+- withdraw
+- light-screen
+- reflect
+- bide
+- metronome
+- fire-blast
+- waterfall
+- swift
+- skull-bash
+- amnesia
+- dream-eater
+- flash
+- psywave
+- rest
+mega:
+  stone: slowbro-mega-stone
+  types:
+  - water
+  - psychic
+  ability: shell-armor
+  base_stats:
+    hp: 95
+    attack: 75
+    defense: 180
+    sp_attack: 130
+    sp_defense: 80
+    speed: 30

@@ -1,0 +1,65 @@
+name: vaporeon
+name_en: vaporeon
+types:
+- water
+base_stats:
+  hp: 130
+  attack: 65
+  defense: 60
+  sp_attack: 110
+  sp_defense: 95
+  speed: 65
+abilities:
+- water-absorb
+- hydration
+learnable_moves:
+- pay-day
+- double-kick
+- sand-attack
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- bite
+- growl
+- roar
+- mist
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- aurora-beam
+- hyper-beam
+- strength
+- dig
+- toxic
+- quick-attack
+- rage
+- mimic
+- double-team
+- haze
+- reflect
+- focus-energy
+- bide
+- waterfall
+- swift
+- skull-bash
+- bubble
+- acid-armor
+- rest
+- substitute
+- snore
+- curse
+- protect
+- mud-slap
+- icy-wind
+- detect
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk

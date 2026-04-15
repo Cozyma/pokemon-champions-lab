@@ -1,0 +1,67 @@
+name: vivillon
+name_en: vivillon
+types:
+- bug
+- flying
+base_stats:
+  hp: 80
+  attack: 52
+  defense: 50
+  sp_attack: 90
+  sp_defense: 50
+  speed: 89
+abilities:
+- shield-dust
+- compound-eyes
+- friend-guard
+learnable_moves:
+- gust
+- supersonic
+- psybeam
+- hyper-beam
+- solar-beam
+- poison-powder
+- stun-spore
+- sleep-powder
+- toxic
+- psychic
+- double-team
+- confuse-ray
+- light-screen
+- swift
+- dream-eater
+- flash
+- rest
+- substitute
+- thief
+- snore
+- protect
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- facade
+- endeavor
+- secret-power
+- weather-ball
+- aromatherapy
+- air-cutter
+- signal-beam
+- aerial-ace
+- iron-defense
+- calm-mind
+- roost
+- tailwind
+- u-turn
+- air-slash
+- bug-buzz
+- energy-ball
+- giga-impact

@@ -1,0 +1,65 @@
+name: stunfisk-galar
+name_en: stunfisk-galar
+types:
+- ground
+- steel
+base_stats:
+  hp: 109
+  attack: 81
+  defense: 99
+  sp_attack: 66
+  sp_defense: 84
+  speed: 32
+abilities:
+- mimicry
+learnable_moves:
+- bind
+- tackle
+- water-gun
+- surf
+- counter
+- thunder-wave
+- earthquake
+- fissure
+- dig
+- screech
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- flail
+- spite
+- protect
+- sludge-bomb
+- mud-slap
+- sandstorm
+- endure
+- attract
+- sleep-talk
+- pain-split
+- metal-claw
+- rain-dance
+- crunch
+- uproar
+- facade
+- revenge
+- yawn
+- astonish
+- rock-tomb
+- metal-sound
+- muddy-water
+- iron-defense
+- bounce
+- mud-shot
+- payback
+- sucker-punch
+- earth-power
+- ice-fang
+- flash-cannon
+- stone-edge
+- stealth-rock
+- sludge-wave
+- foul-play
+- round
+- scald

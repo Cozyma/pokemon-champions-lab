@@ -1,0 +1,67 @@
+name: gourgeist-average
+name_en: gourgeist-average
+types:
+- ghost
+- grass
+base_stats:
+  hp: 65
+  attack: 90
+  defense: 122
+  sp_attack: 58
+  sp_defense: 75
+  speed: 84
+abilities:
+- pickup
+- frisk
+- insomnia
+learnable_moves:
+- flamethrower
+- hyper-beam
+- leech-seed
+- razor-leaf
+- solar-beam
+- toxic
+- psychic
+- double-team
+- confuse-ray
+- light-screen
+- fire-blast
+- dream-eater
+- flash
+- explosion
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- spite
+- protect
+- scary-face
+- sludge-bomb
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- pain-split
+- synthesis
+- hidden-power
+- sunny-day
+- shadow-ball
+- rock-smash
+- will-o-wisp
+- facade
+- nature-power
+- trick
+- role-play
+- magic-coat
+- skill-swap
+- imprison
+- secret-power
+- astonish
+- bullet-seed
+- gyro-ball
+- worry-seed

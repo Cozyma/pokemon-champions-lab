@@ -1,0 +1,65 @@
+name: samurott
+name_en: samurott
+types:
+- water
+base_stats:
+  hp: 95
+  attack: 100
+  defense: 85
+  sp_attack: 108
+  sp_defense: 70
+  speed: 70
+abilities:
+- torrent
+- shell-armor
+learnable_moves:
+- swords-dance
+- cut
+- tackle
+- body-slam
+- take-down
+- tail-whip
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- strength
+- dig
+- toxic
+- screech
+- double-team
+- focus-energy
+- waterfall
+- swift
+- rest
+- slash
+- substitute
+- thief
+- snore
+- protect
+- scary-face
+- icy-wind
+- detect
+- endure
+- false-swipe
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- megahorn
+- encore
+- iron-tail
+- hidden-power
+- rain-dance
+- rock-smash
+- whirlpool
+- hail
+- facade
+- taunt
+- helping-hand
+- superpower
+- revenge

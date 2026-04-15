@@ -1,0 +1,80 @@
+name: houndoom
+name_en: houndoom
+types:
+- dark
+- fire
+base_stats:
+  hp: 75
+  attack: 90
+  defense: 50
+  sp_attack: 110
+  sp_defense: 80
+  speed: 95
+abilities:
+- early-bird
+- flash-fire
+- unnerve
+learnable_moves:
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- leer
+- bite
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- counter
+- strength
+- solar-beam
+- fire-spin
+- toxic
+- mimic
+- double-team
+- smog
+- fire-blast
+- swift
+- dream-eater
+- rest
+- super-fang
+- substitute
+- thief
+- nightmare
+- snore
+- curse
+- reversal
+- spite
+- protect
+- scary-face
+- feint-attack
+- sludge-bomb
+- mud-slap
+- detect
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- pain-split
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- crunch
+- shadow-ball
+- rock-smash
+mega:
+  stone: houndoom-mega-stone
+  types:
+  - dark
+  - fire
+  ability: solar-power
+  base_stats:
+    hp: 75
+    attack: 90
+    defense: 90
+    sp_attack: 140
+    sp_defense: 90
+    speed: 115

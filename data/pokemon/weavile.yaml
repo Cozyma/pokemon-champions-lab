@@ -1,0 +1,66 @@
+name: weavile
+name_en: weavile
+types:
+- dark
+- ice
+base_stats:
+  hp: 70
+  attack: 120
+  defense: 65
+  sp_attack: 45
+  sp_defense: 85
+  speed: 125
+abilities:
+- pressure
+- pickpocket
+learnable_moves:
+- mega-punch
+- ice-punch
+- scratch
+- swords-dance
+- cut
+- mega-kick
+- headbutt
+- take-down
+- leer
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- low-kick
+- strength
+- dig
+- toxic
+- agility
+- quick-attack
+- screech
+- double-team
+- reflect
+- metronome
+- swift
+- dream-eater
+- fury-swipes
+- rest
+- slash
+- substitute
+- thief
+- snore
+- spite
+- protect
+- scary-face
+- feint-attack
+- mud-slap
+- icy-wind
+- endure
+- false-swipe
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- iron-tail
+- metal-claw
+- hidden-power
+- rain-dance

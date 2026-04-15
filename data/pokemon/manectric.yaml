@@ -1,0 +1,78 @@
+name: manectric
+name_en: manectric
+types:
+- electric
+base_stats:
+  hp: 70
+  attack: 75
+  defense: 60
+  sp_attack: 105
+  sp_defense: 60
+  speed: 105
+abilities:
+- static
+- lightning-rod
+- minus
+learnable_moves:
+- headbutt
+- tackle
+- body-slam
+- double-edge
+- leer
+- bite
+- roar
+- flamethrower
+- hyper-beam
+- strength
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- agility
+- quick-attack
+- mimic
+- double-team
+- light-screen
+- swift
+- flash
+- rest
+- substitute
+- thief
+- snore
+- protect
+- scary-face
+- mud-slap
+- endure
+- swagger
+- spark
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- rain-dance
+- crunch
+- uproar
+- facade
+- charge
+- refresh
+- secret-power
+- hyper-voice
+- overheat
+- odor-sleuth
+- signal-beam
+- howl
+- shock-wave
+mega:
+  stone: manectric-mega-stone
+  types:
+  - electric
+  ability: intimidate
+  base_stats:
+    hp: 70
+    attack: 75
+    defense: 80
+    sp_attack: 135
+    sp_defense: 80
+    speed: 135

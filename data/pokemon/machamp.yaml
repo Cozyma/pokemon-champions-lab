@@ -1,0 +1,66 @@
+name: machamp
+name_en: machamp
+types:
+- fighting
+base_stats:
+  hp: 90
+  attack: 130
+  defense: 80
+  sp_attack: 65
+  sp_defense: 85
+  speed: 55
+abilities:
+- guts
+- no-guard
+- steadfast
+learnable_moves:
+- karate-chop
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- leer
+- flamethrower
+- hyper-beam
+- submission
+- low-kick
+- counter
+- seismic-toss
+- strength
+- earthquake
+- fissure
+- dig
+- toxic
+- rage
+- mimic
+- double-team
+- light-screen
+- focus-energy
+- bide
+- metronome
+- fire-blast
+- skull-bash
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- reversal
+- protect
+- mach-punch
+- scary-face
+- mud-slap
+- foresight
+- detect
+- endure
+- swagger
+- attract
+- sleep-talk
+- return

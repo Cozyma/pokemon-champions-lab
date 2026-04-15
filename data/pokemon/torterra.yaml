@@ -1,0 +1,66 @@
+name: torterra
+name_en: torterra
+types:
+- grass
+- ground
+base_stats:
+  hp: 95
+  attack: 109
+  defense: 105
+  sp_attack: 75
+  sp_defense: 85
+  speed: 56
+abilities:
+- overgrow
+- shell-armor
+learnable_moves:
+- swords-dance
+- cut
+- headbutt
+- tackle
+- body-slam
+- take-down
+- thrash
+- double-edge
+- bite
+- roar
+- hyper-beam
+- strength
+- absorb
+- mega-drain
+- leech-seed
+- growth
+- razor-leaf
+- solar-beam
+- sleep-powder
+- earthquake
+- toxic
+- double-team
+- withdraw
+- light-screen
+- reflect
+- amnesia
+- flash
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- protect
+- scary-face
+- mud-slap
+- outrage
+- sandstorm
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- iron-tail
+- synthesis
+- hidden-power
+- sunny-day
+- crunch

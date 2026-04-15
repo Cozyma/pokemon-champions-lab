@@ -1,0 +1,66 @@
+name: conkeldurr
+name_en: conkeldurr
+types:
+- fighting
+base_stats:
+  hp: 105
+  attack: 140
+  defense: 95
+  sp_attack: 55
+  sp_defense: 65
+  speed: 45
+abilities:
+- guts
+- sheer-force
+- iron-fist
+learnable_moves:
+- pound
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- slam
+- mega-kick
+- body-slam
+- take-down
+- double-edge
+- leer
+- hyper-beam
+- low-kick
+- counter
+- strength
+- rock-throw
+- earthquake
+- dig
+- toxic
+- double-team
+- focus-energy
+- bide
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- reversal
+- protect
+- mach-punch
+- scary-face
+- detect
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- dynamic-punch
+- hidden-power
+- rain-dance
+- sunny-day
+- rock-smash
+- facade
+- focus-punch
+- taunt
+- helping-hand
+- superpower
+- revenge

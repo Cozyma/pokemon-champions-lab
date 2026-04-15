@@ -1,0 +1,66 @@
+name: watchog
+name_en: watchog
+types:
+- normal
+base_stats:
+  hp: 60
+  attack: 85
+  defense: 69
+  sp_attack: 60
+  sp_defense: 69
+  speed: 77
+abilities:
+- illuminate
+- keen-eye
+- analytic
+learnable_moves:
+- fire-punch
+- ice-punch
+- thunder-punch
+- swords-dance
+- cut
+- slam
+- sand-attack
+- tackle
+- leer
+- bite
+- flamethrower
+- hyper-beam
+- low-kick
+- strength
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- hypnosis
+- double-team
+- confuse-ray
+- light-screen
+- focus-energy
+- bide
+- dream-eater
+- flash
+- rest
+- hyper-fang
+- super-fang
+- substitute
+- snore
+- protect
+- detect
+- swagger
+- mean-look
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- crunch
+- psych-up
+- shadow-ball
+- rock-smash
+- facade

@@ -1,0 +1,67 @@
+name: mamoswine
+name_en: mamoswine
+types:
+- ice
+- ground
+base_stats:
+  hp: 110
+  attack: 130
+  defense: 80
+  sp_attack: 70
+  sp_defense: 60
+  speed: 80
+abilities:
+- oblivious
+- snow-cloak
+- thick-fat
+learnable_moves:
+- headbutt
+- fury-attack
+- tackle
+- body-slam
+- take-down
+- thrash
+- double-edge
+- bite
+- roar
+- mist
+- ice-beam
+- blizzard
+- hyper-beam
+- peck
+- strength
+- earthquake
+- fissure
+- dig
+- toxic
+- double-team
+- light-screen
+- haze
+- reflect
+- amnesia
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- flail
+- reversal
+- powder-snow
+- protect
+- scary-face
+- mud-slap
+- icy-wind
+- sandstorm
+- endure
+- charm
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- hidden-power
+- rain-dance
+- ancient-power
+- rock-smash
+- hail

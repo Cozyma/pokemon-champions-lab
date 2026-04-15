@@ -1,0 +1,65 @@
+name: rampardos
+name_en: rampardos
+types:
+- rock
+base_stats:
+  hp: 97
+  attack: 165
+  defense: 60
+  sp_attack: 65
+  sp_defense: 50
+  speed: 58
+abilities:
+- mold-breaker
+- sheer-force
+learnable_moves:
+- fire-punch
+- thunder-punch
+- swords-dance
+- cut
+- whirlwind
+- slam
+- stomp
+- headbutt
+- tackle
+- body-slam
+- take-down
+- thrash
+- double-edge
+- leer
+- bite
+- roar
+- flamethrower
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- strength
+- thunderbolt
+- thunder
+- earthquake
+- dig
+- toxic
+- screech
+- double-team
+- focus-energy
+- fire-blast
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- mud-slap
+- outrage
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- pain-split

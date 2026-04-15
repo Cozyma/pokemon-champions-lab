@@ -1,0 +1,66 @@
+name: meowscarada
+name_en: meowscarada
+types:
+- grass
+- dark
+base_stats:
+  hp: 76
+  attack: 110
+  defense: 70
+  sp_attack: 81
+  sp_defense: 70
+  speed: 123
+abilities:
+- overgrow
+- protean
+learnable_moves:
+- thunder-punch
+- scratch
+- take-down
+- tail-whip
+- bite
+- hyper-beam
+- low-kick
+- solar-beam
+- agility
+- quick-attack
+- double-team
+- swift
+- rest
+- slash
+- substitute
+- thief
+- protect
+- mud-slap
+- spikes
+- giga-drain
+- endure
+- charm
+- sleep-talk
+- psych-up
+- shadow-ball
+- facade
+- taunt
+- helping-hand
+- trick
+- brick-break
+- knock-off
+- skill-swap
+- fake-tears
+- bullet-seed
+- aerial-ace
+- frenzy-plant
+- magical-leaf
+- u-turn
+- fling
+- worry-seed
+- toxic-spikes
+- aura-sphere
+- dark-pulse
+- night-slash
+- seed-bomb
+- power-gem
+- energy-ball
+- giga-impact
+- nasty-plot
+- shadow-claw

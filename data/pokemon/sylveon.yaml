@@ -1,0 +1,65 @@
+name: sylveon
+name_en: sylveon
+types:
+- fairy
+base_stats:
+  hp: 95
+  attack: 65
+  defense: 65
+  sp_attack: 110
+  sp_defense: 130
+  speed: 60
+abilities:
+- cute-charm
+- pixilate
+learnable_moves:
+- pay-day
+- cut
+- sand-attack
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- bite
+- growl
+- roar
+- hyper-beam
+- dig
+- toxic
+- psychic
+- quick-attack
+- mimic
+- double-team
+- light-screen
+- reflect
+- focus-energy
+- swift
+- flash
+- rest
+- substitute
+- snore
+- curse
+- protect
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- safeguard
+- baton-pass
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- facade
+- helping-hand
+- magic-coat
+- skill-swap
+- secret-power
+- hyper-voice

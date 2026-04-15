@@ -1,0 +1,65 @@
+name: zoroark-hisui
+name_en: zoroark-hisui
+types:
+- normal
+- ghost
+base_stats:
+  hp: 55
+  attack: 100
+  defense: 60
+  sp_attack: 125
+  sp_defense: 60
+  speed: 110
+abilities:
+- illusion
+learnable_moves:
+- scratch
+- swords-dance
+- body-slam
+- take-down
+- leer
+- roar
+- flamethrower
+- hyper-beam
+- low-kick
+- dig
+- psychic
+- agility
+- night-shade
+- confuse-ray
+- swift
+- rest
+- slash
+- substitute
+- thief
+- curse
+- spite
+- protect
+- scary-face
+- sludge-bomb
+- icy-wind
+- endure
+- sleep-talk
+- pain-split
+- rain-dance
+- crunch
+- psych-up
+- shadow-ball
+- rock-smash
+- torment
+- will-o-wisp
+- facade
+- focus-punch
+- taunt
+- helping-hand
+- trick
+- brick-break
+- knock-off
+- imprison
+- hyper-voice
+- fake-tears
+- extrasensory
+- aerial-ace
+- calm-mind
+- u-turn
+- fling

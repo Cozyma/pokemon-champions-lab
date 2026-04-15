@@ -1,0 +1,66 @@
+name: bastiodon
+name_en: bastiodon
+types:
+- rock
+- steel
+base_stats:
+  hp: 60
+  attack: 52
+  defense: 168
+  sp_attack: 47
+  sp_defense: 138
+  speed: 30
+abilities:
+- sturdy
+- soundproof
+learnable_moves:
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- roar
+- flamethrower
+- ice-beam
+- blizzard
+- hyper-beam
+- counter
+- strength
+- thunderbolt
+- thunder
+- earthquake
+- fissure
+- dig
+- toxic
+- screech
+- double-team
+- reflect
+- focus-energy
+- fire-blast
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- reversal
+- protect
+- scary-face
+- mud-slap
+- outrage
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- ancient-power
+- rock-smash
+- torment
+- facade
+- taunt
+- magic-coat

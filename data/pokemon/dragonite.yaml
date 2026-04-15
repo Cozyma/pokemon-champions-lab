@@ -1,0 +1,66 @@
+name: dragonite
+name_en: dragonite
+types:
+- dragon
+- flying
+base_stats:
+  hp: 91
+  attack: 134
+  defense: 95
+  sp_attack: 100
+  sp_defense: 100
+  speed: 80
+abilities:
+- inner-focus
+- multiscale
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- razor-wind
+- cut
+- wing-attack
+- fly
+- bind
+- slam
+- mega-kick
+- headbutt
+- horn-drill
+- body-slam
+- wrap
+- take-down
+- double-edge
+- leer
+- roar
+- flamethrower
+- mist
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- low-kick
+- strength
+- dragon-rage
+- fire-spin
+- thunderbolt
+- thunder-wave
+- thunder
+- earthquake
+- toxic
+- agility
+- rage
+- mimic
+- double-team
+- light-screen
+- haze
+- reflect
+- bide
+- metronome
+- fire-blast
+- waterfall
+- swift
+- skull-bash

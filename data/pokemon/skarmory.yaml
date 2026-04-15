@@ -1,0 +1,67 @@
+name: skarmory
+name_en: skarmory
+types:
+- steel
+- flying
+base_stats:
+  hp: 65
+  attack: 80
+  defense: 140
+  sp_attack: 40
+  sp_defense: 70
+  speed: 70
+abilities:
+- keen-eye
+- sturdy
+- weak-armor
+learnable_moves:
+- swords-dance
+- cut
+- wing-attack
+- whirlwind
+- fly
+- sand-attack
+- fury-attack
+- take-down
+- double-edge
+- leer
+- roar
+- hyper-beam
+- peck
+- drill-peck
+- counter
+- toxic
+- agility
+- mimic
+- double-team
+- swift
+- sky-attack
+- flash
+- rest
+- rock-slide
+- slash
+- substitute
+- thief
+- snore
+- curse
+- reversal
+- protect
+- mud-slap
+- spikes
+- icy-wind
+- detect
+- sandstorm
+- endure
+- swagger
+- fury-cutter
+- steel-wing
+- attract
+- sleep-talk
+- return
+- frustration
+- pursuit
+- metal-claw
+- hidden-power
+- twister
+- sunny-day
+- rock-smash

@@ -1,0 +1,66 @@
+name: tinkaton
+name_en: tinkaton
+types:
+- fairy
+- steel
+base_stats:
+  hp: 85
+  attack: 75
+  defense: 77
+  sp_attack: 70
+  sp_defense: 105
+  speed: 94
+abilities:
+- mold-breaker
+- own-tempo
+- pickpocket
+learnable_moves:
+- swords-dance
+- slam
+- thunder-wave
+- light-screen
+- reflect
+- metronome
+- rest
+- rock-slide
+- substitute
+- thief
+- protect
+- sweet-kiss
+- endure
+- sleep-talk
+- encore
+- metal-claw
+- rock-smash
+- fake-out
+- flatter
+- facade
+- helping-hand
+- brick-break
+- knock-off
+- endeavor
+- skill-swap
+- astonish
+- fake-tears
+- rock-tomb
+- metal-sound
+- covet
+- fling
+- flash-cannon
+- stone-edge
+- stealth-rock
+- smack-down
+- heavy-slam
+- foul-play
+- bulldoze
+- draining-kiss
+- play-rough
+- fairy-wind
+- baby-doll-eyes
+- brutal-swing
+- steel-beam
+- skitter-smack
+- tera-blast
+- pounce
+- gigaton-hammer
+- hard-press

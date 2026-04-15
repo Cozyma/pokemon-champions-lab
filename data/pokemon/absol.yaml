@@ -1,0 +1,78 @@
+name: absol
+name_en: absol
+types:
+- dark
+base_stats:
+  hp: 65
+  attack: 130
+  defense: 60
+  sp_attack: 75
+  sp_defense: 60
+  speed: 75
+abilities:
+- pressure
+- super-luck
+- justified
+learnable_moves:
+- scratch
+- razor-wind
+- swords-dance
+- cut
+- headbutt
+- body-slam
+- double-edge
+- leer
+- bite
+- flamethrower
+- ice-beam
+- blizzard
+- hyper-beam
+- counter
+- strength
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- quick-attack
+- mimic
+- double-team
+- focus-energy
+- fire-blast
+- swift
+- dream-eater
+- flash
+- rest
+- rock-slide
+- slash
+- substitute
+- thief
+- nightmare
+- snore
+- curse
+- spite
+- protect
+- feint-attack
+- mud-slap
+- perish-song
+- icy-wind
+- detect
+- sandstorm
+- endure
+- false-swipe
+- swagger
+- fury-cutter
+- mean-look
+- attract
+- sleep-talk
+mega:
+  stone: absol-mega-stone
+  types:
+  - dark
+  ability: magic-bounce
+  base_stats:
+    hp: 65
+    attack: 150
+    defense: 60
+    sp_attack: 115
+    sp_defense: 60
+    speed: 115

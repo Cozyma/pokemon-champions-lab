@@ -1,0 +1,66 @@
+name: klefki
+name_en: klefki
+types:
+- steel
+- fairy
+base_stats:
+  hp: 57
+  attack: 80
+  defense: 91
+  sp_attack: 80
+  sp_defense: 87
+  speed: 75
+abilities:
+- prankster
+- magician
+learnable_moves:
+- cut
+- tackle
+- hyper-beam
+- thunder-wave
+- toxic
+- psychic
+- double-team
+- light-screen
+- reflect
+- swift
+- rest
+- substitute
+- thief
+- snore
+- protect
+- spikes
+- lock-on
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- torment
+- facade
+- magic-coat
+- recycle
+- imprison
+- secret-power
+- astonish
+- metal-sound
+- iron-defense
+- covet
+- calm-mind
+- heal-block
+- last-resort
+- magnet-rise
+- switcheroo
+- giga-impact
+- mirror-shot
+- flash-cannon
+- defog
+- trick-room
+- psyshock

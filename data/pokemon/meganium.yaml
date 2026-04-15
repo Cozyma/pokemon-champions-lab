@@ -1,0 +1,65 @@
+name: meganium
+name_en: meganium
+types:
+- grass
+base_stats:
+  hp: 80
+  attack: 82
+  defense: 100
+  sp_attack: 83
+  sp_defense: 100
+  speed: 80
+abilities:
+- overgrow
+- leaf-guard
+learnable_moves:
+- swords-dance
+- cut
+- vine-whip
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- growl
+- hyper-beam
+- counter
+- strength
+- leech-seed
+- razor-leaf
+- solar-beam
+- poison-powder
+- petal-dance
+- earthquake
+- toxic
+- mimic
+- double-team
+- light-screen
+- reflect
+- flash
+- rest
+- substitute
+- snore
+- curse
+- flail
+- protect
+- mud-slap
+- detect
+- outrage
+- giga-drain
+- endure
+- charm
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- encore
+- sweet-scent
+- iron-tail
+- synthesis
+- hidden-power
+- sunny-day
+- ancient-power

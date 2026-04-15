@@ -1,0 +1,65 @@
+name: jolteon
+name_en: jolteon
+types:
+- electric
+base_stats:
+  hp: 65
+  attack: 65
+  defense: 60
+  sp_attack: 110
+  sp_defense: 95
+  speed: 130
+abilities:
+- volt-absorb
+- quick-feet
+learnable_moves:
+- pay-day
+- double-kick
+- sand-attack
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- pin-missile
+- bite
+- growl
+- roar
+- hyper-beam
+- strength
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- agility
+- quick-attack
+- rage
+- mimic
+- double-team
+- light-screen
+- reflect
+- focus-energy
+- bide
+- swift
+- skull-bash
+- flash
+- rest
+- substitute
+- snore
+- curse
+- protect
+- mud-slap
+- zap-cannon
+- detect
+- endure
+- charm
+- false-swipe
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration

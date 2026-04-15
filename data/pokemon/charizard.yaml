@@ -1,0 +1,92 @@
+name: charizard
+name_en: charizard
+types:
+- fire
+- flying
+base_stats:
+  hp: 78
+  attack: 84
+  defense: 78
+  sp_attack: 109
+  sp_defense: 85
+  speed: 100
+abilities:
+- blaze
+- solar-power
+learnable_moves:
+- mega-punch
+- fire-punch
+- thunder-punch
+- scratch
+- swords-dance
+- cut
+- wing-attack
+- fly
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- leer
+- bite
+- growl
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- submission
+- counter
+- seismic-toss
+- strength
+- solar-beam
+- dragon-rage
+- fire-spin
+- earthquake
+- fissure
+- dig
+- toxic
+- rage
+- mimic
+- double-team
+- smokescreen
+- defense-curl
+- reflect
+- bide
+- fire-blast
+- swift
+- skull-bash
+- fury-swipes
+- rest
+- rock-slide
+- slash
+- substitute
+- snore
+- curse
+- protect
+- scary-face
+mega_x:
+  stone: charizard-mega-stone-x
+  types:
+  - fire
+  - dragon
+  ability: tough-claws
+  base_stats:
+    hp: 78
+    attack: 130
+    defense: 111
+    sp_attack: 130
+    sp_defense: 85
+    speed: 100
+mega_y:
+  stone: charizard-mega-stone-y
+  types:
+  - fire
+  - flying
+  ability: drought
+  base_stats:
+    hp: 78
+    attack: 104
+    defense: 78
+    sp_attack: 159
+    sp_defense: 115
+    speed: 100

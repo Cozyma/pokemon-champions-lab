@@ -1,0 +1,67 @@
+name: gliscor
+name_en: gliscor
+types:
+- ground
+- flying
+base_stats:
+  hp: 75
+  attack: 95
+  defense: 125
+  sp_attack: 45
+  sp_defense: 75
+  speed: 95
+abilities:
+- hyper-cutter
+- sand-veil
+- poison-heal
+learnable_moves:
+- guillotine
+- swords-dance
+- cut
+- wing-attack
+- sand-attack
+- headbutt
+- take-down
+- double-edge
+- poison-sting
+- pin-missile
+- hyper-beam
+- counter
+- strength
+- earthquake
+- dig
+- toxic
+- agility
+- quick-attack
+- screech
+- double-team
+- harden
+- swift
+- sky-attack
+- crabhammer
+- rest
+- rock-slide
+- slash
+- substitute
+- thief
+- snore
+- protect
+- scary-face
+- feint-attack
+- sludge-bomb
+- mud-slap
+- spikes
+- sandstorm
+- endure
+- false-swipe
+- swagger
+- fury-cutter
+- steel-wing
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- iron-tail
+- metal-claw
+- hidden-power

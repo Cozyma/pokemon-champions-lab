@@ -1,0 +1,66 @@
+name: torkoal
+name_en: torkoal
+types:
+- fire
+base_stats:
+  hp: 70
+  attack: 85
+  defense: 140
+  sp_attack: 85
+  sp_defense: 70
+  speed: 20
+abilities:
+- white-smoke
+- drought
+- shell-armor
+learnable_moves:
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- ember
+- flamethrower
+- hyper-beam
+- strength
+- solar-beam
+- fire-spin
+- earthquake
+- fissure
+- toxic
+- mimic
+- double-team
+- smokescreen
+- withdraw
+- self-destruct
+- smog
+- fire-blast
+- skull-bash
+- amnesia
+- explosion
+- rest
+- rock-slide
+- substitute
+- flame-wheel
+- snore
+- curse
+- flail
+- protect
+- sludge-bomb
+- mud-slap
+- sandstorm
+- endure
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- rapid-spin
+- iron-tail
+- hidden-power
+- sunny-day
+- ancient-power
+- rock-smash
+- heat-wave
+- will-o-wisp
+- facade

@@ -1,0 +1,67 @@
+name: slowbro-galar
+name_en: slowbro-galar
+types:
+- poison
+- psychic
+base_stats:
+  hp: 95
+  attack: 100
+  defense: 95
+  sp_attack: 100
+  sp_defense: 70
+  speed: 30
+abilities:
+- quick-draw
+- own-tempo
+- regenerator
+learnable_moves:
+- mega-punch
+- pay-day
+- ice-punch
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- growl
+- disable
+- acid
+- flamethrower
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- psybeam
+- hyper-beam
+- thunder-wave
+- earthquake
+- dig
+- toxic
+- confusion
+- psychic
+- withdraw
+- light-screen
+- haze
+- metronome
+- fire-blast
+- waterfall
+- swift
+- amnesia
+- rest
+- tri-attack
+- substitute
+- snore
+- curse
+- protect
+- scary-face
+- sludge-bomb
+- icy-wind
+- sandstorm
+- endure
+- attract
+- sleep-talk
+- safeguard
+- iron-tail
+- rain-dance
+- sunny-day

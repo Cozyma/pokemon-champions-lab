@@ -1,0 +1,66 @@
+name: arbok
+name_en: arbok
+types:
+- poison
+base_stats:
+  hp: 60
+  attack: 95
+  defense: 69
+  sp_attack: 65
+  sp_defense: 79
+  speed: 80
+abilities:
+- intimidate
+- shed-skin
+- unnerve
+learnable_moves:
+- bind
+- slam
+- headbutt
+- body-slam
+- wrap
+- take-down
+- double-edge
+- poison-sting
+- leer
+- bite
+- acid
+- hyper-beam
+- strength
+- mega-drain
+- earthquake
+- fissure
+- dig
+- toxic
+- rage
+- mimic
+- screech
+- double-team
+- haze
+- bide
+- skull-bash
+- glare
+- leech-life
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- sludge-bomb
+- mud-slap
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- pain-split
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day

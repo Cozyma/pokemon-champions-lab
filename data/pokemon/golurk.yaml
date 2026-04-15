@@ -1,0 +1,67 @@
+name: golurk
+name_en: golurk
+types:
+- ground
+- ghost
+base_stats:
+  hp: 89
+  attack: 124
+  defense: 80
+  sp_attack: 55
+  sp_defense: 80
+  speed: 55
+abilities:
+- iron-fist
+- klutz
+- no-guard
+learnable_moves:
+- pound
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- fly
+- mega-kick
+- body-slam
+- take-down
+- double-edge
+- ice-beam
+- hyper-beam
+- low-kick
+- strength
+- solar-beam
+- thunderbolt
+- earthquake
+- dig
+- toxic
+- psychic
+- night-shade
+- double-team
+- confuse-ray
+- defense-curl
+- reflect
+- self-destruct
+- flash
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- protect
+- mud-slap
+- icy-wind
+- sandstorm
+- endure
+- rollout
+- swagger
+- sleep-talk
+- return
+- frustration
+- safeguard
+- magnitude
+- dynamic-punch
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up

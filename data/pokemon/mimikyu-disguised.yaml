@@ -1,0 +1,65 @@
+name: mimikyu-disguised
+name_en: mimikyu-disguised
+types:
+- ghost
+- fairy
+base_stats:
+  hp: 55
+  attack: 90
+  defense: 80
+  sp_attack: 50
+  sp_defense: 105
+  speed: 96
+abilities:
+- disguise
+learnable_moves:
+- scratch
+- swords-dance
+- take-down
+- hyper-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- psychic
+- night-shade
+- mimic
+- screech
+- double-team
+- confuse-ray
+- light-screen
+- dream-eater
+- leech-life
+- splash
+- rest
+- slash
+- substitute
+- thief
+- nightmare
+- snore
+- curse
+- spite
+- protect
+- feint-attack
+- destiny-bond
+- giga-drain
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- pain-split
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- beat-up
+- will-o-wisp
+- facade
+- taunt
+- trick
+- grudge

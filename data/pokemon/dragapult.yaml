@@ -1,0 +1,67 @@
+name: dragapult
+name_en: dragapult
+types:
+- dragon
+- ghost
+base_stats:
+  hp: 88
+  attack: 120
+  defense: 75
+  sp_attack: 100
+  sp_defense: 75
+  speed: 142
+abilities:
+- clear-body
+- infiltrator
+- cursed-body
+learnable_moves:
+- fly
+- body-slam
+- take-down
+- double-edge
+- bite
+- flamethrower
+- hydro-pump
+- surf
+- hyper-beam
+- solar-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- agility
+- quick-attack
+- night-shade
+- light-screen
+- reflect
+- fire-blast
+- swift
+- rest
+- tri-attack
+- substitute
+- thief
+- snore
+- curse
+- protect
+- lock-on
+- outrage
+- endure
+- steel-wing
+- attract
+- sleep-talk
+- dragon-breath
+- baton-pass
+- sunny-day
+- shadow-ball
+- beat-up
+- will-o-wisp
+- facade
+- helping-hand
+- dive
+- astonish
+- dragon-claw
+- dragon-dance
+- brine
+- u-turn
+- assurance
+- last-resort
+- sucker-punch

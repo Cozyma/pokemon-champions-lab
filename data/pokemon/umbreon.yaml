@@ -1,0 +1,65 @@
+name: umbreon
+name_en: umbreon
+types:
+- dark
+base_stats:
+  hp: 95
+  attack: 65
+  defense: 110
+  sp_attack: 60
+  sp_defense: 130
+  speed: 65
+abilities:
+- synchronize
+- inner-focus
+learnable_moves:
+- pay-day
+- cut
+- sand-attack
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- bite
+- growl
+- roar
+- hyper-beam
+- thunder-wave
+- dig
+- toxic
+- psychic
+- quick-attack
+- mimic
+- screech
+- double-team
+- confuse-ray
+- light-screen
+- reflect
+- focus-energy
+- swift
+- dream-eater
+- flash
+- rest
+- substitute
+- thief
+- nightmare
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- feint-attack
+- mud-slap
+- zap-cannon
+- detect
+- endure
+- charm
+- swagger
+- mean-look
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration

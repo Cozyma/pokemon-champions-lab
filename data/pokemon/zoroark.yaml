@@ -1,0 +1,64 @@
+name: zoroark
+name_en: zoroark
+types:
+- dark
+base_stats:
+  hp: 60
+  attack: 105
+  defense: 60
+  sp_attack: 120
+  sp_defense: 60
+  speed: 105
+abilities:
+- illusion
+learnable_moves:
+- mega-punch
+- scratch
+- swords-dance
+- cut
+- mega-kick
+- body-slam
+- take-down
+- leer
+- roar
+- flamethrower
+- hyper-beam
+- low-kick
+- dig
+- toxic
+- psychic
+- agility
+- night-shade
+- double-team
+- confuse-ray
+- swift
+- fury-swipes
+- rest
+- substitute
+- thief
+- snore
+- spite
+- protect
+- scary-face
+- feint-attack
+- sludge-bomb
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- pain-split
+- encore
+- pursuit
+- hidden-power
+- rain-dance
+- sunny-day
+- crunch
+- psych-up
+- shadow-ball
+- rock-smash
+- uproar
+- torment
+- facade
+- taunt

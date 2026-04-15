@@ -1,0 +1,79 @@
+name: altaria
+name_en: altaria
+types:
+- dragon
+- flying
+base_stats:
+  hp: 75
+  attack: 70
+  defense: 90
+  sp_attack: 70
+  sp_defense: 105
+  speed: 80
+abilities:
+- natural-cure
+- cloud-nine
+learnable_moves:
+- fly
+- fury-attack
+- body-slam
+- take-down
+- double-edge
+- growl
+- roar
+- sing
+- flamethrower
+- mist
+- ice-beam
+- hyper-beam
+- peck
+- solar-beam
+- fire-spin
+- earthquake
+- toxic
+- agility
+- mimic
+- double-team
+- haze
+- fire-blast
+- swift
+- dream-eater
+- sky-attack
+- rest
+- substitute
+- thief
+- snore
+- protect
+- mud-slap
+- perish-song
+- outrage
+- endure
+- false-swipe
+- swagger
+- steel-wing
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- safeguard
+- dragon-breath
+- iron-tail
+- hidden-power
+- twister
+- rain-dance
+- sunny-day
+- psych-up
+mega:
+  stone: altaria-mega-stone
+  types:
+  - dragon
+  - fairy
+  ability: pixilate
+  base_stats:
+    hp: 75
+    attack: 110
+    defense: 110
+    sp_attack: 110
+    sp_defense: 105
+    speed: 80

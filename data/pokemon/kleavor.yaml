@@ -1,0 +1,67 @@
+name: kleavor
+name_en: kleavor
+types:
+- bug
+- rock
+base_stats:
+  hp: 70
+  attack: 135
+  defense: 95
+  sp_attack: 45
+  sp_defense: 70
+  speed: 85
+abilities:
+- swarm
+- sheer-force
+- sharpness
+learnable_moves:
+- swords-dance
+- take-down
+- double-edge
+- leer
+- hyper-beam
+- agility
+- quick-attack
+- double-team
+- light-screen
+- focus-energy
+- swift
+- rest
+- rock-slide
+- slash
+- substitute
+- thief
+- reversal
+- protect
+- scary-face
+- sandstorm
+- endure
+- false-swipe
+- fury-cutter
+- sleep-talk
+- baton-pass
+- sunny-day
+- facade
+- helping-hand
+- brick-break
+- air-cutter
+- rock-tomb
+- silver-wind
+- aerial-ace
+- rock-blast
+- tailwind
+- u-turn
+- close-combat
+- air-slash
+- x-scissor
+- bug-buzz
+- vacuum-wave
+- giga-impact
+- stone-edge
+- stealth-rock
+- bug-bite
+- double-hit
+- smack-down
+- acrobatics
+- struggle-bug
+- lunge

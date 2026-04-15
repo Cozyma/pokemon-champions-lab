@@ -1,0 +1,66 @@
+name: reuniclus
+name_en: reuniclus
+types:
+- psychic
+base_stats:
+  hp: 110
+  attack: 65
+  defense: 75
+  sp_attack: 125
+  sp_defense: 85
+  speed: 30
+abilities:
+- overcoat
+- magic-guard
+- regenerator
+learnable_moves:
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- body-slam
+- psybeam
+- hyper-beam
+- strength
+- thunder-wave
+- thunder
+- toxic
+- confusion
+- psychic
+- night-shade
+- double-team
+- recover
+- confuse-ray
+- light-screen
+- reflect
+- swift
+- dream-eater
+- dizzy-punch
+- flash
+- psywave
+- acid-armor
+- explosion
+- rest
+- rock-slide
+- substitute
+- snore
+- protect
+- endure
+- charm
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- pain-split
+- encore
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- future-sight
+- rock-smash
+- facade

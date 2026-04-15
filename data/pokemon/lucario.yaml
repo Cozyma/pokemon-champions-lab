@@ -1,0 +1,80 @@
+name: lucario
+name_en: lucario
+types:
+- fighting
+- steel
+base_stats:
+  hp: 70
+  attack: 110
+  defense: 70
+  sp_attack: 115
+  sp_defense: 70
+  speed: 90
+abilities:
+- steadfast
+- inner-focus
+- justified
+learnable_moves:
+- mega-punch
+- ice-punch
+- thunder-punch
+- swords-dance
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- bite
+- roar
+- hyper-beam
+- low-kick
+- counter
+- strength
+- earthquake
+- dig
+- toxic
+- psychic
+- agility
+- quick-attack
+- screech
+- double-team
+- focus-energy
+- metronome
+- swift
+- rest
+- rock-slide
+- substitute
+- snore
+- reversal
+- protect
+- mach-punch
+- scary-face
+- mud-slap
+- foresight
+- detect
+- bone-rush
+- endure
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- metal-claw
+- hidden-power
+- rain-dance
+- sunny-day
+- crunch
+mega:
+  stone: lucario-mega-stone
+  types:
+  - fighting
+  - steel
+  ability: adaptability
+  base_stats:
+    hp: 70
+    attack: 145
+    defense: 88
+    sp_attack: 140
+    sp_defense: 70
+    speed: 112

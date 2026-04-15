@@ -1,0 +1,80 @@
+name: aerodactyl
+name_en: aerodactyl
+types:
+- rock
+- flying
+base_stats:
+  hp: 80
+  attack: 105
+  defense: 65
+  sp_attack: 60
+  sp_defense: 75
+  speed: 130
+abilities:
+- rock-head
+- pressure
+- unnerve
+learnable_moves:
+- razor-wind
+- wing-attack
+- whirlwind
+- fly
+- headbutt
+- take-down
+- double-edge
+- bite
+- roar
+- supersonic
+- flamethrower
+- hyper-beam
+- strength
+- dragon-rage
+- rock-throw
+- earthquake
+- toxic
+- agility
+- rage
+- mimic
+- double-team
+- reflect
+- bide
+- fire-blast
+- swift
+- sky-attack
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- protect
+- scary-face
+- foresight
+- detect
+- sandstorm
+- endure
+- swagger
+- steel-wing
+- attract
+- sleep-talk
+- return
+- frustration
+- dragon-breath
+- pursuit
+- iron-tail
+- hidden-power
+- twister
+- rain-dance
+mega:
+  stone: aerodactyl-mega-stone
+  types:
+  - rock
+  - flying
+  ability: tough-claws
+  base_stats:
+    hp: 80
+    attack: 135
+    defense: 85
+    sp_attack: 70
+    sp_defense: 95
+    speed: 150

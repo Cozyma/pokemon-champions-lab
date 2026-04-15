@@ -1,0 +1,64 @@
+name: chimecho
+name_en: chimecho
+types:
+- psychic
+base_stats:
+  hp: 75
+  attack: 50
+  defense: 80
+  sp_attack: 95
+  sp_defense: 90
+  speed: 65
+abilities:
+- levitate
+learnable_moves:
+- bind
+- tackle
+- wrap
+- take-down
+- double-edge
+- growl
+- disable
+- psybeam
+- thunder-wave
+- toxic
+- confusion
+- psychic
+- hypnosis
+- mimic
+- double-team
+- recover
+- defense-curl
+- light-screen
+- reflect
+- swift
+- dream-eater
+- flash
+- psywave
+- rest
+- substitute
+- nightmare
+- snore
+- curse
+- protect
+- perish-song
+- icy-wind
+- endure
+- charm
+- rollout
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- safeguard
+- baton-pass
+- encore
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- shadow-ball
+- future-sight
+- uproar

@@ -1,0 +1,67 @@
+name: crabominable
+name_en: crabominable
+types:
+- fighting
+- ice
+base_stats:
+  hp: 97
+  attack: 132
+  defense: 77
+  sp_attack: 62
+  sp_defense: 67
+  speed: 43
+abilities:
+- hyper-cutter
+- iron-fist
+- anger-point
+learnable_moves:
+- ice-punch
+- thunder-punch
+- slam
+- body-slam
+- take-down
+- leer
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- earthquake
+- dig
+- toxic
+- double-team
+- swift
+- amnesia
+- bubble
+- dizzy-punch
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- reversal
+- protect
+- scary-face
+- mud-slap
+- icy-wind
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- dynamic-punch
+- pursuit
+- hidden-power
+- rain-dance
+- sunny-day
+- rock-smash
+- hail
+- facade
+- focus-punch
+- helping-hand
+- superpower
+- brick-break
+- knock-off
+- endeavor
+- rock-tomb
+- iron-defense

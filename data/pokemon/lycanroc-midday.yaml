@@ -1,0 +1,66 @@
+name: lycanroc-midday
+name_en: lycanroc-midday
+types:
+- rock
+base_stats:
+  hp: 75
+  attack: 115
+  defense: 65
+  sp_attack: 55
+  sp_defense: 65
+  speed: 112
+abilities:
+- keen-eye
+- sand-rush
+- steadfast
+learnable_moves:
+- swords-dance
+- sand-attack
+- tackle
+- body-slam
+- take-down
+- double-edge
+- leer
+- bite
+- roar
+- rock-throw
+- dig
+- toxic
+- agility
+- quick-attack
+- double-team
+- swift
+- rest
+- rock-slide
+- substitute
+- snore
+- protect
+- scary-face
+- mud-slap
+- sandstorm
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- sunny-day
+- crunch
+- facade
+- taunt
+- helping-hand
+- brick-break
+- endeavor
+- hyper-voice
+- odor-sleuth
+- rock-tomb
+- iron-defense
+- howl
+- bulk-up
+- covet
+- rock-blast
+- close-combat
+- assurance

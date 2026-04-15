@@ -1,0 +1,66 @@
+name: emolga
+name_en: emolga
+types:
+- electric
+- flying
+base_stats:
+  hp: 55
+  attack: 75
+  defense: 60
+  sp_attack: 75
+  sp_defense: 60
+  speed: 103
+abilities:
+- static
+- motor-drive
+learnable_moves:
+- cut
+- tail-whip
+- solar-beam
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- agility
+- quick-attack
+- double-team
+- light-screen
+- swift
+- flash
+- rest
+- substitute
+- snore
+- protect
+- endure
+- charm
+- swagger
+- spark
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- encore
+- pursuit
+- iron-tail
+- hidden-power
+- rain-dance
+- facade
+- charge
+- taunt
+- helping-hand
+- knock-off
+- secret-power
+- astonish
+- tickle
+- signal-beam
+- aerial-ace
+- covet
+- shock-wave
+- roost
+- tailwind
+- u-turn
+- fling
+- last-resort
+- air-slash

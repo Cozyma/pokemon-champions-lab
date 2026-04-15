@@ -1,0 +1,64 @@
+name: lycanroc-dusk
+name_en: lycanroc-dusk
+types:
+- rock
+base_stats:
+  hp: 75
+  attack: 117
+  defense: 65
+  sp_attack: 55
+  sp_defense: 65
+  speed: 110
+abilities:
+- tough-claws
+learnable_moves:
+- swords-dance
+- sand-attack
+- tackle
+- take-down
+- thrash
+- double-edge
+- leer
+- bite
+- roar
+- counter
+- rock-throw
+- dig
+- toxic
+- quick-attack
+- double-team
+- focus-energy
+- rest
+- rock-slide
+- substitute
+- snore
+- reversal
+- protect
+- scary-face
+- outrage
+- sandstorm
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- crunch
+- facade
+- taunt
+- helping-hand
+- brick-break
+- endeavor
+- hyper-voice
+- crush-claw
+- odor-sleuth
+- rock-tomb
+- iron-defense
+- howl
+- bulk-up
+- covet
+- rock-blast
+- close-combat

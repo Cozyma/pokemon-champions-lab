@@ -1,0 +1,79 @@
+name: beedrill
+name_en: beedrill
+types:
+- bug
+- poison
+base_stats:
+  hp: 65
+  attack: 90
+  defense: 40
+  sp_attack: 45
+  sp_defense: 80
+  speed: 75
+abilities:
+- swarm
+- sniper
+learnable_moves:
+- swords-dance
+- cut
+- headbutt
+- fury-attack
+- take-down
+- double-edge
+- poison-sting
+- twineedle
+- pin-missile
+- hyper-beam
+- peck
+- mega-drain
+- solar-beam
+- string-shot
+- toxic
+- agility
+- rage
+- mimic
+- double-team
+- harden
+- reflect
+- focus-energy
+- bide
+- swift
+- skull-bash
+- flash
+- rest
+- substitute
+- thief
+- snore
+- curse
+- protect
+- sludge-bomb
+- outrage
+- giga-drain
+- endure
+- false-swipe
+- swagger
+- fury-cutter
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- pursuit
+- sweet-scent
+- hidden-power
+- sunny-day
+- rock-smash
+- facade
+mega:
+  stone: beedrill-mega-stone
+  types:
+  - bug
+  - poison
+  ability: adaptability
+  base_stats:
+    hp: 65
+    attack: 150
+    defense: 40
+    sp_attack: 15
+    sp_defense: 80
+    speed: 145

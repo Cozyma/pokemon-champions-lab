@@ -1,0 +1,66 @@
+name: talonflame
+name_en: talonflame
+types:
+- fire
+- flying
+base_stats:
+  hp: 78
+  attack: 81
+  defense: 71
+  sp_attack: 74
+  sp_defense: 69
+  speed: 126
+abilities:
+- flame-body
+- gale-wings
+learnable_moves:
+- razor-wind
+- swords-dance
+- fly
+- tackle
+- take-down
+- double-edge
+- growl
+- ember
+- flamethrower
+- hyper-beam
+- peck
+- solar-beam
+- fire-spin
+- toxic
+- agility
+- quick-attack
+- double-team
+- fire-blast
+- swift
+- rest
+- substitute
+- thief
+- snore
+- flail
+- protect
+- endure
+- swagger
+- steel-wing
+- attract
+- sleep-talk
+- return
+- frustration
+- hidden-power
+- rain-dance
+- sunny-day
+- heat-wave
+- will-o-wisp
+- facade
+- taunt
+- snatch
+- secret-power
+- feather-dance
+- air-cutter
+- overheat
+- aerial-ace
+- bulk-up
+- roost
+- natural-gift
+- feint
+- tailwind

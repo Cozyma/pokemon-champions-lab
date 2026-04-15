@@ -1,0 +1,65 @@
+name: runerigus
+name_en: runerigus
+types:
+- ground
+- ghost
+base_stats:
+  hp: 58
+  attack: 95
+  defense: 145
+  sp_attack: 50
+  sp_defense: 105
+  speed: 30
+abilities:
+- wandering-spirit
+learnable_moves:
+- slam
+- disable
+- hyper-beam
+- earthquake
+- psychic
+- night-shade
+- haze
+- amnesia
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- protect
+- scary-face
+- destiny-bond
+- sandstorm
+- endure
+- mean-look
+- attract
+- sleep-talk
+- safeguard
+- rain-dance
+- shadow-ball
+- will-o-wisp
+- facade
+- taunt
+- trick
+- revenge
+- skill-swap
+- imprison
+- astonish
+- fake-tears
+- rock-tomb
+- sand-tomb
+- iron-defense
+- calm-mind
+- rock-blast
+- payback
+- power-swap
+- guard-swap
+- toxic-spikes
+- dark-pulse
+- dragon-pulse
+- energy-ball
+- earth-power
+- giga-impact
+- nasty-plot
+- shadow-claw

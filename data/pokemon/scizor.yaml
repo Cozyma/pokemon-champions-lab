@@ -1,0 +1,80 @@
+name: scizor
+name_en: scizor
+types:
+- bug
+- steel
+base_stats:
+  hp: 70
+  attack: 130
+  defense: 100
+  sp_attack: 55
+  sp_defense: 80
+  speed: 65
+abilities:
+- swarm
+- technician
+- light-metal
+learnable_moves:
+- razor-wind
+- swords-dance
+- cut
+- wing-attack
+- headbutt
+- take-down
+- double-edge
+- leer
+- hyper-beam
+- counter
+- strength
+- toxic
+- agility
+- quick-attack
+- mimic
+- double-team
+- light-screen
+- focus-energy
+- swift
+- rest
+- slash
+- substitute
+- thief
+- snore
+- curse
+- reversal
+- protect
+- scary-face
+- detect
+- sandstorm
+- endure
+- false-swipe
+- swagger
+- fury-cutter
+- steel-wing
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- baton-pass
+- pursuit
+- metal-claw
+- hidden-power
+- rain-dance
+- sunny-day
+- rock-smash
+- facade
+- helping-hand
+- superpower
+mega:
+  stone: scizor-mega-stone
+  types:
+  - bug
+  - steel
+  ability: technician
+  base_stats:
+    hp: 70
+    attack: 150
+    defense: 140
+    sp_attack: 65
+    sp_defense: 100
+    speed: 75

@@ -1,0 +1,66 @@
+name: aurorus
+name_en: aurorus
+types:
+- rock
+- ice
+base_stats:
+  hp: 123
+  attack: 77
+  defense: 72
+  sp_attack: 99
+  sp_defense: 92
+  speed: 58
+abilities:
+- refrigerate
+- snow-warning
+learnable_moves:
+- body-slam
+- take-down
+- growl
+- roar
+- mist
+- ice-beam
+- blizzard
+- aurora-beam
+- hyper-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- rock-throw
+- earthquake
+- toxic
+- psychic
+- double-team
+- light-screen
+- reflect
+- dream-eater
+- flash
+- rest
+- rock-slide
+- substitute
+- snore
+- powder-snow
+- protect
+- icy-wind
+- outrage
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- encore
+- iron-tail
+- hidden-power
+- rain-dance
+- psych-up
+- ancient-power
+- rock-smash
+- hail
+- facade
+- nature-power
+- secret-power
+- hyper-voice
+- weather-ball

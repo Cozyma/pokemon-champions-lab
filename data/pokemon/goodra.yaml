@@ -1,0 +1,66 @@
+name: goodra
+name_en: goodra
+types:
+- dragon
+base_stats:
+  hp: 90
+  attack: 100
+  defense: 70
+  sp_attack: 110
+  sp_defense: 150
+  speed: 80
+abilities:
+- sap-sipper
+- hydration
+- gooey
+learnable_moves:
+- mega-punch
+- fire-punch
+- thunder-punch
+- mega-kick
+- tackle
+- body-slam
+- take-down
+- flamethrower
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- strength
+- absorb
+- thunderbolt
+- thunder
+- earthquake
+- toxic
+- double-team
+- bide
+- fire-blast
+- bubble
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- flail
+- protect
+- sludge-bomb
+- outrage
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- dragon-breath
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- rock-smash
+- hail
+- facade
+- focus-punch
+- superpower

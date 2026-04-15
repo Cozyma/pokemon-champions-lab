@@ -1,0 +1,67 @@
+name: dedenne
+name_en: dedenne
+types:
+- electric
+- fairy
+base_stats:
+  hp: 67
+  attack: 58
+  defense: 57
+  sp_attack: 81
+  sp_defense: 67
+  speed: 101
+abilities:
+- cheek-pouch
+- pickup
+- plus
+learnable_moves:
+- thunder-punch
+- cut
+- tackle
+- take-down
+- tail-whip
+- hyper-beam
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- agility
+- double-team
+- light-screen
+- swift
+- flash
+- rest
+- super-fang
+- substitute
+- thief
+- snore
+- protect
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- rain-dance
+- sunny-day
+- facade
+- charge
+- helping-hand
+- recycle
+- endeavor
+- secret-power
+- signal-beam
+- aerial-ace
+- covet
+- shock-wave
+- natural-gift
+- u-turn
+- fling
+- last-resort
+- magnet-rise
+- seed-bomb

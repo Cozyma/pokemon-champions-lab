@@ -1,0 +1,65 @@
+name: flareon
+name_en: flareon
+types:
+- fire
+base_stats:
+  hp: 65
+  attack: 130
+  defense: 60
+  sp_attack: 95
+  sp_defense: 110
+  speed: 65
+abilities:
+- flash-fire
+- guts
+learnable_moves:
+- pay-day
+- double-kick
+- sand-attack
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- leer
+- bite
+- growl
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- strength
+- fire-spin
+- dig
+- toxic
+- quick-attack
+- rage
+- mimic
+- double-team
+- reflect
+- focus-energy
+- bide
+- smog
+- fire-blast
+- swift
+- skull-bash
+- rest
+- substitute
+- snore
+- curse
+- protect
+- scary-face
+- mud-slap
+- zap-cannon
+- detect
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- baton-pass
+- iron-tail

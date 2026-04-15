@@ -1,0 +1,67 @@
+name: archaludon
+name_en: archaludon
+types:
+- steel
+- dragon
+base_stats:
+  hp: 90
+  attack: 105
+  defense: 130
+  sp_attack: 125
+  sp_defense: 65
+  speed: 85
+abilities:
+- stamina
+- sturdy
+- stalwart
+learnable_moves:
+- swords-dance
+- body-slam
+- take-down
+- double-edge
+- leer
+- roar
+- hyper-beam
+- solar-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- earthquake
+- light-screen
+- reflect
+- focus-energy
+- rest
+- rock-slide
+- slash
+- substitute
+- protect
+- scary-face
+- outrage
+- endure
+- sleep-talk
+- metal-claw
+- mirror-coat
+- rock-smash
+- facade
+- brick-break
+- rock-tomb
+- metal-sound
+- iron-defense
+- dragon-claw
+- gyro-ball
+- metal-burst
+- aura-sphere
+- dark-pulse
+- night-slash
+- dragon-pulse
+- giga-impact
+- flash-cannon
+- draco-meteor
+- iron-head
+- stone-edge
+- stealth-rock
+- hone-claws
+- smack-down
+- heavy-slam
+- foul-play
+- dragon-tail

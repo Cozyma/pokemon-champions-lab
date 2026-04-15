@@ -1,0 +1,67 @@
+name: diggersby
+name_en: diggersby
+types:
+- normal
+- ground
+base_stats:
+  hp: 85
+  attack: 56
+  defense: 77
+  sp_attack: 50
+  sp_defense: 77
+  speed: 78
+abilities:
+- pickup
+- cheek-pouch
+- huge-power
+learnable_moves:
+- double-slap
+- mega-punch
+- fire-punch
+- ice-punch
+- thunder-punch
+- swords-dance
+- cut
+- double-kick
+- mega-kick
+- tackle
+- body-slam
+- take-down
+- leer
+- surf
+- hyper-beam
+- low-kick
+- strength
+- earthquake
+- dig
+- toxic
+- agility
+- quick-attack
+- double-team
+- rest
+- rock-slide
+- super-fang
+- substitute
+- thief
+- snore
+- flail
+- protect
+- sludge-bomb
+- mud-slap
+- spikes
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- rock-smash
+- uproar
+- torment
+- facade
+- focus-punch
+- nature-power
+- superpower

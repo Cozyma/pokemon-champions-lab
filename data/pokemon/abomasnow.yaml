@@ -1,0 +1,79 @@
+name: abomasnow
+name_en: abomasnow
+types:
+- grass
+- ice
+base_stats:
+  hp: 90
+  attack: 92
+  defense: 75
+  sp_attack: 92
+  sp_defense: 85
+  speed: 60
+abilities:
+- snow-warning
+- soundproof
+learnable_moves:
+- mega-punch
+- ice-punch
+- swords-dance
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- leer
+- mist
+- ice-beam
+- blizzard
+- hyper-beam
+- low-kick
+- strength
+- razor-leaf
+- solar-beam
+- earthquake
+- toxic
+- double-team
+- light-screen
+- flash
+- rest
+- rock-slide
+- substitute
+- snore
+- curse
+- powder-snow
+- protect
+- scary-face
+- mud-slap
+- icy-wind
+- outrage
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- iron-tail
+- synthesis
+- hidden-power
+- rain-dance
+- shadow-ball
+- rock-smash
+- hail
+- facade
+- focus-punch
+mega:
+  stone: abomasnow-mega-stone
+  types:
+  - grass
+  - ice
+  ability: snow-warning
+  base_stats:
+    hp: 90
+    attack: 132
+    defense: 105
+    sp_attack: 132
+    sp_defense: 105
+    speed: 30

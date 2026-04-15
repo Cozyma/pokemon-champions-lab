@@ -1,0 +1,66 @@
+name: incineroar
+name_en: incineroar
+types:
+- fire
+- dark
+base_stats:
+  hp: 95
+  attack: 115
+  defense: 90
+  sp_attack: 80
+  sp_defense: 90
+  speed: 60
+abilities:
+- blaze
+- intimidate
+learnable_moves:
+- mega-punch
+- pay-day
+- fire-punch
+- thunder-punch
+- scratch
+- swords-dance
+- bind
+- double-kick
+- mega-kick
+- body-slam
+- take-down
+- thrash
+- double-edge
+- leer
+- bite
+- growl
+- roar
+- ember
+- flamethrower
+- hyper-beam
+- low-kick
+- fire-spin
+- earthquake
+- toxic
+- double-team
+- lick
+- fire-blast
+- leech-life
+- fury-swipes
+- rest
+- substitute
+- thief
+- snore
+- reversal
+- protect
+- scary-face
+- outrage
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- hidden-power
+- cross-chop
+- sunny-day
+- crunch
+- fake-out
+- heat-wave

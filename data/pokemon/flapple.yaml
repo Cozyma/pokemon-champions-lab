@@ -1,0 +1,67 @@
+name: flapple
+name_en: flapple
+types:
+- grass
+- dragon
+base_stats:
+  hp: 70
+  attack: 110
+  defense: 80
+  sp_attack: 95
+  sp_defense: 60
+  speed: 70
+abilities:
+- ripen
+- gluttony
+- hustle
+learnable_moves:
+- wing-attack
+- fly
+- take-down
+- hyper-beam
+- leech-seed
+- growth
+- solar-beam
+- withdraw
+- focus-energy
+- rest
+- substitute
+- snore
+- protect
+- scary-face
+- outrage
+- giga-drain
+- endure
+- attract
+- sleep-talk
+- dragon-breath
+- twister
+- sunny-day
+- facade
+- recycle
+- endeavor
+- astonish
+- bullet-seed
+- aerial-ace
+- iron-defense
+- magical-leaf
+- dragon-dance
+- u-turn
+- seed-bomb
+- air-slash
+- dragon-pulse
+- dragon-rush
+- energy-ball
+- giga-impact
+- draco-meteor
+- leaf-storm
+- grass-knot
+- heavy-slam
+- acid-spray
+- round
+- acrobatics
+- grassy-terrain
+- grav-apple
+- grassy-glide
+- dual-wingbeat
+- tera-blast

@@ -1,0 +1,65 @@
+name: raichu
+name_en: raichu
+types:
+- electric
+base_stats:
+  hp: 60
+  attack: 90
+  defense: 55
+  sp_attack: 90
+  sp_defense: 80
+  speed: 110
+abilities:
+- static
+- lightning-rod
+learnable_moves:
+- mega-punch
+- pay-day
+- thunder-punch
+- slam
+- mega-kick
+- headbutt
+- body-slam
+- take-down
+- double-edge
+- tail-whip
+- growl
+- surf
+- hyper-beam
+- submission
+- counter
+- seismic-toss
+- strength
+- thunder-shock
+- thunderbolt
+- thunder-wave
+- thunder
+- dig
+- toxic
+- agility
+- quick-attack
+- rage
+- mimic
+- double-team
+- defense-curl
+- light-screen
+- reflect
+- bide
+- swift
+- skull-bash
+- flash
+- rest
+- substitute
+- thief
+- snore
+- curse
+- reversal
+- protect
+- sweet-kiss
+- mud-slap
+- zap-cannon
+- detect
+- endure
+- charm
+- rollout
+- swagger

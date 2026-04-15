@@ -1,0 +1,66 @@
+name: froslass
+name_en: froslass
+types:
+- ice
+- ghost
+base_stats:
+  hp: 70
+  attack: 80
+  defense: 70
+  sp_attack: 80
+  sp_defense: 70
+  speed: 110
+abilities:
+- snow-cloak
+- cursed-body
+learnable_moves:
+- ice-punch
+- headbutt
+- body-slam
+- take-down
+- leer
+- bite
+- ice-beam
+- blizzard
+- hyper-beam
+- thunderbolt
+- thunder-wave
+- thunder
+- toxic
+- psychic
+- night-shade
+- double-team
+- confuse-ray
+- light-screen
+- haze
+- reflect
+- dream-eater
+- flash
+- rest
+- substitute
+- snore
+- curse
+- spite
+- powder-snow
+- protect
+- scary-face
+- mud-slap
+- spikes
+- destiny-bond
+- icy-wind
+- endure
+- charm
+- rollout
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- pain-split
+- hidden-power
+- rain-dance
+- crunch
+- psych-up
+- shadow-ball
+- hail

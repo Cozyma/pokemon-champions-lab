@@ -1,0 +1,66 @@
+name: victreebel
+name_en: victreebel
+types:
+- grass
+- poison
+base_stats:
+  hp: 80
+  attack: 105
+  defense: 65
+  sp_attack: 100
+  sp_defense: 70
+  speed: 70
+abilities:
+- chlorophyll
+- gluttony
+learnable_moves:
+- swords-dance
+- cut
+- bind
+- slam
+- vine-whip
+- headbutt
+- body-slam
+- wrap
+- take-down
+- double-edge
+- acid
+- hyper-beam
+- mega-drain
+- growth
+- razor-leaf
+- solar-beam
+- poison-powder
+- stun-spore
+- sleep-powder
+- toxic
+- rage
+- mimic
+- double-team
+- reflect
+- bide
+- swift
+- leech-life
+- flash
+- rest
+- substitute
+- thief
+- snore
+- curse
+- protect
+- scary-face
+- sludge-bomb
+- giga-drain
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- encore
+- sweet-scent
+- synthesis
+- hidden-power
+- sunny-day
+- stockpile
+- spit-up

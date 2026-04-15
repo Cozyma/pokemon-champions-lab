@@ -1,0 +1,66 @@
+name: primarina
+name_en: primarina
+types:
+- water
+- fairy
+base_stats:
+  hp: 80
+  attack: 74
+  defense: 74
+  sp_attack: 126
+  sp_defense: 116
+  speed: 60
+abilities:
+- torrent
+- liquid-voice
+learnable_moves:
+- pound
+- double-slap
+- body-slam
+- growl
+- sing
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- toxic
+- psychic
+- double-team
+- light-screen
+- haze
+- reflect
+- waterfall
+- swift
+- amnesia
+- rest
+- substitute
+- snore
+- protect
+- perish-song
+- icy-wind
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- encore
+- iron-tail
+- hidden-power
+- rain-dance
+- psych-up
+- shadow-ball
+- whirlpool
+- uproar
+- hail
+- facade
+- helping-hand
+- magic-coat
+- dive
+- hyper-voice
+- hydro-cannon
+- weather-ball

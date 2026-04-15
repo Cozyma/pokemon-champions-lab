@@ -1,0 +1,65 @@
+name: aromatisse
+name_en: aromatisse
+types:
+- fairy
+base_stats:
+  hp: 101
+  attack: 72
+  defense: 72
+  sp_attack: 99
+  sp_defense: 89
+  speed: 29
+abilities:
+- healer
+- aroma-veil
+learnable_moves:
+- hyper-beam
+- thunderbolt
+- thunder
+- toxic
+- psychic
+- double-team
+- light-screen
+- reflect
+- metronome
+- dream-eater
+- flash
+- rest
+- substitute
+- snore
+- flail
+- protect
+- sweet-kiss
+- endure
+- charm
+- swagger
+- attract
+- sleep-talk
+- heal-bell
+- return
+- frustration
+- encore
+- sweet-scent
+- hidden-power
+- rain-dance
+- sunny-day
+- psych-up
+- torment
+- facade
+- helping-hand
+- magic-coat
+- endeavor
+- skill-swap
+- secret-power
+- aromatherapy
+- fake-tears
+- odor-sleuth
+- covet
+- calm-mind
+- gyro-ball
+- drain-punch
+- energy-ball
+- giga-impact
+- nasty-plot
+- flash-cannon
+- trick-room

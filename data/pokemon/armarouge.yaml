@@ -1,0 +1,66 @@
+name: armarouge
+name_en: armarouge
+types:
+- fire
+- psychic
+base_stats:
+  hp: 85
+  attack: 60
+  defense: 100
+  sp_attack: 125
+  sp_defense: 80
+  speed: 75
+abilities:
+- flash-fire
+- weak-armor
+learnable_moves:
+- take-down
+- leer
+- ember
+- flamethrower
+- psybeam
+- solar-beam
+- fire-spin
+- psychic
+- night-shade
+- confuse-ray
+- light-screen
+- reflect
+- fire-blast
+- rest
+- substitute
+- spite
+- protect
+- endure
+- sleep-talk
+- sunny-day
+- psych-up
+- shadow-ball
+- heat-wave
+- will-o-wisp
+- facade
+- taunt
+- helping-hand
+- trick
+- astonish
+- weather-ball
+- overheat
+- iron-defense
+- calm-mind
+- fling
+- flare-blitz
+- aura-sphere
+- dark-pulse
+- dragon-pulse
+- focus-blast
+- energy-ball
+- flash-cannon
+- trick-room
+- lava-plume
+- wide-guard
+- psyshock
+- flame-charge
+- acid-spray
+- clear-smog
+- stored-power
+- ally-switch

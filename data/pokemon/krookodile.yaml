@@ -1,0 +1,67 @@
+name: krookodile
+name_en: krookodile
+types:
+- ground
+- dark
+base_stats:
+  hp: 95
+  attack: 117
+  defense: 80
+  sp_attack: 65
+  sp_defense: 70
+  speed: 92
+abilities:
+- intimidate
+- moxie
+- anger-point
+learnable_moves:
+- mega-punch
+- cut
+- mega-kick
+- sand-attack
+- body-slam
+- take-down
+- thrash
+- double-edge
+- leer
+- bite
+- roar
+- hyper-beam
+- low-kick
+- strength
+- earthquake
+- dig
+- toxic
+- rage
+- double-team
+- focus-energy
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- curse
+- spite
+- protect
+- scary-face
+- sludge-bomb
+- mud-slap
+- outrage
+- sandstorm
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- iron-tail
+- hidden-power
+- crunch
+- rock-smash
+- beat-up
+- uproar
+- torment
+- facade
+- focus-punch
+- taunt
+- helping-hand

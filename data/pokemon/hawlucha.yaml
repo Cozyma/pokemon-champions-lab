@@ -1,0 +1,67 @@
+name: hawlucha
+name_en: hawlucha
+types:
+- fighting
+- flying
+base_stats:
+  hp: 78
+  attack: 92
+  defense: 75
+  sp_attack: 74
+  sp_defense: 63
+  speed: 118
+abilities:
+- limber
+- unburden
+- mold-breaker
+learnable_moves:
+- karate-chop
+- mega-punch
+- fire-punch
+- thunder-punch
+- swords-dance
+- cut
+- wing-attack
+- fly
+- mega-kick
+- tackle
+- body-slam
+- take-down
+- hyper-beam
+- submission
+- low-kick
+- strength
+- dig
+- toxic
+- agility
+- double-team
+- swift
+- high-jump-kick
+- sky-attack
+- rest
+- rock-slide
+- substitute
+- thief
+- snore
+- reversal
+- protect
+- detect
+- endure
+- false-swipe
+- swagger
+- steel-wing
+- mean-look
+- attract
+- sleep-talk
+- return
+- frustration
+- baton-pass
+- encore
+- hidden-power
+- cross-chop
+- rain-dance
+- sunny-day
+- rock-smash
+- uproar
+- torment
+- facade

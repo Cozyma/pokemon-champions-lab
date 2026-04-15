@@ -1,0 +1,66 @@
+name: milotic
+name_en: milotic
+types:
+- water
+base_stats:
+  hp: 95
+  attack: 60
+  defense: 79
+  sp_attack: 100
+  sp_defense: 125
+  speed: 81
+abilities:
+- marvel-scale
+- competitive
+- cute-charm
+learnable_moves:
+- bind
+- tackle
+- body-slam
+- wrap
+- take-down
+- double-edge
+- mist
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- hyper-beam
+- toxic
+- hypnosis
+- mimic
+- double-team
+- recover
+- confuse-ray
+- light-screen
+- haze
+- waterfall
+- swift
+- splash
+- rest
+- substitute
+- snore
+- flail
+- protect
+- mud-slap
+- icy-wind
+- endure
+- swagger
+- attract
+- sleep-talk
+- return
+- frustration
+- safeguard
+- dragon-breath
+- iron-tail
+- hidden-power
+- twister
+- rain-dance
+- mirror-coat
+- psych-up
+- whirlpool
+- hail
+- facade
+- helping-hand
+- magic-coat

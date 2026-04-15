@@ -1,0 +1,66 @@
+name: snorlax
+name_en: snorlax
+types:
+- normal
+base_stats:
+  hp: 160
+  attack: 110
+  defense: 65
+  sp_attack: 65
+  sp_defense: 110
+  speed: 30
+abilities:
+- immunity
+- thick-fat
+- gluttony
+learnable_moves:
+- mega-punch
+- pay-day
+- fire-punch
+- ice-punch
+- thunder-punch
+- whirlwind
+- mega-kick
+- headbutt
+- tackle
+- body-slam
+- take-down
+- double-edge
+- bite
+- flamethrower
+- water-gun
+- hydro-pump
+- surf
+- ice-beam
+- blizzard
+- bubble-beam
+- hyper-beam
+- submission
+- counter
+- seismic-toss
+- strength
+- solar-beam
+- thunderbolt
+- thunder
+- earthquake
+- fissure
+- dig
+- toxic
+- psychic
+- rage
+- mimic
+- screech
+- double-team
+- harden
+- defense-curl
+- reflect
+- bide
+- metronome
+- self-destruct
+- lick
+- fire-blast
+- skull-bash
+- amnesia
+- psywave
+- rest
+- rock-slide
