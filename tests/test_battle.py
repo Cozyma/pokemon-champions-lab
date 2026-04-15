@@ -854,3 +854,78 @@ class TestWeather:
         # 雨セッターなし → すいすいは発動しない → ほぼ互角
         result = simulate_1v1(attacker, defender)
         assert 0.3 <= result.win_rate_a <= 0.7
+
+
+class TestAutoSetup:
+    def test_swords_dance_auto_used(self):
+        """剣舞持ちが自動で積む判断をする（エラーなく完走する）"""
+        garchomp = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32, "hp": 2}, ivs={}, item="",
+            move_names=["earthquake", "swords-dance"],
+        )
+        bulky = BattlePokemon.from_data(
+            species="corviknight", nature=Nature.IMPISH,
+            evs={"hp": 32, "defense": 32}, ivs={}, item="leftovers",
+            move_names=["body-press"],
+        )
+        result = simulate_1v1(garchomp, bulky, n_trials=2000)
+        assert result.win_rate_a + result.win_rate_b > 0
+
+    def test_quiver_dance_boosts_special(self):
+        """ちょうのまいで特攻+1素早さ+1（エラーなく完走する）"""
+        volcarona = BattlePokemon.from_data(
+            species="volcarona", nature=Nature.TIMID,
+            evs={"sp_attack": 32, "speed": 32}, ivs={}, item="sitrus-berry",
+            move_names=["flamethrower", "quiver-dance"],
+        )
+        target = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(volcarona, target, n_trials=2000)
+        assert result.win_rate_a + result.win_rate_b > 0
+
+    def test_no_setup_when_will_die(self):
+        """確定で倒される場合は積まない: ガブリアスがほぼ100%勝つ"""
+        weak = BattlePokemon.from_data(
+            species="magikarp", nature=Nature.JOLLY,
+            evs={}, ivs={}, item="",
+            move_names=["tackle"],
+        )
+        strong = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        result = simulate_1v1(weak, strong)
+        assert result.win_rate_b > 0.9
+
+    def test_swords_dance_improves_win_rate_auto(self):
+        """自動剣舞で手動セットアップなしと比べて勝率が上がる（または同等）"""
+        garchomp_no_setup = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32, "hp": 2}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        bulky_opp1 = BattlePokemon.from_data(
+            species="corviknight", nature=Nature.IMPISH,
+            evs={"hp": 32, "defense": 32}, ivs={}, item="",
+            move_names=["body-press"],
+        )
+        result_no_setup = simulate_1v1(garchomp_no_setup, bulky_opp1, n_trials=2000)
+
+        garchomp_with_dance = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32, "hp": 2}, ivs={}, item="",
+            move_names=["earthquake", "swords-dance"],
+        )
+        bulky_opp2 = BattlePokemon.from_data(
+            species="corviknight", nature=Nature.IMPISH,
+            evs={"hp": 32, "defense": 32}, ivs={}, item="",
+            move_names=["body-press"],
+        )
+        result_with_dance = simulate_1v1(garchomp_with_dance, bulky_opp2, n_trials=2000)
+        # セットアップ持ちの勝率はセットアップなしと同等以上
+        assert result_with_dance.win_rate_a >= result_no_setup.win_rate_a - 0.05

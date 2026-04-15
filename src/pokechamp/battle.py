@@ -523,19 +523,52 @@ def _choose_move(
     max_incoming_dmg: int,
     cur_hp_self: int,
     max_hp_self: int,
+    turn_number: int = 1,
+    setup_used: bool = False,
 ) -> tuple[Move | None, list[int]]:
     """ターンごとの状況に応じて最適な技を選択する。
 
     ロジック:
     1. 全有効技のダメージ範囲はall_movesから取得（事前計算済み）
-    2. 自分が速い → 最大ダメージ技を選択
-    3. 自分が遅い場合:
+    2. ターン1かつ未セットアップ: セットアップ技使用の是非を判断
+    3. 自分が速い → 最大ダメージ技を選択
+    4. 自分が遅い場合:
        a. 先制技でKOできるなら使用
        b. 被弾で倒れる場合: 先制技+急所でKO可能なら先制技（博打）、不可なら最大ダメージ
        c. 生存可能 → 最大ダメージ技
     """
     if not all_moves:
         return None, [0] * 16
+
+    # セットアップ技検討 (ターン1のみ、未使用時のみ)
+    if turn_number == 1 and not setup_used:
+        setup_moves = [m for m in attacker.moves if m.stat_changes and m.category == "status"]
+        if setup_moves:
+            will_survive = max_incoming_dmg < cur_hp_self
+            has_sash = attacker.item == "focus-sash"
+            has_sturdy = attacker.ability == "sturdy"
+
+            if will_survive or has_sash or has_sturdy:
+                # セットアップが有効かを推定する
+                best_atk_move = max(all_moves, key=lambda x: sum(x[1]) / len(x[1]))
+                best_avg_dmg = sum(best_atk_move[1]) / len(best_atk_move[1])
+
+                if best_avg_dmg > 0:
+                    # ブーストによるダメージ増加率を推定
+                    boost_factor = 1.0
+                    for change in setup_moves[0].stat_changes:
+                        stages = int(change["stages"])
+                        if str(change["stat"]) in ("attack", "sp_attack"):
+                            boost_factor *= (2 + stages) / 2  # +2 → ×2.0, +1 → ×1.5
+
+                    if boost_factor > 1.0:
+                        boosted_avg = best_avg_dmg * boost_factor
+                        turns_without = math.ceil(cur_hp_opponent / best_avg_dmg)
+                        turns_with = math.ceil(cur_hp_opponent / boosted_avg)
+
+                        # セットアップで1ターン以上節約できるなら積む
+                        if turns_without - turns_with >= 1:
+                            return setup_moves[0], [0] * 16
 
     # 先制技と通常技に分類
     priority_moves = [(m, dr) for m, dr in all_moves if m.priority > 0]
@@ -745,19 +778,81 @@ def simulate_1v1(
         speed_boost_active_a = False
         speed_boost_active_b = False
 
+        # セットアップ技の積みステージ追跡 (インライン計算用)
+        atk_boost_a = 0    # 攻撃ランク補正
+        spa_boost_a = 0    # 特攻ランク補正
+        def_boost_a = 0    # 防御ランク補正
+        spd_boost_a = 0    # 特防ランク補正
+        spe_boost_a = 0    # 素早さランク補正
+        atk_boost_b = 0
+        spa_boost_b = 0
+        def_boost_b = 0
+        spd_boost_b = 0
+        spe_boost_b = 0
+        setup_used_a = False
+        setup_used_b = False
+        turn_number = 0
+
         while cur_hp_a > 0 and cur_hp_b > 0:
+            turn_number += 1
             # ターンごとに最適な技を選択
+            # 素早さはセットアップによる速度ブーストを考慮
+            eff_speed_a = speed_a if not speed_boost_active_a else 999999
+            eff_speed_b = speed_b if not speed_boost_active_b else 999999
+            if spe_boost_a > 0:
+                eff_speed_a = math.floor(eff_speed_a * (2 + spe_boost_a) / 2)
+            if spe_boost_b > 0:
+                eff_speed_b = math.floor(eff_speed_b * (2 + spe_boost_b) / 2)
+
             move_a, dmg_range_a_cur = _choose_move(
-                a, b, cur_hp_b, speed_a, speed_b,
+                a, b, cur_hp_b, eff_speed_a, eff_speed_b,
                 all_moves_a, max_dmg_from_b, cur_hp_a, hp_a,
+                turn_number=turn_number, setup_used=setup_used_a,
             )
             move_b, dmg_range_b_cur = _choose_move(
-                b, a, cur_hp_a, speed_b, speed_a,
+                b, a, cur_hp_a, eff_speed_b, eff_speed_a,
                 all_moves_b, max_dmg_from_a, cur_hp_b, hp_b,
+                turn_number=turn_number, setup_used=setup_used_b,
             )
 
-            da = random.choice(dmg_range_a_cur)
-            db = random.choice(dmg_range_b_cur)
+            # セットアップ技の処理: ステージを記録しda/db=0に設定
+            if move_a and move_a.category == "status" and move_a.stat_changes:
+                for change in move_a.stat_changes:
+                    stat = str(change["stat"])
+                    stages = int(change["stages"])
+                    if stat == "attack":
+                        atk_boost_a = max(-6, min(6, atk_boost_a + stages))
+                    elif stat == "sp_attack":
+                        spa_boost_a = max(-6, min(6, spa_boost_a + stages))
+                    elif stat == "defense":
+                        def_boost_a = max(-6, min(6, def_boost_a + stages))
+                    elif stat == "sp_defense":
+                        spd_boost_a = max(-6, min(6, spd_boost_a + stages))
+                    elif stat == "speed":
+                        spe_boost_a = max(-6, min(6, spe_boost_a + stages))
+                setup_used_a = True
+                da = 0
+            else:
+                da = random.choice(dmg_range_a_cur)
+
+            if move_b and move_b.category == "status" and move_b.stat_changes:
+                for change in move_b.stat_changes:
+                    stat = str(change["stat"])
+                    stages = int(change["stages"])
+                    if stat == "attack":
+                        atk_boost_b = max(-6, min(6, atk_boost_b + stages))
+                    elif stat == "sp_attack":
+                        spa_boost_b = max(-6, min(6, spa_boost_b + stages))
+                    elif stat == "defense":
+                        def_boost_b = max(-6, min(6, def_boost_b + stages))
+                    elif stat == "sp_defense":
+                        spd_boost_b = max(-6, min(6, spd_boost_b + stages))
+                    elif stat == "speed":
+                        spe_boost_b = max(-6, min(6, spe_boost_b + stages))
+                setup_used_b = True
+                db = 0
+            else:
+                db = random.choice(dmg_range_b_cur)
 
             # 命中チェック (accuracy=100は常に命中)
             hit_a = True
@@ -804,10 +899,32 @@ def simulate_1v1(
             if stamina_boosts_b > 0:
                 da = math.floor(da * 2 / (2 + stamina_boosts_b))
 
+            # セットアップ技による攻撃ブーストを適用 (命中時のみ)
+            if hit_a and da > 0:
+                if atk_boost_a > 0 and move_a and move_a.category == "physical":
+                    da = math.floor(da * (2 + atk_boost_a) / 2)
+                if spa_boost_a > 0 and move_a and move_a.category == "special":
+                    da = math.floor(da * (2 + spa_boost_a) / 2)
+            if hit_b and db > 0:
+                if atk_boost_b > 0 and move_b and move_b.category == "physical":
+                    db = math.floor(db * (2 + atk_boost_b) / 2)
+                if spa_boost_b > 0 and move_b and move_b.category == "special":
+                    db = math.floor(db * (2 + spa_boost_b) / 2)
+
+            # セットアップ技による防御ブーストを適用 (被弾ダメージを軽減)
+            if def_boost_a > 0 and move_b and move_b.category == "physical":
+                db = math.floor(db * 2 / (2 + def_boost_a))
+            if spd_boost_a > 0 and move_b and move_b.category == "special":
+                db = math.floor(db * 2 / (2 + spd_boost_a))
+            if def_boost_b > 0 and move_a and move_a.category == "physical":
+                da = math.floor(da * 2 / (2 + def_boost_b))
+            if spd_boost_b > 0 and move_a and move_a.category == "special":
+                da = math.floor(da * 2 / (2 + spd_boost_b))
+
             # 先攻判定: ターンごとに優先度と素早さで決定
             # かそくが発動済みなら素早さを上書き (2ターン目以降)
-            cur_speed_a = speed_a if not speed_boost_active_a else 999999
-            cur_speed_b = speed_b if not speed_boost_active_b else 999999
+            cur_speed_a = eff_speed_a if not speed_boost_active_a else 999999
+            cur_speed_b = eff_speed_b if not speed_boost_active_b else 999999
 
             priority_a_cur = move_a.priority if move_a else 0
             priority_b_cur = move_b.priority if move_b else 0
