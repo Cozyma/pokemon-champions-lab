@@ -510,11 +510,6 @@ class TestBatch2Abilities:
 
     def test_unaware_ignores_stat_boosts(self):
         """てんねんで相手の積みを無視"""
-        attacker = BattlePokemon.from_data(
-            species="garchomp", nature=Nature.JOLLY,
-            evs={"attack": 32, "speed": 32}, ivs={}, item="",
-            move_names=["earthquake"],
-        )
         # Defender with unaware + swords dance opponent
         defender_unaware = BattlePokemon.from_data(
             species="garchomp", nature=Nature.JOLLY,
