@@ -1,37 +1,46 @@
 from __future__ import annotations
 import typer
-from pokechamp.battle import BattlePokemon, simulate_1v1
-from pokechamp.loader import list_pokemon, list_teams, load_pokemon
-from pokechamp.matchup import evaluate_matchup
-from pokechamp.models import Nature
+from pokechamp.battle import simulate_1v1
+from pokechamp.loader import list_pokemon, list_teams, load_pokemon, load_team
+from pokechamp.matchup import evaluate_matchup, build_battle_pokemon_from_team
 from pokechamp.output import format_battle_result, format_matchup_result
 
 app = typer.Typer(help="Pokemon Champions team builder & battle simulator")
 
+
+def _resolve_pokemon(team_name: str, spec: str):
+    """チームからポケモンを解決する。specはspecies名 or 0始まりインデックス."""
+    team = load_team(team_name)
+    bp_list = build_battle_pokemon_from_team(team)
+    # インデックス指定
+    if spec.isdigit():
+        idx = int(spec)
+        if idx >= len(bp_list):
+            typer.echo(f"Error: index {idx} out of range (team has {len(bp_list)} pokemon)", err=True)
+            raise typer.Exit(1)
+        return bp_list[idx]
+    # species名指定
+    for bp in bp_list:
+        if bp.name == spec:
+            return bp
+    typer.echo(f"Error: '{spec}' not found in team '{team_name}'", err=True)
+    raise typer.Exit(1)
+
+
 @app.command()
 def battle(
-    pokemon_a: str = typer.Argument(help="1体目のポケモン (species name)"),
+    team_a: str = typer.Argument(help="チームA名"),
+    pokemon_a: str = typer.Argument(help="ポケモンA (species名 or インデックス)"),
     vs: str = typer.Argument(help="'vs' (固定)"),
-    pokemon_b: str = typer.Argument(help="2体目のポケモン (species name)"),
+    team_b: str = typer.Argument(help="チームB名"),
+    pokemon_b: str = typer.Argument(help="ポケモンB (species名 or インデックス)"),
     setup: str | None = typer.Option(None, help="積み技名"),
     setup_turns: int = typer.Option(1, help="積みターン数"),
-    nature_a: str = typer.Option("hardy", help="ポケモンAの性格"),
-    nature_b: str = typer.Option("hardy", help="ポケモンBの性格"),
     json: bool = typer.Option(False, "--json", help="JSON出力"),
 ) -> None:
-    """1v1対面シミュレーション"""
-    poke_a_data = load_pokemon(pokemon_a)
-    poke_b_data = load_pokemon(pokemon_b)
-    bp_a = BattlePokemon.from_data(
-        species=pokemon_a, nature=Nature(nature_a),
-        evs={}, ivs={}, item="",
-        move_names=poke_a_data.learnable_moves[:4],
-    )
-    bp_b = BattlePokemon.from_data(
-        species=pokemon_b, nature=Nature(nature_b),
-        evs={}, ivs={}, item="",
-        move_names=poke_b_data.learnable_moves[:4],
-    )
+    """1v1対面シミュレーション (チーム定義の型を使用)"""
+    bp_a = _resolve_pokemon(team_a, pokemon_a)
+    bp_b = _resolve_pokemon(team_b, pokemon_b)
     result = simulate_1v1(bp_a, bp_b, setup_move=setup, setup_turns=setup_turns if setup else 0)
     typer.echo(format_battle_result(result, as_json=json))
 
