@@ -455,6 +455,9 @@ def _calc_all_moves(
             ignore_my_atk = opponent.ability == "unaware"
             atk_stat = attacker.get_effective_stat("sp_attack", ignore_stages=ignore_my_atk)
             def_stat = opponent.get_effective_stat("sp_defense", ignore_stages=ignore_opp_def)
+            # 砂嵐時の岩タイプ特防1.5倍
+            if weather == "sand" and TypeName.ROCK in opponent.types:
+                def_stat = math.floor(def_stat * 1.5)
 
         # アビリティによる攻撃補正をatk_statに乗算
         atk_mod = _get_attack_modifier(attacker, move)
