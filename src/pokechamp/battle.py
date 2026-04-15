@@ -165,13 +165,13 @@ class BattlePokemon:
             multiplier = 2 / (2 - stage)
         return math.floor(base * multiplier)
 
-    def best_move_against(self, opponent: "BattlePokemon") -> tuple[Move | None, list[int]]:
+    def best_move_against(self, opponent: "BattlePokemon", weather: str = "none") -> tuple[Move | None, list[int]]:
         """相手に対して最も高い平均ダメージを与える技と乱数リストを返す。
 
         ステータス技および完全無効な技はスキップ。
         全技がステータスか無効の場合は (None, [0]*16) を返す。
         """
-        all_moves = _calc_all_moves(self, opponent)
+        all_moves = _calc_all_moves(self, opponent, weather=weather)
         if not all_moves:
             return None, [0] * 16
         best = max(all_moves, key=lambda x: sum(x[1]) / len(x[1]))
@@ -370,9 +370,32 @@ def _apply_setup(pokemon: BattlePokemon, setup_move_name: str, turns: int) -> No
             pokemon.stage_modifiers[stat] = max(-6, min(6, current + stages))
 
 
+# ---------------------------------------------------------------------------
+# 天候定数
+# ---------------------------------------------------------------------------
+
+_WEATHER_ABILITIES: dict[str, str] = {
+    "drought": "sun",
+    "drizzle": "rain",
+    "sand-stream": "sand",
+    "snow-warning": "snow",
+}
+
+_WEATHER_SPEED_ABILITIES: dict[str, str] = {
+    "swift-swim": "rain",
+    "sand-rush": "sand",
+    "chlorophyll": "sun",
+    "slush-rush": "snow",
+}
+
+_SAND_IMMUNE_TYPES: set[TypeName] = {TypeName.ROCK, TypeName.GROUND, TypeName.STEEL}
+_SAND_IMMUNE_ABILITIES: set[str] = {"magic-guard", "overcoat", "sand-force", "sand-rush", "sand-veil"}
+
+
 def _calc_all_moves(
     attacker: BattlePokemon,
     opponent: BattlePokemon,
+    weather: str = "none",
 ) -> list[tuple[Move, list[int]]]:
     """攻撃側の全有効技とダメージ乱数リストを返す。
 
@@ -444,6 +467,32 @@ def _calc_all_moves(
 
         # アビリティによるダメージ補正をitem_modに乗算
         item_mod *= _get_damage_modifier(attacker, move, opponent)
+
+        # 天候によるダメージ補正
+        weather_mod = 1.0
+        effective_weather = weather
+        # mega-solar: 攻撃側はいつも晴れ扱い
+        if attacker.ability == "mega-solar":
+            effective_weather = "sun"
+
+        move_type_value = effective_type.value
+        if effective_weather == "sun":
+            if move_type_value == "fire":
+                weather_mod = 1.5
+            elif move_type_value == "water":
+                weather_mod = 0.5
+        elif effective_weather == "rain":
+            if move_type_value == "water":
+                weather_mod = 1.5
+            elif move_type_value == "fire":
+                weather_mod = 0.5
+
+        # すなのちから: 砂嵐時に岩/地面/鋼技が×1.3
+        if weather == "sand" and attacker.ability == "sand-force":
+            if move_type_value in ("rock", "ground", "steel"):
+                weather_mod *= 1.3
+
+        item_mod *= weather_mod
 
         # adaptability: stab=Trueで1.5倍、差分(2.0/1.5)をitem_modに乗算
         if stab and stab_mult == 2.0:
@@ -563,27 +612,48 @@ def simulate_1v1(
         elif a.ability == "competitive":
             a.stage_modifiers["sp_attack"] = min(6, a.stage_modifiers["sp_attack"] + 2)
 
+    # 天候決定: 天候アビリティを持つポケモンが天候をセット
+    # 両者が天候アビリティを持つ場合は遅い方の天候が優先（後から発動）
+    weather = "none"
+    if a.ability in _WEATHER_ABILITIES:
+        weather = _WEATHER_ABILITIES[a.ability]
+    if b.ability in _WEATHER_ABILITIES:
+        if a.ability in _WEATHER_ABILITIES:
+            # 両者が天候アビリティを持つ場合: 遅い方の天候が優先
+            sa = a.get_effective_stat("speed")
+            sb = b.get_effective_stat("speed")
+            if sb < sa:
+                weather = _WEATHER_ABILITIES[b.ability]
+            # aが遅い、または同速の場合はaの天候のまま
+        else:
+            weather = _WEATHER_ABILITIES[b.ability]
+
     # 全技の事前計算（かたやぶり系対応）
     # かたやぶり: 攻撃側がかたやぶりなら防御側のアビリティを一時無効化してダメージ計算
     if a.ability in _MOLD_BREAKER_ABILITIES:
         saved_ability_b = b.ability
         b.ability = ""
-        all_moves_a = _calc_all_moves(a, b)
+        all_moves_a = _calc_all_moves(a, b, weather=weather)
         b.ability = saved_ability_b
     else:
-        all_moves_a = _calc_all_moves(a, b)
+        all_moves_a = _calc_all_moves(a, b, weather=weather)
 
     if b.ability in _MOLD_BREAKER_ABILITIES:
         saved_ability_a = a.ability
         a.ability = ""
-        all_moves_b = _calc_all_moves(b, a)
+        all_moves_b = _calc_all_moves(b, a, weather=weather)
         a.ability = saved_ability_a
     else:
-        all_moves_b = _calc_all_moves(b, a)
+        all_moves_b = _calc_all_moves(b, a, weather=weather)
 
-    # 素早さ計算
+    # 素早さ計算（天候依存アビリティを考慮）
     speed_a = a.get_effective_stat("speed")
     speed_b = b.get_effective_stat("speed")
+
+    if a.ability in _WEATHER_SPEED_ABILITIES and weather == _WEATHER_SPEED_ABILITIES[a.ability]:
+        speed_a *= 2
+    if b.ability in _WEATHER_SPEED_ABILITIES and weather == _WEATHER_SPEED_ABILITIES[b.ability]:
+        speed_b *= 2
 
     # 事前の最大ダメージ（優先技選択の判断用）
     max_dmg_from_b = max(max(dr) for _, dr in all_moves_b) if all_moves_b else 0
@@ -934,6 +1004,19 @@ def simulate_1v1(
                 cur_hp_a = min(hp_a, cur_hp_a + leftovers_heal_a)
             if leftovers_b and cur_hp_b > 0:
                 cur_hp_b = min(hp_b, cur_hp_b + leftovers_heal_b)
+
+            # ターン終了時: 砂嵐ダメージ (非岩・地・鋼タイプに最大HPの1/16)
+            if weather == "sand":
+                if cur_hp_a > 0 and not (set(a.types) & _SAND_IMMUNE_TYPES) and a.ability not in _SAND_IMMUNE_ABILITIES:
+                    sand_dmg_a = max(1, hp_a // 16)
+                    cur_hp_a -= sand_dmg_a
+                    if cur_hp_a <= 0:
+                        break
+                if cur_hp_b > 0 and not (set(b.types) & _SAND_IMMUNE_TYPES) and b.ability not in _SAND_IMMUNE_ABILITIES:
+                    sand_dmg_b = max(1, hp_b // 16)
+                    cur_hp_b -= sand_dmg_b
+                    if cur_hp_b <= 0:
+                        break
 
             # かそく: ターン終了時に素早さ上昇 → 次ターンから速度ブースト発動
             if a.ability == "speed-boost":

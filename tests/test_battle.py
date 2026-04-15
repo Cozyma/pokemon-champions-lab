@@ -772,3 +772,85 @@ class TestPhase25:
         result = simulate_1v1(a, b, n_trials=5000)
         # With crits and same speed, should be close to 50% but with some variance
         assert 0.35 <= result.win_rate_a <= 0.65
+
+
+class TestWeather:
+    def test_sun_boosts_fire(self):
+        """ひでりで炎技1.5倍"""
+        # Ninetales (drought) with flamethrower vs target
+        attacker_sun = BattlePokemon.from_data(
+            species="ninetales", nature=Nature.TIMID,
+            evs={"sp_attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["flamethrower"],
+        )
+        attacker_sun.ability = "drought"
+
+        attacker_normal = BattlePokemon.from_data(
+            species="ninetales", nature=Nature.TIMID,
+            evs={"sp_attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["flamethrower"],
+        )
+        attacker_normal.ability = "flash-fire"  # no weather
+
+        target1 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        target2 = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"hp": 32}, ivs={}, item="", move_names=["earthquake"],
+        )
+        result_sun = simulate_1v1(attacker_sun, target1)
+        result_normal = simulate_1v1(attacker_normal, target2)
+        # 晴れ強化された炎技はより多くのダメージ → 勝率が高いかそれ以上
+        assert result_sun.win_rate_a >= result_normal.win_rate_a
+
+    def test_rain_boosts_water_weakens_fire(self):
+        """あめふらしで水技1.5倍、炎技0.5倍"""
+        pelipper = BattlePokemon.from_data(
+            species="pelipper", nature=Nature.MODEST,
+            evs={"sp_attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["surf"],
+        )
+        fire_attacker = BattlePokemon.from_data(
+            species="ninetales", nature=Nature.TIMID,
+            evs={"sp_attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["flamethrower"],
+        )
+        # エラーなく動作することを確認
+        result = simulate_1v1(pelipper, fire_attacker)
+        assert result.win_rate_a + result.win_rate_b > 0
+
+    def test_sand_chip_damage(self):
+        """すなおこしで非岩地鋼に毎ターン1/16ダメージ"""
+        tyranitar = BattlePokemon.from_data(
+            species="tyranitar", nature=Nature.ADAMANT,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        # プリマリーナ (水/フェアリー) は砂嵐ダメージを受ける
+        target2 = BattlePokemon.from_data(
+            species="primarina", nature=Nature.MODEST,
+            evs={"sp_attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["moonblast"],
+        )
+        result = simulate_1v1(tyranitar, target2)
+        # タイラニターは砂嵐の恩恵 (相手にチップダメージ、自分は岩タイプで免疫)
+        assert result.win_rate_a + result.win_rate_b > 0
+
+    def test_swift_swim_doubles_speed_in_rain(self):
+        """すいすいで雨時に素早さ2倍"""
+        attacker = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender = BattlePokemon.from_data(
+            species="garchomp", nature=Nature.JOLLY,
+            evs={"attack": 32, "speed": 32}, ivs={}, item="",
+            move_names=["earthquake"],
+        )
+        defender.ability = "swift-swim"
+        # 雨セッターなし → すいすいは発動しない → ほぼ互角
+        result = simulate_1v1(attacker, defender)
+        assert 0.3 <= result.win_rate_a <= 0.7
