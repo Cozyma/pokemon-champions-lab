@@ -18,10 +18,27 @@ from pokechamp.models import BattleResult, Move, Nature, TypeName
 # アイテム効果テーブル
 # ---------------------------------------------------------------------------
 _ITEM_EFFECTS: dict[str, dict] = {
-    "choice-band": {"type": "attack_multiply", "value": 1.5},
-    "choice-specs": {"type": "sp_attack_multiply", "value": 1.5},
+    # ステータス補正
     "choice-scarf": {"type": "speed_multiply", "value": 1.5},
-    "life-orb": {"type": "damage_multiply", "value": 1.3},
+    # タイプ強化アイテム (1.2倍)
+    "silver-powder": {"type": "type_boost", "boost_type": "bug", "value": 1.2},
+    "metal-coat": {"type": "type_boost", "boost_type": "steel", "value": 1.2},
+    "soft-sand": {"type": "type_boost", "boost_type": "ground", "value": 1.2},
+    "hard-stone": {"type": "type_boost", "boost_type": "rock", "value": 1.2},
+    "miracle-seed": {"type": "type_boost", "boost_type": "grass", "value": 1.2},
+    "black-glasses": {"type": "type_boost", "boost_type": "dark", "value": 1.2},
+    "black-belt": {"type": "type_boost", "boost_type": "fighting", "value": 1.2},
+    "magnet": {"type": "type_boost", "boost_type": "electric", "value": 1.2},
+    "mystic-water": {"type": "type_boost", "boost_type": "water", "value": 1.2},
+    "sharp-beak": {"type": "type_boost", "boost_type": "flying", "value": 1.2},
+    "poison-barb": {"type": "type_boost", "boost_type": "poison", "value": 1.2},
+    "never-melt-ice": {"type": "type_boost", "boost_type": "ice", "value": 1.2},
+    "spell-tag": {"type": "type_boost", "boost_type": "ghost", "value": 1.2},
+    "twisted-spoon": {"type": "type_boost", "boost_type": "psychic", "value": 1.2},
+    "charcoal": {"type": "type_boost", "boost_type": "fire", "value": 1.2},
+    "dragon-fang": {"type": "type_boost", "boost_type": "dragon", "value": 1.2},
+    "silk-scarf": {"type": "type_boost", "boost_type": "normal", "value": 1.2},
+    "fairy-feather": {"type": "type_boost", "boost_type": "fairy", "value": 1.2},
 }
 
 
@@ -113,11 +130,7 @@ class BattlePokemon:
         # アイテムによるステータス補正
         if self.item in _ITEM_EFFECTS:
             effect = _ITEM_EFFECTS[self.item]
-            if effect["type"] == "attack_multiply" and stat_name == "attack":
-                base = math.floor(base * effect["value"])
-            elif effect["type"] == "sp_attack_multiply" and stat_name == "sp_attack":
-                base = math.floor(base * effect["value"])
-            elif effect["type"] == "speed_multiply" and stat_name == "speed":
+            if effect["type"] == "speed_multiply" and stat_name == "speed":
                 base = math.floor(base * effect["value"])
 
         stage = self.stage_modifiers.get(stat_name, 0)
@@ -136,13 +149,6 @@ class BattlePokemon:
         best_move: Optional[Move] = None
         best_dmg: list[int] = [0] * 16
         best_avg = 0.0
-
-        # life-orbのダメージ補正
-        item_modifier = 1.0
-        if self.item in _ITEM_EFFECTS:
-            effect = _ITEM_EFFECTS[self.item]
-            if effect["type"] == "damage_multiply":
-                item_modifier = effect["value"]
 
         for move in self.moves:
             if move.category == "status":
@@ -169,6 +175,13 @@ class BattlePokemon:
                 atk_stat = self.get_effective_stat("sp_attack")
                 def_stat = opponent.get_effective_stat("sp_defense")
 
+            # タイプ強化アイテムの補正
+            item_mod = 1.0
+            if self.item in _ITEM_EFFECTS:
+                effect = _ITEM_EFFECTS[self.item]
+                if effect["type"] == "type_boost" and move.type.value == effect["boost_type"]:
+                    item_mod = effect["value"]
+
             dmg_range = calc_damage_range(
                 level=50,
                 power=move.power,
@@ -176,7 +189,7 @@ class BattlePokemon:
                 defense_stat=def_stat,
                 stab=stab,
                 type_eff=eff,
-                item_modifier=item_modifier,
+                item_modifier=item_mod,
             )
 
             avg = sum(dmg_range) / len(dmg_range)

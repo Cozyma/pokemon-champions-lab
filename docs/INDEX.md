@@ -20,7 +20,8 @@ tags: [index, docs]
 | ファイル | 概要 | タグ |
 |---------|------|------|
 | [pokechamp-design.md](design/pokechamp-design.md) | プロジェクト設計書（データモデル・シミュエンジン・CLI） | design, spec |
-| [champions-rules.md](design/champions-rules.md) | ポケモンチャンピオンズ固有仕様（本編との差分） | design, rules, champions |
+| [champions-rules.md](design/champions-rules.md) | ポケモンチャンピ���ンズ固有仕様（本編との差分） | design, rules, champions |
+| [pool-m-a-1.md](design/pool-m-a-1.md) | 使用可能プール一覧 M-A-1（ポケモン186種・メガシンカ59形態・アイテム117種） | design, pool, regulation |
 
 ### design/decisions/ — ADR（Architecture Decision Records）
 
