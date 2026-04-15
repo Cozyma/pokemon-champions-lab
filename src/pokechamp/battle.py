@@ -587,6 +587,13 @@ def _choose_move(
                 avg *= 2 / (2 + abs(spa_boost))
         return avg
 
+    # ねこだまし: ターン1で自分が遅い場合に使用
+    # （先制+ひるみで相手の攻撃を1ターン封じる。自分が速い場合は最大火力のほうが得）
+    if turn_number == 1 and my_speed <= opp_speed:
+        for move, dmg_range in all_moves:
+            if move.name_en == "fake-out":
+                return move, dmg_range
+
     # セットアップ技検討 (ターン1のみ、未使用時のみ)
     if turn_number == 1 and not setup_used:
         setup_moves = [m for m in attacker.moves if m.stat_changes and m.category == "status"]
@@ -1016,6 +1023,10 @@ def simulate_1v1(
             else:
                 first_is_a = random.random() < 0.5
 
+            # ねこだまし: 命中すればひるみ100%（相手はそのターン行動不可）
+            flinch_b = hit_a and move_a is not None and move_a.name_en == "fake-out"
+            flinch_a = hit_b and move_b is not None and move_b.name_en == "fake-out"
+
             if first_is_a:
                 prev_hp_b = cur_hp_b
                 # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
@@ -1077,6 +1088,10 @@ def simulate_1v1(
                             spd_boost_a = max(-6, spd_boost_a + _stages)
                         elif _stat == "speed":
                             spe_boost_a = max(-6, spe_boost_a + _stages)
+
+                # ひるみ: 先攻のねこだましが当たったら後攻は行動不可
+                if flinch_b:
+                    db = 0
 
                 prev_hp_a = cur_hp_a
                 # マルチスケイル: HP満タン時に被ダメージ半減 (かたやぶりで無効)
@@ -1189,6 +1204,10 @@ def simulate_1v1(
                             spd_boost_b = max(-6, spd_boost_b + _stages)
                         elif _stat == "speed":
                             spe_boost_b = max(-6, spe_boost_b + _stages)
+
+                # ひるみ: bの先攻ねこだましが当たったらaは行動不可
+                if flinch_a:
+                    da = 0
 
                 prev_hp_b = cur_hp_b
                 # マルチスケイル (かたやぶりで無効)
