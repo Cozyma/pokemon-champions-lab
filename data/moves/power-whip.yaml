@@ -1,0 +1,10 @@
+name: power-whip
+name_en: power-whip
+type: grass
+category: physical
+power: 120
+accuracy: 85
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

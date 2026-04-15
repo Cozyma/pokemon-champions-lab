@@ -1,0 +1,14 @@
+name: dragon-dance
+name_en: dragon-dance
+type: dragon
+category: status
+power: 0
+accuracy: 100
+pp: 20
+priority: 0
+effects: []
+stat_changes:
+- stat: attack
+  stages: 1
+- stat: speed
+  stages: 1

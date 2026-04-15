@@ -1,0 +1,10 @@
+name: draining-kiss
+name_en: draining-kiss
+type: fairy
+category: special
+power: 50
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes: []

@@ -1,0 +1,10 @@
+name: slack-off
+name_en: slack-off
+type: normal
+category: status
+power: 0
+accuracy: 100
+pp: 5
+priority: 0
+effects: []
+stat_changes: []

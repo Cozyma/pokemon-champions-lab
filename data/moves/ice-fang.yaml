@@ -1,0 +1,10 @@
+name: ice-fang
+name_en: ice-fang
+type: ice
+category: physical
+power: 65
+accuracy: 95
+pp: 15
+priority: 0
+effects: []
+stat_changes: []

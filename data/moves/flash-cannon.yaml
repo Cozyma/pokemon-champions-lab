@@ -1,0 +1,12 @@
+name: flash-cannon
+name_en: flash-cannon
+type: steel
+category: special
+power: 80
+accuracy: 100
+pp: 10
+priority: 0
+effects: []
+stat_changes:
+- stat: sp_defense
+  stages: -1

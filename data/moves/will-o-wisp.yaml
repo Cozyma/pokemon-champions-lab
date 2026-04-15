@@ -1,0 +1,10 @@
+name: will-o-wisp
+name_en: will-o-wisp
+type: fire
+category: status
+power: 0
+accuracy: 85
+pp: 15
+priority: 0
+effects: []
+stat_changes: []

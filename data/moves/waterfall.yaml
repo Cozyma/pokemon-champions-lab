@@ -1,0 +1,10 @@
+name: waterfall
+name_en: waterfall
+type: water
+category: physical
+power: 80
+accuracy: 100
+pp: 15
+priority: 0
+effects: []
+stat_changes: []

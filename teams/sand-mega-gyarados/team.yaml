@@ -1,0 +1,43 @@
+name: 砂メガギャラドス
+pokemon:
+  - species: hippowdon
+    ability: sand-stream
+    item: sitrus-berry
+    nature: impish
+    evs: {hp: 32, defense: 32, sp_defense: 2}
+    moves: [earthquake, stealth-rock, slack-off, stone-edge]
+
+  - species: gyarados
+    ability: intimidate
+    item: gyarados-mega-stone
+    nature: adamant
+    evs: {attack: 32, speed: 32, hp: 2}
+    moves: [waterfall, power-whip, ice-fang, dragon-dance]
+
+  - species: archaludon
+    ability: stamina
+    item: leftovers
+    nature: modest
+    evs: {sp_attack: 32, hp: 32, sp_defense: 2}
+    moves: [flash-cannon, dragon-tail, thunderbolt, stealth-rock]
+
+  - species: floette-eternal
+    ability: flower-veil
+    item: floette-mega-stone
+    nature: modest
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [moonblast, draining-kiss, calm-mind, synthesis]
+
+  - species: arcanine
+    ability: intimidate
+    item: shuca-berry
+    nature: timid
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [flamethrower, will-o-wisp, morning-sun, roost]
+
+  - species: greninja
+    ability: protean
+    item: focus-sash
+    nature: timid
+    evs: {sp_attack: 32, speed: 32, hp: 2}
+    moves: [sludge-wave, ice-beam, dark-pulse, water-shuriken]
