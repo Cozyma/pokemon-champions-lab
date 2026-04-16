@@ -5,7 +5,7 @@ Runs actual battles on the local Showdown server for precise win rate calculatio
 from __future__ import annotations
 
 from poke_env import AccountConfiguration, ServerConfiguration
-from poke_env.player import MaxBasePowerPlayer
+from poke_env.player import SimpleHeuristicsPlayer
 
 SERVER_CONFIG = ServerConfiguration(
     "ws://localhost:8000/showdown/websocket",
@@ -14,28 +14,77 @@ SERVER_CONFIG = ServerConfiguration(
 FORMAT = "gen9championsbssregma"
 
 
+_MOVE_NAMES_CACHE: dict[str, str] = {}
+
+
+def _get_move_display_name(move_id: str) -> str:
+    """Showdownの技IDを表示名に変換 (closecombat → Close Combat)。"""
+    if not _MOVE_NAMES_CACHE:
+        import re
+        from pathlib import Path
+        moves_path = Path(__file__).resolve().parent.parent.parent / "engines" / "showdown" / "data" / "moves.ts"
+        if moves_path.exists():
+            with open(moves_path) as f:
+                for match in re.finditer(r'(\w+):\s*\{[^}]*?name:\s*"([^"]+)"', f.read()):
+                    _MOVE_NAMES_CACHE[match.group(1)] = match.group(2)
+    return _MOVE_NAMES_CACHE.get(move_id, move_id.replace("-", " ").title())
+
+
+def _get_champions_learnset(species: str) -> list[str]:
+    """ShowdownのChampions learnsetから有効な技リストを取得。"""
+    import re
+    from pathlib import Path
+
+    learnset_path = Path(__file__).resolve().parent.parent.parent / "engines" / "showdown" / "data" / "mods" / "champions" / "learnsets.ts"
+    if not learnset_path.exists():
+        return []
+
+    with open(learnset_path) as f:
+        content = f.read()
+
+    # species名を正規化（ハイフン除去、小文字）
+    key = species.replace("-", "").lower()
+    pattern = rf'{key}:\s*\{{[^}}]*learnset:\s*\{{([^}}]+)\}}'
+    match = re.search(pattern, content)
+    if not match:
+        return []
+    return re.findall(r'(\w+):', match.group(1))
+
+
+# 汎用性の高い技（攻撃技優先で選ぶ用のフォールバック）
+_PREFERRED_MOVES = [
+    "earthquake", "closecombat", "flamethrower", "icebeam", "thunderbolt",
+    "shadowball", "sludgebomb", "psychic", "darkpulse", "flashcannon",
+    "moonblast", "dragonclaw", "airslash", "surf", "bodypress",
+    "bravebid", "ironhead", "stoneedge", "xscissor", "poisonjab",
+    "dracometeor", "outrage", "hydropump", "fireblast", "leafstorm",
+    "swordsdance", "nastyplot", "calmmind", "dragondance", "quiverdance",
+]
+
+
 def _species_to_showdown_paste(species: str, item: str = "", ability: str = "") -> str:
     """Convert a species name to Showdown paste format with sensible defaults."""
-    from pokechamp.loader import load_move, load_pokemon
+    from pokechamp.loader import load_pokemon
 
     pokemon = load_pokemon(species)
 
     # Pick first ability if not specified
     ability = ability or (pokemon.abilities[0] if pokemon.abilities else "")
 
-    # Pick first 4 learnable moves that have move data files
-    moves: list[str] = []
-    for move_name in pokemon.learnable_moves:
-        try:
-            load_move(move_name)
-            moves.append(move_name)
-            if len(moves) >= 4:
-                break
-        except FileNotFoundError:
-            continue
-
-    # If we don't have 4 moves with data, just use names directly
-    if len(moves) < 4:
+    # Showdownのlearnsetから技を選択（優先技リストでソート）
+    learnset = _get_champions_learnset(species)
+    if learnset:
+        # 優先技から選ぶ
+        moves = [m for m in _PREFERRED_MOVES if m in learnset][:4]
+        # 足りなければlearnsetから追加
+        if len(moves) < 4:
+            for m in learnset:
+                if m not in moves and m not in ("protect", "rest", "sleeptalk", "substitute", "endure", "facade"):
+                    moves.append(m)
+                    if len(moves) >= 4:
+                        break
+    else:
+        # フォールバック: pokechampデータから
         moves = list(pokemon.learnable_moves[:4])
 
     # Build display name: kebab-case → Title Case with hyphens preserved for forms
@@ -57,7 +106,7 @@ def _species_to_showdown_paste(species: str, item: str = "", ability: str = "") 
     lines.append("Jolly Nature")
 
     for m in moves:
-        lines.append(f"- {_to_display(m)}")
+        lines.append(f"- {_get_move_display_name(m)}")
 
     lines.append("")
     return "\n".join(lines)
@@ -86,7 +135,7 @@ async def evaluate_candidate(
 
     1. Build team: current_team + candidate (pad to 6 with strong generalists if needed)
     2. Build threat team: top threats (pad to 6 if needed)
-    3. Run n_battles via poke-env (MaxBasePowerPlayer vs MaxBasePowerPlayer)
+    3. Run n_battles via poke-env (SimpleHeuristicsPlayer vs SimpleHeuristicsPlayer)
     4. Return {"candidate": str, "win_rate": float, "battles": int}
     """
     team_species = current_team_species + [candidate_species]
@@ -96,13 +145,13 @@ async def evaluate_candidate(
     p1_name = f"Builder_{candidate_species[:8]}"
     p2_name = f"Threat_{candidate_species[:8]}"
 
-    player1 = MaxBasePowerPlayer(
+    player1 = SimpleHeuristicsPlayer(
         account_configuration=AccountConfiguration(p1_name, None),
         server_configuration=SERVER_CONFIG,
         battle_format=FORMAT,
         team=team_paste,
     )
-    player2 = MaxBasePowerPlayer(
+    player2 = SimpleHeuristicsPlayer(
         account_configuration=AccountConfiguration(p2_name, None),
         server_configuration=SERVER_CONFIG,
         battle_format=FORMAT,
@@ -149,13 +198,13 @@ async def evaluate_candidates(
         p1_name = f"Builder_{candidate[:8]}"
         p2_name = f"Threat_{candidate[:8]}"
 
-        player1 = MaxBasePowerPlayer(
+        player1 = SimpleHeuristicsPlayer(
             account_configuration=AccountConfiguration(p1_name, None),
             server_configuration=SERVER_CONFIG,
             battle_format=FORMAT,
             team=team_paste,
         )
-        player2 = MaxBasePowerPlayer(
+        player2 = SimpleHeuristicsPlayer(
             account_configuration=AccountConfiguration(p2_name, None),
             server_configuration=SERVER_CONFIG,
             battle_format=FORMAT,
