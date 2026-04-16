@@ -30,6 +30,7 @@ tags: [index, docs]
 |---------|------|------|
 | [_template.md](design/decisions/_template.md) | ADRテンプレート | ADR, template |
 | [2026-04-15-initial-development.md](design/decisions/2026-04-15-initial-development.md) | 初期開発経緯（設計判断・実装時系列・フェーズ2→2.5） | ADR, log |
+| [2026-04-16-rl-roadmap.md](design/decisions/2026-04-16-rl-roadmap.md) | 強化学習ロードマップ（PPO→Self-Play→選出AI→信念状態→ReBeL） | ADR, RL, roadmap |
 
 > 設計判断が発生したら `design/decisions/YYYY-MM-DD-{topic}.md` に記録する。
 
