@@ -7,12 +7,9 @@ from __future__ import annotations
 import math
 import random
 
-from pokechamp.battle import (
-    BattlePokemon,
-    _WEATHER_ABILITIES,
-    _calc_all_moves,
-    simulate_1v1,
-)
+from pokechamp.abilities import _WEATHER_ABILITIES
+from pokechamp.battle import BattlePokemon, simulate_1v1
+from pokechamp.calc import _calc_all_moves
 from pokechamp.models import SequenceResult
 
 

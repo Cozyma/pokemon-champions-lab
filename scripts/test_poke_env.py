@@ -154,7 +154,7 @@ async def main() -> None:
     # 1戦だけ対戦
     await player1.battle_against(player2, n_battles=1)
 
-    print(f"\nResults:")
+    print("\nResults:")
     print(f"  Player1 wins: {player1.n_won_battles}")
     print(f"  Player2 wins: {player2.n_won_battles}")
 

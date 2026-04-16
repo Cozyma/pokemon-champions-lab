@@ -293,7 +293,7 @@ def main() -> None:
         time.sleep(0.15)
     print(f"\nMega: {mega_ok} OK, {mega_fail} FAIL")
 
-    print(f"\n=== Summary ===")
+    print("\n=== Summary ===")
     print(f"Pokemon YAML: {len(list((DATA_DIR / 'pokemon').glob('*.yaml')))} files")
     print(f"Item YAML: {len(list(ITEMS_DIR.glob('*.yaml')))} files")
 
