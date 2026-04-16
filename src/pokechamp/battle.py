@@ -77,11 +77,26 @@ class BattlePokemon:
 
         # メガシンカ判定: メガストーンを持っている場合はメガシンカ種族値・タイプ・アビリティを使用
         # リザードン等の複数メガ形態にも対応 (mega, mega_x, mega_y)
+        # アイテム名はpokechamp形式(garchomp-mega-stone)とShowdown形式(garchompite等)の両方に対応
         mega = None
+        item_lower = item.lower().replace(" ", "").replace("-", "")
         for mega_field in (pokemon.mega, pokemon.mega_x, pokemon.mega_y):
-            if mega_field is not None and item == mega_field.stone:
+            if mega_field is None:
+                continue
+            stone_lower = mega_field.stone.lower().replace(" ", "").replace("-", "")
+            if item_lower == stone_lower or item_lower.rstrip("e") + "ite" == item_lower:
                 mega = mega_field
                 break
+        # Showdown形式のメガストーン名でもヒットさせる（species名 + ite/inite 等）
+        if mega is None and item:
+            species_key = species.lower().replace("-", "")
+            for mega_field in (pokemon.mega, pokemon.mega_x, pokemon.mega_y):
+                if mega_field is None:
+                    continue
+                # garchompite, lopunnite, dragoninite 等のパターンマッチ
+                if item_lower.startswith(species_key[:5]):
+                    mega = mega_field
+                    break
         is_mega = mega is not None
         if is_mega:
             stat_source = mega.base_stats  # type: ignore[union-attr]
@@ -116,7 +131,12 @@ class BattlePokemon:
         # メガストーン持ちはアイテムスロットをメガストーンが占有するため _ITEM_EFFECTS は適用しない
 
         # 技を読み込む
-        moves = [load_move(name) for name in move_names]
+        moves = []
+        for name in move_names:
+            try:
+                moves.append(load_move(name))
+            except FileNotFoundError:
+                continue  # 技データがない場合はスキップ
 
         return cls(
             name=species,
