@@ -1,0 +1,3 @@
+[submodule "engines/showdown"]
+	path = engines/showdown
+	url = https://github.com/Cozyma/pokemon-showdown-champions.git
