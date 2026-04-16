@@ -410,3 +410,169 @@ def test_run_battle_same_seed_reproducible():
 
     assert result1["winner"] == result2["winner"]
     assert result1["turns"] == result2["turns"]
+
+
+# ---------------------------------------------------------------------------
+# Damage-based switch helpers
+# ---------------------------------------------------------------------------
+
+
+def test_estimate_opponent_max_damage_super_effective():
+    """Garchomp (ground/dragon) attacking a steel type: ground is SE vs steel."""
+    from pokechamp.fast_battle import _estimate_opponent_max_damage
+
+    dmg = _estimate_opponent_max_damage("garchomp", ["ground", "dragon"], 150, 100, ["steel"])
+    assert dmg > 0  # ground is super effective vs steel
+
+
+def test_estimate_opponent_max_damage_immune():
+    """Ground attack vs flying type should be 0 (immune)."""
+    from pokechamp.fast_battle import _estimate_opponent_max_damage
+
+    dmg = _estimate_opponent_max_damage("garchomp", ["ground"], 150, 100, ["flying"])
+    # Ground vs flying = 0x, so ground type should be 0. Dragon vs flying = 1x.
+    # With only ground type, should be 0.
+    assert dmg == 0
+
+
+def test_estimate_opponent_max_damage_unknown_species():
+    """Unknown species returns 0 (can't estimate, don't switch)."""
+    from pokechamp.fast_battle import _estimate_opponent_max_damage
+
+    dmg = _estimate_opponent_max_damage("unknownmon99", ["fire"], 100, 100, ["grass"])
+    assert dmg == 0
+
+
+def test_estimate_opponent_speed():
+    """Garchomp speed estimate should be a positive integer."""
+    from pokechamp.fast_battle import _estimate_opponent_speed
+
+    spe = _estimate_opponent_speed("garchomp")
+    assert spe > 0
+
+
+def test_should_switch_out_ohko():
+    """Should switch out when opponent can OHKO active pokemon."""
+    from pokechamp.fast_battle import _should_switch_out
+
+    # Active pokemon is a low-HP steel type facing a fire/ground garchomp
+    # Garchomp ground STAB is SE vs steel
+    request = {
+        "side": {
+            "pokemon": [
+                {
+                    "active": True,
+                    "condition": "30/180",  # very low HP
+                    "types": ["steel"],
+                    "stats": {"atk": 80, "def": 130, "spa": 60, "spd": 85, "spe": 70},
+                    "boosts": {},
+                },
+                {
+                    "active": False,
+                    "condition": "175/175",
+                    "types": ["water", "fairy"],
+                    "stats": {"atk": 77, "def": 92, "spa": 125, "spd": 116, "spe": 60},
+                    "boosts": {},
+                },
+            ]
+        }
+    }
+    opponent = {
+        "species": "garchomp",
+        "types": ["dragon", "ground"],
+        "hp_pct": 100.0,
+        "stats": {},
+    }
+    result = _should_switch_out(request, opponent)
+    assert result is True
+
+
+def test_choose_best_switch_skips_ohko_target():
+    """choose_best_switch should skip a switch target that would be OHKO'd."""
+    from pokechamp.fast_battle import _choose_best_switch
+
+    # Team: active (fainted placeholder), mon2 would be OHKO'd, mon3 is safe
+    request = {
+        "side": {
+            "pokemon": [
+                {
+                    "active": True,
+                    "condition": "0 fnt",
+                    "types": ["normal"],
+                    "stats": {"atk": 80, "def": 70, "spa": 70, "spd": 70, "spe": 90},
+                },
+                {
+                    "active": False,
+                    "condition": "10/180",  # very low HP — would be OHKO'd
+                    "types": ["steel"],
+                    "stats": {"atk": 80, "def": 130, "spa": 60, "spd": 85, "spe": 70},
+                },
+                {
+                    "active": False,
+                    "condition": "180/180",
+                    "types": ["water", "fairy"],
+                    "stats": {"atk": 77, "def": 92, "spa": 125, "spd": 116, "spe": 60},
+                },
+            ]
+        }
+    }
+    opponent = {
+        "species": "garchomp",
+        "types": ["dragon", "ground"],
+        "hp_pct": 100.0,
+        "stats": {},
+    }
+    cmd = _choose_best_switch(request, opponent)
+    # Should pick switch 3 (water/fairy), not switch 2 (steel with 10 HP)
+    assert cmd == "switch 3"
+
+
+def test_choose_action_priority_ko_prevents_switch():
+    """When a priority move can KO, don't switch even if matchup is bad."""
+    from pokechamp.fast_battle import _choose_action
+
+    # Active Scizor (steel/bug) vs opponent grass type at 5% HP
+    # Bullet Punch (priority) should be used to KO instead of switching
+    request = {
+        "active": [
+            {
+                "moves": [
+                    {
+                        "move": "Bullet Punch", "id": "bulletpunch", "pp": 24, "maxpp": 24,
+                        "basePower": 40, "type": "Steel", "category": "Physical",
+                        "accuracy": 100, "target": "normal", "disabled": False,
+                        "priority": 1,
+                    },
+                    {
+                        "move": "U-turn", "id": "uturn", "pp": 32, "maxpp": 32,
+                        "basePower": 70, "type": "Bug", "category": "Physical",
+                        "accuracy": 100, "target": "normal", "disabled": False,
+                        "priority": 0,
+                    },
+                ]
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "active": True,
+                    "condition": "140/140",
+                    "types": ["steel", "bug"],
+                    "stats": {"atk": 130, "def": 100, "spa": 55, "spd": 80, "spe": 65},
+                    "boosts": {},
+                },
+                {
+                    "active": False,
+                    "condition": "160/160",
+                    "types": ["dragon", "ground"],
+                    "stats": {"atk": 130, "def": 95, "spa": 80, "spd": 85, "spe": 102},
+                    "boosts": {},
+                },
+            ]
+        },
+    }
+    # Opponent grass type at very low HP (5%) — priority move should KO
+    log_lines = ["|switch|p2a: Abomasnow|Abomasnow, L50|5/190"]
+    action = _choose_action(request, log_lines, "p1")
+    # Should use Bullet Punch (move 1) rather than switching
+    assert action == "move 1"

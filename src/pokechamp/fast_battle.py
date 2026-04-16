@@ -205,6 +205,118 @@ def _parse_opponent_from_log(log_lines: list[str], my_player_id: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Damage-based helpers for switch decisions
+# ---------------------------------------------------------------------------
+
+_POKEMON_STATS_CACHE: dict[str, dict] = {}
+
+
+def _load_pokemon_base_stats(species: str) -> dict | None:
+    """Load base stats for a species, with caching. Returns None on failure."""
+    key = species.lower().replace(" ", "-")
+    if key in _POKEMON_STATS_CACHE:
+        return _POKEMON_STATS_CACHE[key]
+    try:
+        from pokechamp.loader import load_pokemon
+        poke = load_pokemon(key)
+        result = {
+            "attack": poke.base_stats.attack,
+            "sp_attack": poke.base_stats.sp_attack,
+            "defense": poke.base_stats.defense,
+            "sp_defense": poke.base_stats.sp_defense,
+            "speed": poke.base_stats.speed,
+        }
+    except Exception:
+        result = None  # type: ignore[assignment]
+    _POKEMON_STATS_CACHE[key] = result  # type: ignore[assignment]
+    return result
+
+
+def _estimate_opponent_speed(species: str) -> int:
+    """Estimate opponent's speed stat from base stats (EV=32, IV=31, Lv50, neutral)."""
+    base = _load_pokemon_base_stats(species)
+    if base is None:
+        return 100  # fallback
+    from pokechamp.damage import calc_stat
+    from pokechamp.models import Nature
+    return calc_stat(base["speed"], 31, 32, 50, Nature.HARDY, "speed")
+
+
+def _estimate_opponent_max_damage(
+    opponent_species: str,
+    opponent_types: list[str],
+    my_def: int,
+    my_spd: int,
+    my_types: list[str],
+) -> int:
+    """Estimate max STAB damage the opponent can deal to us.
+
+    Assumes opponent uses ~80 base power STAB move, standard EVs (EV=32, IV=31, Lv50).
+    Returns 0 when estimation is not possible.
+    """
+    base = _load_pokemon_base_stats(opponent_species)
+    if base is None:
+        return 0
+
+    from pokechamp.damage import calc_stat, calc_damage_range, type_effectiveness
+    from pokechamp.models import Nature, TypeName
+
+    opp_atk = calc_stat(base["attack"], 31, 32, 50, Nature.HARDY, "attack")
+    opp_spa = calc_stat(base["sp_attack"], 31, 32, 50, Nature.HARDY, "sp_attack")
+
+    max_damage = 0
+    for opp_type_str in opponent_types:
+        try:
+            opp_type = TypeName(opp_type_str.lower())
+        except ValueError:
+            continue
+
+        # Type effectiveness against us
+        eff = 1.0
+        for my_type_str in my_types:
+            try:
+                eff *= type_effectiveness(opp_type, TypeName(my_type_str.lower()))
+            except ValueError:
+                pass
+
+        if eff == 0:
+            continue
+
+        # Physical STAB damage (power 80)
+        phys_dmg = calc_damage_range(
+            level=50, power=80, attack_stat=opp_atk, defense_stat=max(my_def, 1),
+            stab=True, type_eff=eff,
+        )
+        max_damage = max(max_damage, max(phys_dmg))
+
+        # Special STAB damage (power 80)
+        spec_dmg = calc_damage_range(
+            level=50, power=80, attack_stat=opp_spa, defense_stat=max(my_spd, 1),
+            stab=True, type_eff=eff,
+        )
+        max_damage = max(max_damage, max(spec_dmg))
+
+    return max_damage
+
+
+def _parse_current_hp(pokemon: dict) -> int:
+    """Return current HP as an integer from condition string."""
+    condition = pokemon.get("condition", "")
+    m = re.match(r"(\d+)/(\d+)", condition)
+    if m:
+        return int(m.group(1))
+    return 0
+
+
+def _calc_type_effectiveness_score(attacker_types: list[str], defender_types: list[str]) -> float:
+    """Return max type effectiveness score for attacker vs defender."""
+    return max(
+        (_calc_type_effectiveness(t, defender_types) for t in attacker_types),
+        default=1.0,
+    )
+
+
+# ---------------------------------------------------------------------------
 # Heuristic AI: move scoring and switch decision
 # ---------------------------------------------------------------------------
 
@@ -257,7 +369,10 @@ def _should_switch_out(
     request: dict,
     opponent: dict,
 ) -> bool:
-    """Decide whether we should switch out (mirrors SimpleHeuristicsPlayer._should_switch_out)."""
+    """Decide whether we should switch out (mirrors SimpleHeuristicsPlayer._should_switch_out).
+
+    Enhanced with damage-based OHKO/2HKO detection.
+    """
     team = request.get("side", {}).get("pokemon", [])
     active_pokemon = next((p for p in team if p.get("active")), None)
     if active_pokemon is None:
@@ -277,6 +392,7 @@ def _should_switch_out(
     opp_types = opponent.get("types", [])
     opp_stats = opponent.get("stats", {})
     opp_hp = opponent.get("hp_pct", 100.0)
+    opp_species = opponent.get("species", "")
 
     # Check if there is a decent switch-in
     has_good_switch = any(
@@ -298,6 +414,22 @@ def _should_switch_out(
     if boosts.get("spa", 0) <= -3 and active_stats.get("spa", 0) > active_stats.get("atk", 0):
         return True
 
+    # Damage-based OHKO/2HKO check
+    if opp_species and opp_types:
+        my_def = active_stats.get("def", 100)
+        my_spd = active_stats.get("spd", 100)
+        my_current_hp = _parse_current_hp(active_pokemon)
+        max_incoming = _estimate_opponent_max_damage(
+            opp_species, opp_types, my_def, my_spd, active_types
+        )
+        if max_incoming > 0 and my_current_hp > 0:
+            if max_incoming >= my_current_hp:
+                return True  # confirmed OHKO
+            my_spe = active_stats.get("spe", 100)
+            opp_spe = _estimate_opponent_speed(opp_species)
+            if max_incoming * 2 >= my_current_hp and opp_spe > my_spe:
+                return True  # 2HKO and we're slower
+
     matchup = _estimate_matchup(
         active_types, active_stats, active_hp,
         opp_types, opp_stats, opp_hp,
@@ -309,11 +441,15 @@ def _should_switch_out(
 
 
 def _choose_best_switch(request: dict, opponent: dict) -> str | None:
-    """Return switch command for the best available team member."""
+    """Return switch command for the best available team member.
+
+    Enhanced to skip switch targets that would be OHKO'd on switch-in.
+    """
     team = request.get("side", {}).get("pokemon", [])
     opp_types = opponent.get("types", [])
     opp_stats = opponent.get("stats", {})
     opp_hp = opponent.get("hp_pct", 100.0)
+    opp_species = opponent.get("species", "")
 
     best_idx = None
     best_score = float("-inf")
@@ -321,8 +457,23 @@ def _choose_best_switch(request: dict, opponent: dict) -> str | None:
     for i, mon in enumerate(team):
         if mon.get("active") or _is_fainted(mon):
             continue
+
+        mon_types = mon.get("types", [])
+        mon_stats = mon.get("stats", {})
+        mon_current_hp = _parse_current_hp(mon)
+
+        # Skip if this switch target would be OHKO'd on switch-in
+        if opp_species and opp_types and mon_current_hp > 0:
+            mon_def = mon_stats.get("def", 100)
+            mon_spd = mon_stats.get("spd", 100)
+            switch_in_dmg = _estimate_opponent_max_damage(
+                opp_species, opp_types, mon_def, mon_spd, mon_types
+            )
+            if switch_in_dmg >= mon_current_hp:
+                continue  # would die on switch-in, skip
+
         score = _estimate_matchup(
-            mon.get("types", []), mon.get("stats", {}), _hp_pct(mon),
+            mon_types, mon_stats, _hp_pct(mon),
             opp_types, opp_stats, opp_hp,
         )
         if score > best_score:
@@ -406,6 +557,30 @@ def _stat_estimation(base_stat: int, boost: int) -> float:
     return ((2 * base_stat + 31) + 5) * boost_mult
 
 
+def _priority_can_ko(
+    move: dict,
+    active_pokemon: dict,
+    opponent: dict,
+    physical_ratio: float,
+    special_ratio: float,
+) -> bool:
+    """Estimate if a priority move can KO the opponent this turn.
+
+    Uses a rough damage estimate: score > opp_hp_pct * threshold.
+    This is intentionally conservative — only returns True when clearly able to KO.
+    """
+    opp_hp_pct = opponent.get("hp_pct", 100.0)
+    if opp_hp_pct <= 0:
+        return False
+    move_score = _score_move(move, active_pokemon, opponent, physical_ratio, special_ratio)
+    if move_score <= 0:
+        return False
+    # Heuristic: if score (damage proxy) exceeds opp hp% * 1.5, likely KO
+    # The score is base_power * modifiers, typically 60-200 for normal attacks.
+    # opp_hp_pct is 0-100. Threshold tuned so score ~100+ vs low HP triggers KO.
+    return move_score >= opp_hp_pct * 1.5
+
+
 def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     """Choose an action given the current request JSON.
 
@@ -453,11 +628,23 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     available_moves = [m for m in moves if not m.get("disabled")]
     available_switches = [p for p in team if not p.get("active") and not _is_fainted(p)]
 
-    # Determine if we should switch out
-    if available_switches and _should_switch_out(request, opp):
+    # Priority move check: if we have a priority move that can KO, use it instead of switching
+    priority_ko_move = None
+    for move in available_moves:
+        if move.get("priority", 0) > 0:
+            if _priority_can_ko(move, active_pokemon, opp, physical_ratio, special_ratio):
+                priority_ko_move = move
+                break
+
+    # Determine if we should switch out (but not if we have a priority KO available)
+    if priority_ko_move is None and available_switches and _should_switch_out(request, opp):
         switch_cmd = _choose_best_switch(request, opp)
         if switch_cmd:
             return switch_cmd
+
+    # Use the priority KO move if found
+    if priority_ko_move is not None:
+        return f"move {moves.index(priority_ko_move) + 1}"
 
     if available_moves:
         # Entry hazards setup (if opponent has >=3 mons remaining)
