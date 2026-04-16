@@ -1,0 +1,53 @@
+Venusaur @ Venusaurite
+Ability: Chlorophyll
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Giga Drain
+- Earth Power
+- Leech Seed
+- Synthesis
+
+Charizard @ Charizardite X
+Ability: Blaze
+EVs: 2 HP / 32 Atk / 32 Spe
+Adamant Nature
+- Dragon Claw
+- Nitro Charge
+- Will-O-Wisp
+- Roost
+
+Garchomp @ Focus Sash
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Scale Shot
+- Earthquake
+- Swords Dance
+- Stealth Rock
+
+Aegislash-Shield @ Leftovers
+Ability: Stance Change
+EVs: 32 HP / 32 SpA / 2 SpD
+Modest Nature
+- Shadow Ball
+- Flash Cannon
+- King's Shield
+- Substitute
+
+Azumarill @ Sitrus Berry
+Ability: Huge Power
+EVs: 32 HP / 32 Atk / 2 Spe
+Adamant Nature
+- Play Rough
+- Aqua Jet
+- Bulldoze
+- Belly Drum
+
+Corviknight @ Sitrus Berry
+Ability: Pressure
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Body Press
+- U-turn
+- Iron Defense
+- Roost

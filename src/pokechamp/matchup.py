@@ -17,6 +17,7 @@ from pokechamp.models import (
     Team,
     TeamMember,
 )
+from pokechamp.showdown_loader import showdown_to_team_model  # noqa: F401  (re-exported)
 from pokechamp.sequence import evaluate_sequence
 
 

@@ -16,8 +16,9 @@ class TestEvaluateMatchup:
     def test_mirror_matchup(self):
         """同じ構築同士のマッチアップはスコア約50%になる"""
         result = evaluate_matchup("example-team", "example-team")
-        assert result.team_a == "サンプル構築"
-        assert result.team_b == "サンプル構築"
+        # team name comes from the directory name when loaded from team.txt
+        assert result.team_a == "example-team"
+        assert result.team_b == "example-team"
         for i, row in enumerate(result.matrix.matrix):
             for j, win_rate in enumerate(row):
                 if i == j:

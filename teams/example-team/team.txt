@@ -1,0 +1,8 @@
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Outrage
+- Iron Head
+- Stone Edge

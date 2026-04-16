@@ -1,0 +1,53 @@
+Scizor @ Scizorite
+Ability: Technician
+EVs: 32 HP / 32 Atk / 2 Spe
+Adamant Nature
+- Bullet Punch
+- Close Combat
+- Swords Dance
+- Roost
+
+Greninja @ Greninjite
+Ability: Protean
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Surf
+- Ice Beam
+- Sludge Wave
+- Extrasensory
+
+Garchomp @ Sitrus Berry
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Dragon Tail
+- Poison Jab
+- Stealth Rock
+
+Umbreon @ Leftovers
+Ability: Synchronize
+EVs: 32 HP / 2 Def / 32 SpD
+Calm Nature
+- Foul Play
+- Moonblast
+- Dark Pulse
+- Protect
+
+Primarina @ Sitrus Berry
+Ability: Torrent
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Moonblast
+- Surf
+- Aqua Jet
+- Encore
+
+Aegislash-Shield @ Focus Sash
+Ability: Stance Change
+EVs: 32 HP / 32 Atk / 2 Spe
+Adamant Nature
+- Poltergeist
+- Close Combat
+- Shadow Sneak
+- Swords Dance

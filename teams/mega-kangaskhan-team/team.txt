@@ -1,0 +1,53 @@
+Kangaskhan @ Kangaskhanite
+Ability: Scrappy
+EVs: 2 HP / 32 Atk / 32 Spe
+Adamant Nature
+- Fake Out
+- Sucker Punch
+- Ice Punch
+- Earthquake
+
+Meganium @ Meganiumite
+Ability: Leaf Guard
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Solar Beam
+- Weather Ball
+- Earth Power
+- Synthesis
+
+Hippowdon @ Sitrus Berry
+Ability: Sand Stream
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Earthquake
+- Stealth Rock
+- Roost
+- Stone Edge
+
+Aegislash-Shield @ Spell Tag
+Ability: Stance Change
+EVs: 32 HP / 32 Atk / 2 Spe
+Adamant Nature
+- Poltergeist
+- Shadow Sneak
+- King's Shield
+- Swords Dance
+
+Greninja @ Focus Sash
+Ability: Protean
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Sludge Wave
+- Ice Beam
+- Dark Pulse
+- Water Shuriken
+
+Volcarona @ Leftovers
+Ability: Flame Body
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Flamethrower
+- Giga Drain
+- Quiver Dance
+- Morning Sun

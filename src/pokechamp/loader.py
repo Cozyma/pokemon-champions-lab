@@ -64,7 +64,18 @@ def load_item(name_en: str) -> dict:
 
 
 def load_team(team_name: str) -> Team:
-    path = get_teams_dir() / team_name / "team.yaml"
+    """Load a team, preferring team.txt (Showdown format) over team.yaml.
+
+    Falls back to team.yaml if team.txt does not exist.
+    """
+    teams_dir = get_teams_dir()
+    txt_path = teams_dir / team_name / "team.txt"
+    if txt_path.exists():
+        from pokechamp.showdown_loader import load_showdown_team, showdown_to_team_model
+        parsed = load_showdown_team(team_name)
+        return showdown_to_team_model(parsed, name=team_name)
+    # Fallback: legacy YAML format
+    path = teams_dir / team_name / "team.yaml"
     data = _load_yaml(path)
     return Team(**data)
 
@@ -75,4 +86,8 @@ def list_pokemon() -> list[str]:
 
 def list_teams() -> list[str]:
     teams_dir = get_teams_dir()
-    return sorted(d.name for d in teams_dir.iterdir() if d.is_dir() and (d / "team.yaml").exists())
+    return sorted(
+        d.name
+        for d in teams_dir.iterdir()
+        if d.is_dir() and ((d / "team.txt").exists() or (d / "team.yaml").exists())
+    )

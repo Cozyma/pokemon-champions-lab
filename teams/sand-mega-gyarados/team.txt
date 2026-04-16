@@ -1,0 +1,53 @@
+Hippowdon @ Sitrus Berry
+Ability: Sand Stream
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Earthquake
+- Stealth Rock
+- Slack Off
+- Stone Edge
+
+Gyarados @ Gyaradosite
+Ability: Intimidate
+EVs: 2 HP / 32 Atk / 32 Spe
+Adamant Nature
+- Waterfall
+- Power Whip
+- Ice Fang
+- Dragon Dance
+
+Archaludon @ Leftovers
+Ability: Stamina
+EVs: 32 HP / 32 SpA / 2 SpD
+Modest Nature
+- Flash Cannon
+- Dragon Tail
+- Thunderbolt
+- Stealth Rock
+
+Floette-Eternal @ Floettite
+Ability: Flower Veil
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Moonblast
+- Draining Kiss
+- Calm Mind
+- Synthesis
+
+Arcanine @ Shuca Berry
+Ability: Intimidate
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Flamethrower
+- Will-O-Wisp
+- Morning Sun
+- Roost
+
+Greninja @ Focus Sash
+Ability: Protean
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Sludge Wave
+- Ice Beam
+- Dark Pulse
+- Water Shuriken

@@ -1,0 +1,53 @@
+Gengar @ Gengarite
+Ability: Cursed Body
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Shadow Ball
+- Sludge Wave
+- Focus Blast
+- Protect
+
+Garchomp @ Focus Sash
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Scale Shot
+- Earthquake
+- Stealth Rock
+- Swords Dance
+
+Corviknight @ Leftovers
+Ability: Pressure
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Body Press
+- U-turn
+- Iron Defense
+- Roost
+
+Primarina @ Sitrus Berry
+Ability: Torrent
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Sparkling Aria
+- Moonblast
+- Aqua Jet
+- Encore
+
+Hydreigon @ Choice Scarf
+Ability: Levitate
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Dark Pulse
+- Draco Meteor
+- Flamethrower
+- U-turn
+
+Aegislash-Shield @ Spell Tag
+Ability: Stance Change
+EVs: 32 HP / 32 Atk / 2 SpD
+Adamant Nature
+- Poltergeist
+- Sacred Sword
+- Shadow Sneak
+- King's Shield

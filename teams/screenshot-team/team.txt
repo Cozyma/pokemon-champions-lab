@@ -1,0 +1,53 @@
+Lopunny @ Lopunnite
+Ability: Limber
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Fake Out
+- Close Combat
+- High Jump Kick
+- Swords Dance
+
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Draco Meteor
+- Air Slash
+- Thunderbolt
+- Aqua Jet
+
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Outrage
+- Earthquake
+- Stone Edge
+- Poison Jab
+
+Primarina @ Focus Sash
+Ability: Torrent
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Sparkling Aria
+- Moonblast
+- Aqua Jet
+- Encore
+
+Corviknight @ Leftovers
+Ability: Pressure
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Body Press
+- U-turn
+- Iron Defense
+- Roost
+
+Volcarona @ Sitrus Berry
+Ability: Flame Body
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Flamethrower
+- Giga Drain
+- Quiver Dance
+- Morning Sun
