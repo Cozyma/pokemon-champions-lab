@@ -843,6 +843,7 @@ def run_battle(
     team_b_paste: str,
     format_id: str = "gen9championsbssregma",
     seed: list[int] | None = None,
+    return_log: bool = False,
 ) -> dict:
     """Run a single battle via Showdown subprocess.
 
@@ -954,12 +955,15 @@ def run_battle(
     p1_remaining = _count_remaining(log_lines, "p1")
     p2_remaining = _count_remaining(log_lines, "p2")
 
-    return {
+    result = {
         "winner": winner,
         "turns": turns,
         "p1_remaining": p1_remaining,
         "p2_remaining": p2_remaining,
     }
+    if return_log:
+        result["log"] = log_lines
+    return result
 
 
 def _count_remaining(log_lines: list[str], player_id: str) -> int:
