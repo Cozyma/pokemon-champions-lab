@@ -4,6 +4,7 @@ from pokechamp.battle import simulate_1v1
 from pokechamp.loader import list_pokemon, list_teams, load_pokemon, load_team
 from pokechamp.matchup import evaluate_matchup, build_battle_pokemon_from_team
 from pokechamp.output import format_battle_result, format_matchup_result
+from pokechamp.type_filter import analyze_team
 
 app = typer.Typer(help="Pokemon Champions team builder & battle simulator")
 
@@ -102,3 +103,60 @@ def import_cmd(
     """PokeAPIからデータインポート（未実装）"""
     typer.echo(f"PokeAPI import for gen {gen} is not yet implemented.")
     typer.echo("Use data/pokemon/*.yaml to add pokemon data manually.")
+
+
+@app.command()
+def build(
+    starter: str = typer.Argument(help="起点となるポケモンのspecies名 (name_en)"),
+    members: list[str] = typer.Argument(default=None, help="既存チームメンバー (name_en, スペース区切り)"),
+    top: int = typer.Option(10, help="表示件数"),
+    json: bool = typer.Option(False, "--json", help="JSON出力"),
+) -> None:
+    """パーティ構築補助 — 弱点脅威の分析とカバー候補の提案。
+
+    starter を起点に、type相性ベースで上位脅威と推奨追加ポケモンを表示する。
+
+    例:
+      pokechamp build garchomp
+      pokechamp build garchomp corviknight primarina --top 5
+    """
+    import json as json_mod
+
+    team: list[str] = [starter]
+    if members:
+        team.extend(members)
+
+    # Validate all species exist
+    for species in team:
+        try:
+            load_pokemon(species)
+        except FileNotFoundError:
+            typer.echo(f"Error: pokemon '{species}' not found in data/pokemon/", err=True)
+            raise typer.Exit(1)
+
+    result = analyze_team(team, top_n=top)
+
+    if json:
+        typer.echo(json_mod.dumps(result, ensure_ascii=False, indent=2))
+        return
+
+    typer.echo("\n=== パーティ構築分析 ===")
+    typer.echo(f"現在のチーム: {', '.join(team)}")
+
+    typer.echo(f"\n--- 上位脅威 (Top {top}) ---")
+    for rank, (species, score) in enumerate(result["top_threats"], 1):
+        try:
+            poke = load_pokemon(species)
+            types_str = "/".join(t.value for t in poke.types)
+            typer.echo(f"  {rank:2d}. {species:<20s} [{types_str}]  score={score:.2f}")
+        except FileNotFoundError:
+            typer.echo(f"  {rank:2d}. {species:<20s}  score={score:.2f}")
+
+    typer.echo(f"\n--- 推奨追加候補 (Top {top}) ---")
+    for rank, (species, score) in enumerate(result["suggested_additions"], 1):
+        try:
+            poke = load_pokemon(species)
+            types_str = "/".join(t.value for t in poke.types)
+            typer.echo(f"  {rank:2d}. {species:<20s} [{types_str}]  score={score:.2f}")
+        except FileNotFoundError:
+            typer.echo(f"  {rank:2d}. {species:<20s}  score={score:.2f}")
