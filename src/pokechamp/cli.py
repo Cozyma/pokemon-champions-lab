@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 import typer
 from pokechamp.battle import simulate_1v1
 from pokechamp.loader import list_pokemon, list_teams, load_pokemon, load_team
@@ -110,6 +111,8 @@ def build(
     starter: str = typer.Argument(help="起点となるポケモンのspecies名 (name_en)"),
     members: list[str] = typer.Argument(default=None, help="既存チームメンバー (name_en, スペース区切り)"),
     top: int = typer.Option(10, help="表示件数"),
+    evaluate: bool = typer.Option(False, "--evaluate", help="TOP候補をShowdownで精密評価"),
+    eval_battles: int = typer.Option(3, "--eval-battles", help="評価対戦数"),
     json: bool = typer.Option(False, "--json", help="JSON出力"),
 ) -> None:
     """パーティ構築補助 — 弱点脅威の分析とカバー候補の提案。
@@ -119,6 +122,7 @@ def build(
     例:
       pokechamp build garchomp
       pokechamp build garchomp corviknight primarina --top 5
+      pokechamp build garchomp --evaluate --eval-battles 5
     """
     import json as json_mod
 
@@ -160,3 +164,19 @@ def build(
             typer.echo(f"  {rank:2d}. {species:<20s} [{types_str}]  score={score:.2f}")
         except FileNotFoundError:
             typer.echo(f"  {rank:2d}. {species:<20s}  score={score:.2f}")
+
+    if evaluate:
+        from pokechamp.showdown_eval import evaluate_candidates
+
+        typer.echo("\n--- Showdown精密評価中 ---")
+        candidates = [s for s, _ in result["suggested_additions"][:5]]
+        threats = [s for s, _ in result["top_threats"][:6]]
+
+        eval_results = asyncio.run(
+            evaluate_candidates(team, candidates, threats, n_battles=eval_battles)
+        )
+
+        typer.echo("\n--- 精密評価結果 ---")
+        for i, r in enumerate(eval_results, 1):
+            status = f"{r['win_rate'] * 100:.0f}%" if r["win_rate"] >= 0 else "ERROR"
+            typer.echo(f"  {i}. {r['candidate']:<20s} 勝率: {status} ({r['battles']}戦)")
