@@ -1,16 +1,9 @@
-"""Showdown-based precise battle evaluation via poke-env.
+"""Showdown-based battle evaluation via subprocess runner.
 
-Runs actual battles on the local Showdown server for precise win rate calculation.
+Runs actual battles using the fast subprocess runner (no server required).
 """
 from __future__ import annotations
 
-from poke_env import AccountConfiguration, ServerConfiguration
-from poke_env.player import SimpleHeuristicsPlayer
-
-SERVER_CONFIG = ServerConfiguration(
-    "ws://localhost:8000/showdown/websocket",
-    "http://localhost:8000/action.php?",
-)
 FORMAT = "gen9championsbssregma"
 
 
@@ -135,40 +128,32 @@ async def evaluate_candidate(
 
     1. Build team: current_team + candidate (pad to 6 with strong generalists if needed)
     2. Build threat team: top threats (pad to 6 if needed)
-    3. Run n_battles via poke-env (SimpleHeuristicsPlayer vs SimpleHeuristicsPlayer)
+    3. Run n_battles via fast subprocess runner
     4. Return {"candidate": str, "win_rate": float, "battles": int}
     """
+    from pokechamp.fast_battle import run_battle
+
     team_species = current_team_species + [candidate_species]
     team_paste = _build_showdown_team(team_species)
     threat_paste = _build_showdown_team(threat_species[:6])
 
-    p1_name = f"Builder_{candidate_species[:8]}"
-    p2_name = f"Threat_{candidate_species[:8]}"
+    wins = 0
+    played = 0
+    for i in range(n_battles):
+        try:
+            seed = [i * 4 + 1, i * 4 + 2, i * 4 + 3, i * 4 + 4]
+            result = run_battle(team_paste, threat_paste, seed=seed)
+            if result["winner"] == "p1":
+                wins += 1
+            played += 1
+        except Exception:
+            continue
 
-    player1 = SimpleHeuristicsPlayer(
-        account_configuration=AccountConfiguration(p1_name, None),
-        server_configuration=SERVER_CONFIG,
-        battle_format=FORMAT,
-        team=team_paste,
-    )
-    player2 = SimpleHeuristicsPlayer(
-        account_configuration=AccountConfiguration(p2_name, None),
-        server_configuration=SERVER_CONFIG,
-        battle_format=FORMAT,
-        team=threat_paste,
-    )
-
-    try:
-        await player1.battle_against(player2, n_battles=n_battles)
-        total = player1.n_won_battles + player2.n_won_battles
-        win_rate = player1.n_won_battles / max(1, total)
-    except Exception:
-        win_rate = -1.0
-
+    win_rate = wins / max(1, played)
     return {
         "candidate": candidate_species,
         "win_rate": win_rate,
-        "battles": n_battles,
+        "battles": played,
     }
 
 
@@ -180,14 +165,18 @@ async def evaluate_candidates(
 ) -> list[dict]:
     """Evaluate multiple candidates against threat teams.
 
+    Uses the fast subprocess battle runner (no Showdown server required).
+
     For each candidate:
     1. team_with = current_team + [candidate] (padded to 6)
     2. threat_team = threats[:6] (padded to 6)
-    3. Run n_battles
+    3. Run n_battles via fast subprocess runner
     4. Record win rate
 
     Returns sorted list of {candidate, win_rate, battles}
     """
+    from pokechamp.fast_battle import run_battle
+
     results: list[dict] = []
 
     for candidate in candidates:
@@ -195,36 +184,23 @@ async def evaluate_candidates(
         team_paste = _build_showdown_team(team_species)
         threat_paste = _build_showdown_team(threats[:6])
 
-        p1_name = f"Builder_{candidate[:8]}"
-        p2_name = f"Threat_{candidate[:8]}"
-
-        player1 = SimpleHeuristicsPlayer(
-            account_configuration=AccountConfiguration(p1_name, None),
-            server_configuration=SERVER_CONFIG,
-            battle_format=FORMAT,
-            team=team_paste,
-        )
-        player2 = SimpleHeuristicsPlayer(
-            account_configuration=AccountConfiguration(p2_name, None),
-            server_configuration=SERVER_CONFIG,
-            battle_format=FORMAT,
-            team=threat_paste,
-        )
-
-        try:
-            await player1.battle_against(player2, n_battles=n_battles)
-            total = player1.n_won_battles + player2.n_won_battles
-            win_rate = player1.n_won_battles / max(1, total)
-        except Exception as e:
-            if "rejected" in str(e).lower():
-                results.append({"candidate": candidate, "win_rate": -1, "battles": 0})
+        wins = 0
+        played = 0
+        for i in range(n_battles):
+            try:
+                seed = [i * 4 + 1, i * 4 + 2, i * 4 + 3, i * 4 + 4]
+                result = run_battle(team_paste, threat_paste, seed=seed)
+                if result["winner"] == "p1":
+                    wins += 1
+                played += 1
+            except Exception:
                 continue
-            win_rate = -1.0
 
+        win_rate = wins / max(1, played)
         results.append({
             "candidate": candidate,
             "win_rate": win_rate,
-            "battles": n_battles,
+            "battles": played,
         })
 
     results.sort(key=lambda x: x["win_rate"], reverse=True)
