@@ -269,6 +269,110 @@ HP満タン AND 対面スコア > 0 AND 技のブースト合計 ≥ +2 AND 対�
 | **ねこだまし優先使用** | 出した直後に確定先制+ひるみで1ターン得する |
 | **HP管理** | 受けポケモンの回復技（はねやすめ等）のタイミング判断 |
 
+---
+
+## 8. Showdownデータ活用によるAI強化計画
+
+Showdownの`data/`には技・特性・アイテム・ポケモンの**完全なデータ**がTypeScript形式で格納されている（56,612行 + Champions mod 21,432行）。現在のAIはこのデータをほぼ活用していない。
+
+### 利用可能なデータ
+
+| ファイル | 行数 | AIに有用な情報 |
+|---------|------|--------------|
+| `data/moves.ts` | 21,318 | basePower, type, category, priority, accuracy, flags(contact等), secondary(追加効果), onTry(ねこだまし制約等) |
+| `data/abilities.ts` | 5,667 | onModifyAtk(ちからもち等), onStart(いかく), onDamagingHit(さめはだ) |
+| `data/items.ts` | 8,167 | onModifyDef, onModifySpe, megaStone, isChoice |
+| `data/pokedex.ts` | 20,976 | baseStats, types, abilities, weightkg |
+| `data/typechart.ts` | 484 | 完全なタイプ相性テーブル |
+| `data/mods/champions/moves.ts` | 1,133 | チャンピオンズ固有の技変更 |
+| `data/mods/champions/abilities.ts` | 66 | チャンピオンズ固有の特性変更 |
+| `data/mods/champions/items.ts` | 1,053 | チャンピオンズ固有のアイテム |
+
+### 段階的な活用ステップ
+
+#### Step 1: TSデータのJSON変換パイプライン（基盤）
+
+Showdownの`.ts`ファイルをPythonから参照可能なJSONに変換するスクリプトを作成。
+
+```
+engines/showdown/data/moves.ts → data/showdown-cache/moves.json
+engines/showdown/data/abilities.ts → data/showdown-cache/abilities.json
+engines/showdown/data/items.ts → data/showdown-cache/items.json
+engines/showdown/data/pokedex.ts → data/showdown-cache/pokedex.json
+```
+
+Showdownの`node build`で`.js`が生成されるので、それをNode.jsで`JSON.stringify`してもよい。
+
+#### Step 2: 技データの参照によるスコアリング改善
+
+現在のAIは技の`basePower`と`type`しか見ていない。moves.jsonから以下を参照：
+
+| 参照フィールド | 活用方法 |
+|--------------|---------|
+| `priority` | 先制技の判定（現在は固定リストだがデータ参照に切替） |
+| `flags.contact` | 接触技判定（さめはだ、ゴツメ回避の判断） |
+| `secondary.chance` + `secondary.boosts` | 追加効果の評価（ひるみ30%等をスコアに加算） |
+| `onTry` / `condition` | ねこだまし（ターン1限定）、ねむるの制約等 |
+| `self.boosts` | りゅうせいぐんのC-2等、自己デバフを技スコアに反映 |
+| `drain` | ドレイン技（ギガドレイン等）の回復量をスコアに加算 |
+| `recoil` | 反動技のリスクをスコアから減算 |
+
+#### Step 3: 特性データの参照による対面評価改善
+
+abilities.jsonから相手の特性効果を推定し、技選択と交代判定に反映：
+
+| 参照フィールド | 活用方法 |
+|--------------|---------|
+| `onModifyAtk` / `onModifySpA` | 相手のちからもち等の火力倍率を被ダメ推定に反映 |
+| `onDamagingHit` | さめはだ等の接触反動を技選択時に回避判断 |
+| `onStart` | いかくの攻撃低下を交代時の評価に反映 |
+| `onSourceModifyDamage` | マルチスケイル等の被ダメ軽減を確定数計算に反映 |
+| `immunities` | ふゆう(地面無効)等をタイプ相性に上乗せ |
+
+#### Step 4: アイテムデータの参照
+
+items.jsonから持ち物効果を推定：
+
+| 参照フィールド | 活用方法 |
+|--------------|---------|
+| `isChoice` | こだわり系（技固定）を検出 → 相手が同じ技を連打してきたら読み交代 |
+| `megaStone` | メガシンカ可能判定（`canMegaEvo`の裏付け） |
+| `onModifySpe` | スカーフのS1.5倍を速度比較に反映 |
+| `fling.basePower` | なげつけるの威力推定 |
+
+#### Step 5: 統合 — request JSON + Showdownデータ で精密判断
+
+request JSONから得られる情報とShowdownデータを組み合わせ：
+
+```python
+# request JSONから:
+opponent_species = "Garchomp"  # ログから取得
+my_stats = {"atk": 182, "def": 115, ...}  # request JSONから正確に取得
+available_moves = [{"id": "earthquake", "pp": 8}, ...]  # request JSONから
+
+# Showdownデータから:
+move_data = moves_json["earthquake"]  # basePower=100, type=Ground, flags={...}
+opp_data = pokedex_json["garchomp"]  # baseStats, types, abilities
+opp_ability_data = abilities_json[opp_data["abilities"]["0"]]  # 特性効果
+
+# 統合判断:
+damage = calc_damage(my_stats, move_data, opp_data)  # 精密ダメージ計算
+is_contact = move_data["flags"].get("contact")  # さめはだ回避判断
+opp_can_ohko = estimate_incoming(opp_data, opp_ability_data, my_stats)  # 交代判定
+```
+
+### 見積もり
+
+| Step | 実装量 | 優先度 |
+|------|--------|--------|
+| Step 1 (JSON変換) | 小（スクリプト1つ） | **最優先** — 他の全Stepの前提 |
+| Step 2 (技データ) | 中 | 高 — スコアリング精度が大幅に向上 |
+| Step 3 (特性データ) | 中 | 高 — 交代判定精度が向上 |
+| Step 4 (アイテム) | 小 | 中 — こだわり系の読みが可能に |
+| Step 5 (統合) | 大 | RL Phase 0の前に完了したい |
+
+---
+
 ### 優先度低（RLで解決すべき）
 
 | 改善点 | 理由 |
