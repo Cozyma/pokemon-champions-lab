@@ -38,3 +38,10 @@ tags: [index, docs]
 | ファイル | 概要 | タグ |
 |---------|------|------|
 | [2026-04-15-pokechamp-implementation.md](plans/2026-04-15-pokechamp-implementation.md) | フェーズ2実装計画（全10タスク） | plan, implementation |
+
+## src/pokechamp/ — 主要モジュール
+
+| ファイル | 概要 |
+|---------|------|
+| `env.py` | Gymnasium RL環境 (ChampionsEnv) — バトル状態の観測エンコード・報酬計算 |
+| `team_converter.py` | チームYAML → Showdown paste 変換 |
