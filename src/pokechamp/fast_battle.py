@@ -797,19 +797,21 @@ def _score_move(
     active_boosts: dict | None = None,
 ) -> float:
     """Score a single move using base stats and Showdown data enhancements."""
-    base_power = move.get("basePower", 0) or 0
+    move_id = move.get("id", "")
+
+    # Showdown request JSON doesn't include basePower/type/category — look up from cache
+    sd_move = showdown_data.get_move(move_id) if move_id else None
+    base_power = move.get("basePower") or (sd_move.get("basePower", 0) if sd_move else 0) or 0
     if base_power == 0:
         return 0.0
-
-    move_id = move.get("id", "")
-    move_type = (move.get("type") or "").lower()
+    move_type = (move.get("type") or (sd_move.get("type", "") if sd_move else "") or "").lower()
     active_types = [t.lower() for t in active_pokemon.get("types", [])]
 
     # STAB
     stab = 1.5 if move_type in active_types else 1.0
 
     # Category ratio
-    category = (move.get("category") or "").lower()
+    category = (move.get("category") or (sd_move.get("category", "") if sd_move else "") or "").lower()
     if category == "physical":
         ratio = physical_ratio
     elif category == "special":
@@ -1077,8 +1079,18 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                 priority_ko_move = move
                 break
 
+    # Detect switch loop: if we've switched 3+ times in a row recently, stop switching
+    recent_switches = 0
+    for line in reversed(log_lines[-30:]):
+        if f"|switch|{player_id}a: " in line:
+            recent_switches += 1
+        elif f"|move|{player_id}a: " in line:
+            break
+    in_switch_loop = recent_switches >= 3
+
     # Determine if we should switch out (but not if we have a priority KO available)
-    if priority_ko_move is None and available_switches and _should_switch_out(request, opp):
+    if (priority_ko_move is None and available_switches
+            and not in_switch_loop and _should_switch_out(request, opp)):
         switch_cmd = _choose_best_switch(request, opp)
         if switch_cmd:
             return switch_cmd
@@ -1146,8 +1158,8 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
             best_move, best_score = max(scored, key=lambda x: x[1])
             if best_score > 0:
                 return f"move {moves.index(best_move) + 1}{mega_suffix}"
-            # All moves score 0 (immune/no effect): switch if possible
-            if available_switches:
+            # All moves score 0 (immune/no effect): switch if possible (unless looping)
+            if available_switches and not in_switch_loop:
                 switch_cmd = _choose_best_switch(request, opp)
                 if switch_cmd:
                     return switch_cmd
