@@ -300,9 +300,22 @@ def _parse_opponent_ability(log_lines: list[str], my_player_id: str) -> str:
     for line in log_lines:
         if f"|switch|{opp_id}a: " in line or f"|drag|{opp_id}a: " in line:
             ability = ""
+        # |-ability|p2a: Gyarados|Intimidate|boost
         m = re.match(rf"\|-ability\|{opp_id}a: [^|]+\|([^|]+)", line)
         if m:
             ability = m.group(1).strip().lower().replace(" ", "")
+        # |-immune|p2a: Bronzong|[from] ability: Levitate
+        # |-activate|p2a: Heatran|ability: Flash Fire
+        if f"{opp_id}a: " in line and "[from] ability: " in line:
+            idx = line.index("[from] ability: ") + len("[from] ability: ")
+            ab_name = line[idx:].split("|")[0].strip().lower().replace(" ", "")
+            if ab_name:
+                ability = ab_name
+        if f"{opp_id}a: " in line and "ability: " in line and "|-activate|" in line:
+            idx = line.index("ability: ") + len("ability: ")
+            ab_name = line[idx:].split("|")[0].strip().lower().replace(" ", "")
+            if ab_name:
+                ability = ab_name
 
     return ability
 
