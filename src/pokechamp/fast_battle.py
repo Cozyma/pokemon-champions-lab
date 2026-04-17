@@ -949,7 +949,10 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     physical_ratio = atk_est / opp_def_est if opp_def_est else 1.0
     special_ratio = spa_est / opp_spd_est if opp_spd_est else 1.0
 
-    available_moves = [m for m in moves if not m.get("disabled") and m.get("pp", 1) > 0]
+    available_moves = [
+        m for m in moves
+        if not m.get("disabled") and m.get("pp", 1) not in (0, None)
+    ]
 
     # Filter switch-in-only moves (Fake Out, First Impression, etc.)
     current_turn = _parse_current_turn(log_lines)
@@ -1087,19 +1090,28 @@ def _count_opponent_remaining(log_lines: list[str], player_id: str) -> int:
 
 
 def _parse_side_conditions(log_lines: list[str], player_id: str) -> list[str]:
-    """Parse active side conditions from log."""
+    """Parse active side conditions from log.
+
+    Returns condition names with 'move: ' prefix stripped
+    (e.g. 'Stealth Rock' not 'move: Stealth Rock').
+    """
     conditions: list[str] = []
     for line in log_lines:
         if f"|-sidestart|{player_id}: " in line:
             parts = line.split("|")
             if len(parts) > 3:
                 cond = parts[3].strip()
+                # Strip 'move: ' prefix from condition names
+                if cond.startswith("move: "):
+                    cond = cond[6:]
                 if cond not in conditions:
                     conditions.append(cond)
         elif f"|-sideend|{player_id}: " in line:
             parts = line.split("|")
             if len(parts) > 3:
                 cond = parts[3].strip()
+                if cond.startswith("move: "):
+                    cond = cond[6:]
                 if cond in conditions:
                     conditions.remove(cond)
     return conditions
