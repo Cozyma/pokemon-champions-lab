@@ -175,3 +175,75 @@ def ability_is_power_boost(ability_id: str) -> bool:
         return False
     flags = a.get("flags", [])
     return bool({"modifyAtk", "modifySpA", "modifyPower", "modifySTAB"} & set(flags))
+
+
+@lru_cache(maxsize=1)
+def load_pokedex() -> dict[str, dict]:
+    """Load all species from the Showdown cache."""
+    path = CACHE_DIR / "pokedex.json"
+    if not path.exists():
+        return {}
+    with open(path) as f:
+        return json.load(f)
+
+
+def get_species_abilities(species: str) -> list[str]:
+    """Return list of ability IDs for a species (e.g. ['sandveil', 'roughskin'])."""
+    key = species.lower().replace(" ", "").replace("-", "")
+    pokedex = load_pokedex()
+    entry = pokedex.get(key)
+    if not entry:
+        return []
+    return list(entry.get("abilities", {}).values())
+
+
+# Type immunity abilities: ability_id -> immune_type
+_TYPE_IMMUNITY_ABILITIES: dict[str, str] = {
+    "levitate": "ground",
+    "flashfire": "fire",
+    "waterabsorb": "water",
+    "voltabsorb": "electric",
+    "sapsipper": "grass",
+    "lightningrod": "electric",
+    "stormdrain": "water",
+    "motordrive": "electric",
+    "dryskin": "water",
+    "eartheater": "ground",
+    "wellbakedbody": "fire",
+}
+
+# Attack multiplier abilities: ability_id -> (stat, multiplier)
+_ATTACK_MULTIPLIER_ABILITIES: dict[str, tuple[str, float]] = {
+    "hugepower": ("atk", 2.0),
+    "purepower": ("atk", 2.0),
+    "hustle": ("atk", 1.5),
+    "gorillatactics": ("atk", 1.5),
+}
+
+
+def ability_grants_type_immunity(ability_id: str) -> str | None:
+    """Return the type this ability grants immunity to, or None."""
+    return _TYPE_IMMUNITY_ABILITIES.get(ability_id)
+
+
+def ability_attack_multiplier(ability_id: str) -> tuple[str, float] | None:
+    """Return (stat, multiplier) if ability boosts attack, else None."""
+    return _ATTACK_MULTIPLIER_ABILITIES.get(ability_id)
+
+
+def species_may_have_contact_punish(species: str) -> bool:
+    """Return True if any of the species' possible abilities punishes contact."""
+    for ab_id in get_species_abilities(species):
+        if ability_has_contact_punish(ab_id):
+            return True
+    return False
+
+
+def species_type_immunities(species: str) -> list[str]:
+    """Return list of types this species might be immune to via abilities."""
+    immunities = []
+    for ab_id in get_species_abilities(species):
+        immune_type = ability_grants_type_immunity(ab_id)
+        if immune_type:
+            immunities.append(immune_type)
+    return immunities
