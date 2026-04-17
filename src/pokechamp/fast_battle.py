@@ -798,6 +798,17 @@ def _choose_best_switch(request: dict, opponent: dict) -> str | None:
             mon_types, mon_stats, _hp_pct(mon),
             opp_types, opp_stats, opp_hp,
         )
+
+        # Defensive safety bonus: if opponent deals very little damage,
+        # this pokemon can safely wall even without offensive advantage.
+        # switch_in_dmg is already computed above (0 if estimation failed).
+        if opp_species and opp_types and mon_current_hp > 0 and switch_in_dmg > 0:
+            dmg_ratio = switch_in_dmg / mon_current_hp
+            if dmg_ratio < 0.15:
+                score += 1.0  # can tank ~7+ hits: excellent wall
+            elif dmg_ratio < 0.25:
+                score += 0.5  # can tank 4-6 hits: solid wall
+
         if score > best_score:
             best_score = score
             best_idx = i + 1  # 1-indexed
