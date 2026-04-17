@@ -19,6 +19,33 @@ from pokechamp.models import TypeName
 SHOWDOWN_DIR = Path(__file__).resolve().parent.parent.parent / "engines" / "showdown"
 
 # ---------------------------------------------------------------------------
+# Mega Evolution lookup tables
+# ---------------------------------------------------------------------------
+
+# Type-changing megas: species -> {base_types, mega_types}
+# Only the 10 megas whose types change on evolution.
+MEGA_TYPE_CHANGES: dict[str, dict[str, list[str]]] = {
+    "charizard": {"base_types": ["fire", "flying"], "mega_types": ["fire", "dragon"]},  # X
+    "pinsir": {"base_types": ["bug"], "mega_types": ["bug", "flying"]},
+    "gyarados": {"base_types": ["water", "flying"], "mega_types": ["water", "dark"]},
+    "ampharos": {"base_types": ["electric"], "mega_types": ["electric", "dragon"]},
+    "aggron": {"base_types": ["steel", "rock"], "mega_types": ["steel"]},
+    "altaria": {"base_types": ["dragon", "flying"], "mega_types": ["dragon", "fairy"]},
+    "chimecho": {"base_types": ["psychic"], "mega_types": ["psychic", "steel"]},
+    "audino": {"base_types": ["normal"], "mega_types": ["normal", "fairy"]},
+    "feraligatr": {"base_types": ["water"], "mega_types": ["water", "dragon"]},
+    "meganium": {"base_types": ["grass"], "mega_types": ["grass", "fairy"]},
+}
+
+# Pre-mega abilities that are situationally valuable.
+# species -> {ability, check} where check is the condition type.
+MEGA_VALUABLE_ABILITIES: dict[str, dict[str, str]] = {
+    "clefable": {"ability": "unaware", "check": "opponent_has_boosts"},
+    "venusaur": {"ability": "chlorophyll", "check": "weather_is_sun"},
+}
+
+
+# ---------------------------------------------------------------------------
 # Type effectiveness (delegates to pokechamp.damage)
 # ---------------------------------------------------------------------------
 
