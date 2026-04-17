@@ -1413,3 +1413,106 @@ def test_scarf_detection_adjusts_speed():
     ]
     action = _choose_action(request, log_lines, "p1")
     assert action.startswith("move ")
+
+
+def test_parse_self_boosts():
+    """_parse_self_boosts tracks own stat changes from log."""
+    from pokechamp.fast_battle import _parse_self_boosts
+
+    log_lines = [
+        "|switch|p1a: Dragonite|Dragonite, L50, M|168/168",
+        "|turn|1",
+        "|move|p1a: Dragonite|Draco Meteor|p2a: Corviknight",
+        "|-unboost|p1a: Dragonite|spa|2",
+        "|turn|2",
+        "|move|p1a: Dragonite|Draco Meteor|p2a: Corviknight",
+        "|-unboost|p1a: Dragonite|spa|2",
+    ]
+    boosts = _parse_self_boosts(log_lines, "p1")
+    assert boosts["spa"] == -4
+
+
+def test_parse_self_boosts_reset_on_switch():
+    """Self boosts reset when own pokemon switches."""
+    from pokechamp.fast_battle import _parse_self_boosts
+
+    log_lines = [
+        "|switch|p1a: Dragonite|Dragonite, L50, M|168/168",
+        "|-unboost|p1a: Dragonite|spa|2",
+        "|switch|p1a: Garchomp|Garchomp, L50, M|185/185",
+        "|-boost|p1a: Garchomp|atk|2",
+    ]
+    boosts = _parse_self_boosts(log_lines, "p1")
+    assert boosts.get("spa", 0) == 0  # Dragonite's debuff cleared
+    assert boosts.get("atk", 0) == 2  # Garchomp's boost kept
+
+
+def test_parse_self_boosts_close_combat():
+    """Close Combat's Def/SpD drops are tracked."""
+    from pokechamp.fast_battle import _parse_self_boosts
+
+    log_lines = [
+        "|switch|p1a: Lopunny|Lopunny, L50, F|151/151",
+        "|move|p1a: Lopunny|Close Combat|p2a: Garchomp",
+        "|-unboost|p1a: Lopunny|def|1",
+        "|-unboost|p1a: Lopunny|spd|1",
+        "|move|p1a: Lopunny|Close Combat|p2a: Garchomp",
+        "|-unboost|p1a: Lopunny|def|1",
+        "|-unboost|p1a: Lopunny|spd|1",
+    ]
+    boosts = _parse_self_boosts(log_lines, "p1")
+    assert boosts["def"] == -2
+    assert boosts["spd"] == -2
+
+
+def test_choose_action_avoids_draco_meteor_at_minus6():
+    """AI should prefer Dragon Pulse over Draco Meteor when SpA is at -6."""
+    from pokechamp.fast_battle import _choose_action
+
+    request = {
+        "active": [
+            {
+                "moves": [
+                    {"move": "Draco Meteor", "id": "dracometeor", "pp": 4, "maxpp": 8,
+                     "basePower": 130, "type": "Dragon", "category": "Special",
+                     "accuracy": 90, "target": "normal", "disabled": False},
+                    {"move": "Dragon Pulse", "id": "dragonpulse", "pp": 16, "maxpp": 16,
+                     "basePower": 85, "type": "Dragon", "category": "Special",
+                     "accuracy": 100, "target": "normal", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Dragonite",
+                    "active": True,
+                    "condition": "168/168",
+                    "types": ["dragon", "flying"],
+                    "stats": {"atk": 186, "def": 115, "spa": 120, "spd": 120, "spe": 100},
+                    "boosts": {},
+                }
+            ]
+        },
+    }
+    # Log shows SpA dropped -6 from 3x Draco Meteor
+    log_lines = [
+        "|switch|p1a: Dragonite|Dragonite, L50, M|168/168",
+        "|switch|p2a: Corviknight|Corviknight, L50, F|173/173",
+        "|turn|1",
+        "|move|p1a: Dragonite|Draco Meteor|p2a: Corviknight",
+        "|-unboost|p1a: Dragonite|spa|2",
+        "|turn|2",
+        "|move|p1a: Dragonite|Draco Meteor|p2a: Corviknight",
+        "|-unboost|p1a: Dragonite|spa|2",
+        "|turn|3",
+        "|move|p1a: Dragonite|Draco Meteor|p2a: Corviknight",
+        "|-unboost|p1a: Dragonite|spa|2",
+        "|turn|4",
+    ]
+    action = _choose_action(request, log_lines, "p1")
+    # At -6 SpA, Draco Meteor is much weaker. Dragon Pulse (no debuff) should win.
+    # Draco: 130 * 0.9acc * (2/(2+6)) ratio * 0.7 debuff_penalty
+    # Pulse: 85 * 1.0acc * (2/(2+6)) ratio * 1.0
+    # Dragon Pulse should be preferred
+    assert action.startswith("move 2"), f"Expected Dragon Pulse (move 2), got '{action}'"

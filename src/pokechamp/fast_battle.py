@@ -264,6 +264,30 @@ def _parse_opponent_boosts(log_lines: list[str], my_player_id: str) -> dict[str,
     return boosts
 
 
+def _parse_self_boosts(log_lines: list[str], player_id: str) -> dict[str, int]:
+    """Extract own active pokemon's stat boosts from battle log.
+
+    Boosts reset on switch. Returns dict like {"spa": -4, "def": -2}.
+    Needed because request JSON boosts don't include move-induced self-debuffs
+    (e.g. Draco Meteor's SpA -2, Close Combat's Def/SpD -1).
+    """
+    boosts: dict[str, int] = {}
+
+    for line in log_lines:
+        if f"|switch|{player_id}a: " in line or f"|drag|{player_id}a: " in line:
+            boosts.clear()
+        m = re.match(rf"\|-boost\|{player_id}a: [^|]+\|(\w+)\|(\d+)", line)
+        if m:
+            stat, stages = m.group(1), int(m.group(2))
+            boosts[stat] = boosts.get(stat, 0) + stages
+        m = re.match(rf"\|-unboost\|{player_id}a: [^|]+\|(\w+)\|(\d+)", line)
+        if m:
+            stat, stages = m.group(1), int(m.group(2))
+            boosts[stat] = boosts.get(stat, 0) - stages
+
+    return boosts
+
+
 def _parse_opponent_ability(log_lines: list[str], my_player_id: str) -> str:
     """Extract opponent's revealed ability from battle log.
 
@@ -751,6 +775,7 @@ def _score_move(
     opponent: dict,
     physical_ratio: float,
     special_ratio: float,
+    active_boosts: dict | None = None,
 ) -> float:
     """Score a single move using base stats and Showdown data enhancements."""
     base_power = move.get("basePower", 0) or 0
@@ -810,8 +835,22 @@ def _score_move(
         if recoil > 0:
             score *= (1.0 - recoil * 0.75)
 
-        # Self-debuff: penalize stat drops after attacking
+        # Self-debuff: penalize stat drops after attacking.
+        # If the relevant stat is already deeply negative, apply an extra
+        # penalty proportional to how far in the hole we already are.
+        # e.g. Draco Meteor at spa=-6: extra * 2/(2+6)=0.25, making it
+        # much weaker than Dragon Pulse despite higher base power.
         debuff_penalty = showdown_data.move_self_debuff_penalty(move_id)
+        if debuff_penalty < 1.0 and active_boosts:
+            m_data = showdown_data.get_move(move_id)
+            if m_data and "selfBoosts" in m_data:
+                for stat, drop in m_data["selfBoosts"].items():
+                    if drop < 0:
+                        current_boost = active_boosts.get(stat, 0)
+                        if current_boost < 0:
+                            # Extra penalty: 2 / (2 + |current_negative_boost|)
+                            extra = 2 / (2 + abs(current_boost))
+                            debuff_penalty *= extra
         score *= debuff_penalty
 
         # Two-turn moves: halve effective damage (charge/recharge = 2 turns for 1 hit)
@@ -912,6 +951,12 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     # Derive stat ratios for physical/special scoring
     active_stats = active_pokemon.get("stats", {})
     active_boosts = active_pokemon.get("boosts", {})
+    # Merge self boosts from log (request JSON misses move-induced self-debuffs)
+    log_boosts = _parse_self_boosts(log_lines, player_id)
+    if log_boosts:
+        active_boosts = dict(active_boosts)  # copy to avoid mutating request
+        for stat, val in log_boosts.items():
+            active_boosts[stat] = active_boosts.get(stat, 0) + val
     opp = _parse_opponent_from_log(log_lines, player_id)
     opp_stats = opp.get("stats", {})
     opp_boosts = _parse_opponent_boosts(log_lines, player_id)
@@ -1046,7 +1091,7 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
         # Score moves and pick best
         scored = []
         for move in available_moves:
-            score = _score_move(move, active_pokemon, opp, physical_ratio, special_ratio)
+            score = _score_move(move, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
             scored.append((move, score))
 
         if scored:
