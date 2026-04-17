@@ -271,6 +271,81 @@ def _parse_weather(log_lines: list[str]) -> str:
     return weather
 
 
+def _extract_species_key(species: str) -> str:
+    """Normalize species name to lookup key (e.g. 'Charizard' -> 'charizard')."""
+    return species.split("-")[0].strip().lower()
+
+
+def _should_mega_evolve(
+    species: str,
+    active_types: list[str],
+    opp_types: list[str],
+    opp_boosts: dict[str, int],
+    weather: str,
+    moves: list[dict],
+) -> bool:
+    """Decide whether to mega evolve this turn.
+
+    Default: True (always mega).
+    Exceptions:
+      - Category A: Type change increases opponent's max damage against us,
+        OR type change reduces our best move's effective score.
+      - Category B: Pre-mega ability is situationally valuable
+        (Clefable/Unaware when opponent has boosts, Venusaur/Chlorophyll in sun).
+    """
+    key = _extract_species_key(species)
+
+    # --- Category B: valuable pre-mega ability ---
+    if key in MEGA_VALUABLE_ABILITIES:
+        entry = MEGA_VALUABLE_ABILITIES[key]
+        check = entry["check"]
+        if check == "opponent_has_boosts":
+            if any(v > 0 for v in opp_boosts.values()):
+                return False
+        elif check == "weather_is_sun":
+            if weather == "sunnyday":
+                return False
+
+    # --- Category A: type change evaluation ---
+    if key not in MEGA_TYPE_CHANGES:
+        return True
+
+    info = MEGA_TYPE_CHANGES[key]
+    base_types = info["base_types"]
+    mega_types = info["mega_types"]
+
+    # 1. Defensive check: does mega increase max incoming damage?
+    base_incoming = max(
+        (_calc_type_effectiveness(t, base_types) for t in opp_types),
+        default=1.0,
+    )
+    mega_incoming = max(
+        (_calc_type_effectiveness(t, mega_types) for t in opp_types),
+        default=1.0,
+    )
+    if mega_incoming > base_incoming:
+        return False
+
+    # 2. Offensive check: does mega reduce our best move score?
+    base_best = 0.0
+    mega_best = 0.0
+    for move in moves:
+        bp = move.get("basePower", 0) or 0
+        if bp == 0:
+            continue
+        move_type = (move.get("type") or "").lower()
+        eff = _calc_type_effectiveness(move_type, opp_types)
+        base_stab = 1.5 if move_type in [t.lower() for t in base_types] else 1.0
+        mega_stab = 1.5 if move_type in [t.lower() for t in mega_types] else 1.0
+        base_best = max(base_best, bp * base_stab * eff)
+        mega_best = max(mega_best, bp * mega_stab * eff)
+
+    if mega_best < base_best:
+        return False
+
+    return True
+
+
 # ---------------------------------------------------------------------------
 # Damage-based helpers for switch decisions
 # ---------------------------------------------------------------------------

@@ -681,3 +681,123 @@ def test_parse_opponent_boosts_reset_on_switch():
     boosts = _parse_opponent_boosts(log_lines, "p1")
     assert boosts.get("atk", 0) == 0
     assert boosts.get("def", 0) == 1
+
+
+# ---------------------------------------------------------------------------
+# Mega evolution decision tests
+# ---------------------------------------------------------------------------
+
+
+def test_should_mega_evolve_default_true():
+    """Pokemon not in any lookup table should always mega evolve."""
+    from pokechamp.fast_battle import _should_mega_evolve
+
+    assert _should_mega_evolve(
+        species="Lopunny",
+        active_types=["normal"],
+        opp_types=["dragon", "ground"],
+        opp_boosts={},
+        weather="",
+        moves=[{"id": "return", "basePower": 102, "type": "Normal", "category": "Physical"}],
+    ) is True
+
+
+def test_should_mega_evolve_type_change_increases_incoming_damage():
+    """Charizard-X gains Dragon type, weak to Dragon from Dragon opponent."""
+    from pokechamp.fast_battle import _should_mega_evolve
+
+    assert _should_mega_evolve(
+        species="Charizard",
+        active_types=["fire", "flying"],
+        opp_types=["dragon"],
+        opp_boosts={},
+        weather="",
+        moves=[{"id": "flareblitz", "basePower": 120, "type": "Fire", "category": "Physical"}],
+    ) is False
+
+
+def test_should_mega_evolve_type_change_reduces_incoming_damage():
+    """Aggron loses Rock type, reducing Water weakness."""
+    from pokechamp.fast_battle import _should_mega_evolve
+
+    assert _should_mega_evolve(
+        species="Aggron",
+        active_types=["steel", "rock"],
+        opp_types=["water"],
+        opp_boosts={},
+        weather="",
+        moves=[{"id": "ironhead", "basePower": 80, "type": "Steel", "category": "Physical"}],
+    ) is True
+
+
+def test_should_mega_evolve_type_change_reduces_stab():
+    """Gyarados loses Flying STAB when best move is Flying type."""
+    from pokechamp.fast_battle import _should_mega_evolve
+
+    assert _should_mega_evolve(
+        species="Gyarados",
+        active_types=["water", "flying"],
+        opp_types=["grass"],
+        opp_boosts={},
+        weather="",
+        moves=[
+            {"id": "bounce", "basePower": 85, "type": "Flying", "category": "Physical"},
+            {"id": "waterfall", "basePower": 80, "type": "Water", "category": "Physical"},
+        ],
+    ) is False
+
+
+def test_should_mega_evolve_clefable_unaware_with_boosts():
+    """Clefable should NOT mega when opponent has stat boosts (Unaware is valuable)."""
+    from pokechamp.fast_battle import _should_mega_evolve
+
+    assert _should_mega_evolve(
+        species="Clefable",
+        active_types=["fairy"],
+        opp_types=["normal"],
+        opp_boosts={"atk": 2},
+        weather="",
+        moves=[{"id": "moonblast", "basePower": 95, "type": "Fairy", "category": "Special"}],
+    ) is False
+
+
+def test_should_mega_evolve_clefable_unaware_no_boosts():
+    """Clefable SHOULD mega when opponent has no boosts."""
+    from pokechamp.fast_battle import _should_mega_evolve
+
+    assert _should_mega_evolve(
+        species="Clefable",
+        active_types=["fairy"],
+        opp_types=["normal"],
+        opp_boosts={},
+        weather="",
+        moves=[{"id": "moonblast", "basePower": 95, "type": "Fairy", "category": "Special"}],
+    ) is True
+
+
+def test_should_mega_evolve_venusaur_in_sun():
+    """Venusaur should NOT mega in sun (Chlorophyll doubles speed)."""
+    from pokechamp.fast_battle import _should_mega_evolve
+
+    assert _should_mega_evolve(
+        species="Venusaur",
+        active_types=["grass", "poison"],
+        opp_types=["water"],
+        opp_boosts={},
+        weather="sunnyday",
+        moves=[{"id": "sludgebomb", "basePower": 90, "type": "Poison", "category": "Special"}],
+    ) is False
+
+
+def test_should_mega_evolve_venusaur_no_sun():
+    """Venusaur SHOULD mega when no sun."""
+    from pokechamp.fast_battle import _should_mega_evolve
+
+    assert _should_mega_evolve(
+        species="Venusaur",
+        active_types=["grass", "poison"],
+        opp_types=["water"],
+        opp_boosts={},
+        weather="",
+        moves=[{"id": "sludgebomb", "basePower": 90, "type": "Poison", "category": "Special"}],
+    ) is True
