@@ -1,0 +1,53 @@
+Bronzong @ Leftovers
+Ability: Levitate
+EVs: 32 Def / 32 SpD
+Relaxed Nature
+- Stealth Rock
+- Earthquake
+- Iron Head
+- Trick Room
+
+Chandelure @ Chandelurite
+Ability: Flash Fire
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Shadow Ball
+- Flamethrower
+- Energy Ball
+- Will-O-Wisp
+
+Cresselia @ Sitrus Berry
+Ability: Levitate
+EVs: 32 Def / 32 SpD
+Bold Nature
+- Psychic
+- Ice Beam
+- Moonlight
+- Trick Room
+
+Houndoom @ Houndoominite
+Ability: Flash Fire
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Dark Pulse
+- Flamethrower
+- Sludge Bomb
+- Taunt
+
+Weezing-Galar @ Black Sludge
+Ability: Levitate
+EVs: 32 Def / 32 SpD
+Bold Nature
+- Sludge Bomb
+- Strange Steam
+- Will-O-Wisp
+- Defog
+
+Cryogonal @ Scope Lens
+Ability: Levitate
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Ice Beam
+- Freeze-Dry
+- Rapid Spin
+- Recover

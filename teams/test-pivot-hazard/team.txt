@@ -1,0 +1,53 @@
+Scizor @ Scizorite
+Ability: Technician
+EVs: 32 Atk / 32 HP
+Adamant Nature
+- Bullet Punch
+- U-turn
+- Knock Off
+- Swords Dance
+
+Greninja @ Greninjite
+Ability: Protean
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Surf
+- Ice Beam
+- Dark Pulse
+- U-turn
+
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Outrage
+- Stone Edge
+- U-turn
+
+Sableye @ Sableyeite
+Ability: Prankster
+EVs: 32 Def / 32 SpD
+Careful Nature
+- Knock Off
+- Will-O-Wisp
+- Recover
+- Taunt
+
+Heatran @ Heatranite
+Ability: Flash Fire
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Magma Storm
+- Flash Cannon
+- Earth Power
+- Stealth Rock
+
+Corviknight @ Leftovers
+Ability: Pressure
+EVs: 32 Def / 32 SpD
+Impish Nature
+- Iron Head
+- Body Press
+- Roost
+- Defog

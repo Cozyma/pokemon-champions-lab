@@ -1,0 +1,53 @@
+Serperior @ Leftovers
+Ability: Contrary
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Leaf Storm
+- Dragon Pulse
+- Glare
+- Substitute
+
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 32 Atk / 32 Spe
+Adamant Nature
+- Dragon Dance
+- Dragon Claw
+- Earthquake
+- Extreme Speed
+
+Lopunny @ Lopunnite
+Ability: Limber
+EVs: 32 Atk / 32 Spe
+Jolly Nature
+- Fake Out
+- Return
+- Close Combat
+- Ice Punch
+
+Volcarona @ Focus Sash
+Ability: Flame Body
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Fiery Dance
+- Bug Buzz
+- Quiver Dance
+- Roost
+
+Meganium @ Meganiumite
+Ability: Overgrow
+EVs: 32 SpA / 32 Spe
+Modest Nature
+- Solar Beam
+- Dragon Pulse
+- Synthesis
+- Leech Seed
+
+Excadrill @ Excadrite
+Ability: Sand Rush
+EVs: 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Iron Head
+- Rock Slide
+- Swords Dance

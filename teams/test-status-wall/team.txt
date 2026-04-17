@@ -1,0 +1,53 @@
+Clefable @ Clefablite
+Ability: Unaware
+EVs: 32 Def / 32 SpD
+Bold Nature
+- Moonblast
+- Flamethrower
+- Soft-Boiled
+- Thunder Wave
+
+Bronzong @ Leftovers
+Ability: Levitate
+EVs: 32 Def / 32 SpD
+Sassy Nature
+- Iron Head
+- Earthquake
+- Trick Room
+- Stealth Rock
+
+Chandelure @ Chandelurite
+Ability: Flash Fire
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Shadow Ball
+- Flamethrower
+- Energy Ball
+- Will-O-Wisp
+
+Azumarill @ Sitrus Berry
+Ability: Huge Power
+EVs: 32 Atk / 32 HP
+Adamant Nature
+- Play Rough
+- Aqua Jet
+- Knock Off
+- Belly Drum
+
+Sableye @ Sableyeite
+Ability: Prankster
+EVs: 32 Def / 32 SpD
+Careful Nature
+- Knock Off
+- Will-O-Wisp
+- Recover
+- Taunt
+
+Skarmory @ Skarmoryite
+Ability: Sturdy
+EVs: 32 Def / 32 SpD
+Impish Nature
+- Iron Head
+- Body Press
+- Roost
+- Whirlwind

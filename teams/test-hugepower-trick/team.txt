@@ -1,0 +1,53 @@
+Azumarill @ Sitrus Berry
+Ability: Huge Power
+EVs: 32 Atk / 32 HP
+Adamant Nature
+- Play Rough
+- Aqua Jet
+- Knock Off
+- Belly Drum
+
+Diggersby @ Choice Scarf
+Ability: Huge Power
+EVs: 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Return
+- U-turn
+- Quick Attack
+
+Clefable @ Clefablite
+Ability: Unaware
+EVs: 32 Def / 32 SpD
+Bold Nature
+- Moonblast
+- Flamethrower
+- Soft-Boiled
+- Stealth Rock
+
+Slowbro @ Slowbronite
+Ability: Regenerator
+EVs: 32 Def / 32 SpA
+Relaxed Nature
+- Scald
+- Psychic
+- Trick Room
+- Slack Off
+
+Skarmory @ Skarmoryite
+Ability: Sturdy
+EVs: 32 Def / 32 SpD
+Impish Nature
+- Iron Head
+- Body Press
+- Roost
+- Spikes
+
+Serperior @ Leftovers
+Ability: Contrary
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Leaf Storm
+- Dragon Pulse
+- Glare
+- Substitute

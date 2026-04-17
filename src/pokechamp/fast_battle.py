@@ -305,13 +305,19 @@ def _parse_opponent_ability(log_lines: list[str], my_player_id: str) -> str:
         if m:
             ability = m.group(1).strip().lower().replace(" ", "")
         # |-immune|p2a: Bronzong|[from] ability: Levitate
-        # |-activate|p2a: Heatran|ability: Flash Fire
+        # But NOT: |-damage|p2a: Bronzong|...|[from] ability: Rough Skin|[of] p1a: Garchomp
+        # The [of] tag indicates the ability belongs to a DIFFERENT pokemon.
         if f"{opp_id}a: " in line and "[from] ability: " in line:
-            idx = line.index("[from] ability: ") + len("[from] ability: ")
-            ab_name = line[idx:].split("|")[0].strip().lower().replace(" ", "")
-            if ab_name:
-                ability = ab_name
-        if f"{opp_id}a: " in line and "ability: " in line and "|-activate|" in line:
+            # Skip if [of] points to a different player (ability belongs to them, not opponent)
+            if f"[of] {opp_id}a:" not in line and "[of]" in line:
+                pass  # ability belongs to someone else
+            else:
+                idx = line.index("[from] ability: ") + len("[from] ability: ")
+                ab_name = line[idx:].split("|")[0].strip().lower().replace(" ", "")
+                if ab_name:
+                    ability = ab_name
+        # |-activate|p2a: Heatran|ability: Flash Fire
+        if f"|-activate|{opp_id}a: " in line and "ability: " in line:
             idx = line.index("ability: ") + len("ability: ")
             ab_name = line[idx:].split("|")[0].strip().lower().replace(" ", "")
             if ab_name:
@@ -1140,12 +1146,18 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
             best_move, best_score = max(scored, key=lambda x: x[1])
             if best_score > 0:
                 return f"move {moves.index(best_move) + 1}{mega_suffix}"
-            # All status moves or 0 power: pick first available
+            # All moves score 0 (immune/no effect): switch if possible
+            if available_switches:
+                switch_cmd = _choose_best_switch(request, opp)
+                if switch_cmd:
+                    return switch_cmd
+            # No switch available: use first move as last resort
             return f"move {moves.index(available_moves[0]) + 1}{mega_suffix}"
 
     # Fallback to first move
     if moves:
-        return f"move {moves.index(next(m for m in moves if not m.get('disabled')), moves[0]) + 1}{mega_suffix}"
+        first_avail = next((m for m in moves if not m.get("disabled")), moves[0])
+        return f"move {moves.index(first_avail) + 1}{mega_suffix}"
 
     # If we have switches, switch to best
     if available_switches:
