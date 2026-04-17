@@ -996,17 +996,118 @@ def _priority_can_ko(
     return move_score >= opp_hp_pct * 1.5
 
 
+def _select_team_preview(
+    team: list[dict], log_lines: list[str], max_size: int,
+) -> list[int]:
+    """Select best pokemon for team preview based on type matchup vs opponent.
+
+    Parses opponent team from |poke| lines in log, scores all C(n, max_size)
+    combinations, and picks from the top candidates with slight randomness.
+    Returns 1-indexed picks like [2, 4, 5].
+    """
+    import itertools
+    import random
+
+    # Parse opponent species from |poke| lines
+    opp_species_list: list[str] = []
+    for line in log_lines:
+        if "|poke|" in line:
+            parts = line.split("|")
+            if len(parts) >= 4:
+                # |poke|p2|Garchomp, L50, M|
+                poke_info = parts[3]
+                species = poke_info.split(",")[0].strip()
+                # Only opponent's pokemon (detect from p1/p2)
+                player_tag = parts[2].strip()
+                # We don't know which player we are at this point,
+                # so collect all and deduplicate by player
+                opp_species_list.append((player_tag, species))
+
+    # Determine which player tag is ours from team idents
+    my_tag = ""
+    if team:
+        ident = team[0].get("ident", "")
+        if ident.startswith("p1"):
+            my_tag = "p1"
+        elif ident.startswith("p2"):
+            my_tag = "p2"
+
+    opp_species = [sp for tag, sp in opp_species_list if tag != my_tag]
+
+    if not opp_species:
+        # Fallback: pick first max_size
+        return list(range(1, min(max_size, len(team)) + 1))
+
+    # Get types for our team and opponent
+    my_pokemon: list[tuple[int, list[str]]] = []
+    for i, mon in enumerate(team):
+        types = _get_pokemon_types(mon)
+        my_pokemon.append((i, types))
+
+    opp_types_list: list[list[str]] = []
+    pokedex = showdown_data.load_pokedex()
+    for sp in opp_species:
+        key = sp.lower().replace(" ", "").replace("-", "")
+        entry = pokedex.get(key)
+        if entry:
+            opp_types_list.append([t.lower() for t in entry.get("types", [])])
+        else:
+            opp_types_list.append([])
+
+    # Score each combination of max_size pokemon
+    indices = list(range(len(team)))
+    best_combos: list[tuple[float, tuple[int, ...]]] = []
+
+    for combo in itertools.combinations(indices, min(max_size, len(team))):
+        score = 0.0
+        combo_types = [my_pokemon[i][1] for i in combo]
+
+        for opp_t in opp_types_list:
+            if not opp_t:
+                continue
+            # Best matchup any of our 3 has against this opponent
+            best_vs_this_opp = -10.0
+            for my_t in combo_types:
+                if not my_t:
+                    continue
+                # Offensive: best type eff we deal
+                atk_eff = max(
+                    (_calc_type_effectiveness(t, opp_t) for t in my_t),
+                    default=1.0,
+                )
+                # Defensive: best type eff they deal to us
+                def_eff = max(
+                    (_calc_type_effectiveness(t, my_t) for t in opp_t),
+                    default=1.0,
+                )
+                matchup = atk_eff - def_eff
+                best_vs_this_opp = max(best_vs_this_opp, matchup)
+            score += best_vs_this_opp
+
+        best_combos.append((score, combo))
+
+    # Sort by score descending, pick from top 3 with randomness
+    # Use hash of opponent species as deterministic seed for reproducibility
+    best_combos.sort(key=lambda x: -x[0])
+    top_n = min(3, len(best_combos))
+    if top_n > 0:
+        rng = random.Random(hash(tuple(opp_species)))
+        chosen = rng.choice(best_combos[:top_n])
+        return [i + 1 for i in chosen[1]]
+
+    return list(range(1, min(max_size, len(team)) + 1))
+
+
 def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     """Choose an action given the current request JSON.
 
     Returns a command string like 'move 1', 'switch 2', 'team 123', etc.
     """
-    # Team preview
+    # Team preview — select best 3 based on type matchup vs opponent team
     if request.get("teamPreview"):
         max_size = request.get("maxChosenTeamSize", 3)
         team = request.get("side", {}).get("pokemon", [])
-        # Pick first max_size
-        picks = list(range(1, min(max_size, len(team)) + 1))
+        picks = _select_team_preview(team, log_lines, max_size)
         return f"team {''.join(str(p) for p in picks)}"
 
     # Force switch
