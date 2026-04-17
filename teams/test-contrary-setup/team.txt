@@ -32,14 +32,14 @@ Timid Nature
 - Fiery Dance
 - Bug Buzz
 - Quiver Dance
-- Roost
+- Morning Sun
 
 Meganium @ Meganiumite
 Ability: Overgrow
 EVs: 32 SpA / 32 Spe
 Modest Nature
 - Solar Beam
-- Dragon Pulse
+- Earth Power
 - Synthesis
 - Leech Seed
 
