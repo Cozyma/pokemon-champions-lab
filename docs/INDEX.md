@@ -33,6 +33,7 @@ tags: [index, docs]
 | [2026-04-15-initial-development.md](design/decisions/2026-04-15-initial-development.md) | 初期開発経緯（設計判断・実装時系列・フェーズ2→2.5） | ADR, log |
 | [2026-04-16-rl-roadmap.md](design/decisions/2026-04-16-rl-roadmap.md) | 強化学習ロードマップ（PPO→Self-Play→選出AI→信念状態→ReBeL） | ADR, RL, roadmap |
 | [2026-04-16-showdown-migration-and-ai.md](design/decisions/2026-04-16-showdown-migration-and-ai.md) | Showdown移行・RL環境構築・AI改善の開発経緯 | ADR, log, showdown, AI |
+| [2026-04-17-ai-overhaul.md](design/decisions/2026-04-17-ai-overhaul.md) | ヒューリスティックAI大幅改善（メガシンカ・Showdownデータ・選出・回復/壁） | ADR, log, AI, heuristic |
 
 > 設計判断が発生したら `design/decisions/YYYY-MM-DD-{topic}.md` に記録する。
 
@@ -46,7 +47,9 @@ tags: [index, docs]
 
 | ファイル | 概要 |
 |---------|------|
+| `damage.py` | ダメージ計算エンジン — タイプ相性テーブル(`typechart.json` SSOT)・ステータス計算・ダメージ範囲計算 |
+| `damage_calc.py` | ダメージ計算��エリ (`damage_query`) & 逆算推定 (`estimate_attacker`)。フォーム名対応 |
 | `env.py` | Gymnasium RL環境 (ChampionsEnv) — バトル状態の観測エンコード・報酬計算 |
-| `showdown_data.py` | ShowdownデータJSONローダー — 技・特性のAI参照用関数群 |
+| `showdown_data.py` | Showdownデー���JSONローダー — 技・特性・種族値(フォーム別)のAI参照用関数群 |
 | `team_converter.py` | チームYAML → Showdown paste 変換 |
 | `type_filter.py` | タイプ相性ベース高速フィルタ — 脅威分析・カバー候補提案 (パーティ構築補助) |
