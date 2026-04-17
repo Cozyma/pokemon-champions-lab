@@ -12,7 +12,7 @@ Ability: Blaze
 EVs: 2 HP / 32 Atk / 32 Spe
 Adamant Nature
 - Dragon Claw
-- Nitro Charge
+- Flame Charge
 - Will-O-Wisp
 - Roost
 

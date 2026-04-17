@@ -30,7 +30,7 @@ Ability: Synchronize
 EVs: 32 HP / 2 Def / 32 SpD
 Calm Nature
 - Foul Play
-- Moonblast
+- Moonlight
 - Dark Pulse
 - Protect
 

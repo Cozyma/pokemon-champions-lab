@@ -41,7 +41,7 @@ Timid Nature
 - Flamethrower
 - Will-O-Wisp
 - Morning Sun
-- Roost
+- Extreme Speed
 
 Greninja @ Focus Sash
 Ability: Protean
