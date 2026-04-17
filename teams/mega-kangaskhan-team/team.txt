@@ -22,7 +22,7 @@ EVs: 32 HP / 32 Def / 2 SpD
 Impish Nature
 - Earthquake
 - Stealth Rock
-- Roost
+- Slack Off
 - Stone Edge
 
 Aegislash-Shield @ Spell Tag
