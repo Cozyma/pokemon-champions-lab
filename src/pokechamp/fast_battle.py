@@ -13,6 +13,7 @@ import subprocess
 import time
 from pathlib import Path
 
+from pokechamp import showdown_data
 from pokechamp.damage import type_effectiveness
 from pokechamp.models import TypeName
 
@@ -681,11 +682,12 @@ def _score_move(
     physical_ratio: float,
     special_ratio: float,
 ) -> float:
-    """Score a single move (mirrors SimpleHeuristicsPlayer's inline scoring)."""
+    """Score a single move using base stats and Showdown data enhancements."""
     base_power = move.get("basePower", 0) or 0
     if base_power == 0:
         return 0.0
 
+    move_id = move.get("id", "")
     move_type = (move.get("type") or "").lower()
     active_types = [t.lower() for t in active_pokemon.get("types", [])]
 
@@ -710,10 +712,52 @@ def _score_move(
 
     expected_hits = move.get("multihit", 1) or 1
     if isinstance(expected_hits, list):
-        # e.g. [2, 5] multi-hit: expected ~3.17
         expected_hits = sum(expected_hits) / len(expected_hits)
 
-    return base_power * stab * ratio * accuracy * expected_hits * effectiveness
+    score = base_power * stab * ratio * accuracy * expected_hits * effectiveness
+
+    # --- Showdown data enhancements ---
+    if move_id:
+        # Drain: reward HP recovery (e.g. +50% for Giga Drain)
+        drain = showdown_data.move_drain_ratio(move_id)
+        if drain > 0:
+            score *= (1.0 + drain * 0.5)
+
+        # Recoil: penalize self-damage (e.g. -25% for Brave Bird)
+        recoil = showdown_data.move_recoil_ratio(move_id)
+        if recoil > 0:
+            score *= (1.0 - recoil * 0.75)
+
+        # Self-debuff: penalize stat drops after attacking
+        debuff_penalty = showdown_data.move_self_debuff_penalty(move_id)
+        score *= debuff_penalty
+
+        # Two-turn moves: halve effective damage (charge/recharge = 2 turns for 1 hit)
+        if showdown_data.move_is_two_turn(move_id):
+            score *= 0.5
+
+        # Contact move vs contact-punishing ability (Rough Skin, Iron Barbs)
+        if showdown_data.move_is_contact(move_id):
+            # Simple heuristic: penalize contact slightly as precaution
+            # More precise check would need opponent's actual ability
+            score *= 0.95
+
+        # Flinch bonus (only valuable when we're faster)
+        flinch = showdown_data.move_flinch_chance(move_id)
+        if flinch > 0:
+            active_spe = active_pokemon.get("stats", {}).get("spe", 100)
+            opp_spe = opponent.get("stats", {}).get("spe", 100)
+            if active_spe > opp_spe:
+                score *= (1.0 + flinch * 0.3)
+
+        # Status infliction bonus
+        status, chance = showdown_data.move_status_chance(move_id)
+        if status and chance > 0:
+            status_value = {"brn": 0.15, "par": 0.12, "psn": 0.05, "tox": 0.10, "slp": 0.20, "frz": 0.20}
+            bonus = status_value.get(status, 0.05) * chance
+            score *= (1.0 + bonus)
+
+    return score
 
 
 def _stat_estimation(base_stat: int, boost: int) -> float:
@@ -811,12 +855,25 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
 
     available_moves = [m for m in moves if not m.get("disabled") and m.get("pp", 1) > 0]
 
-    # Filter Fake Out: only usable on the turn the pokemon switched in
+    # Filter switch-in-only moves (Fake Out, First Impression, etc.)
     current_turn = _parse_current_turn(log_lines)
     switch_in_turn = _parse_switch_in_turn(log_lines, player_id)
     is_switch_in_turn = (current_turn <= switch_in_turn + 1)
     if not is_switch_in_turn:
-        available_moves = [m for m in available_moves if m.get("id") != "fakeout"]
+        available_moves = [
+            m for m in available_moves
+            if not showdown_data.move_is_switch_in_only(m.get("id", ""))
+        ]
+
+    # Filter self-destruct moves unless it's a favorable trade
+    # (only use when we're on last pokemon or opponent is low HP)
+    my_remaining = sum(1 for p in team if not _is_fainted(p))
+    opp_hp = opp.get("hp_pct", 100.0)
+    if my_remaining > 1 and opp_hp > 30:
+        available_moves = [
+            m for m in available_moves
+            if not showdown_data.move_is_self_destruct(m.get("id", ""))
+        ]
 
     available_switches = [p for p in team if not p.get("active") and not _is_fainted(p)]
 

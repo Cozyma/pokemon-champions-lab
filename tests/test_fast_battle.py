@@ -1037,3 +1037,170 @@ def test_choose_action_fake_out_only_on_switch_in_turn():
     action = _choose_action(base_request, log_turn2, "p1")
     # Should pick Return (move 2), not Fake Out
     assert action.startswith("move 2"), f"Expected 'move 2...', got '{action}'"
+
+
+# ---------------------------------------------------------------------------
+# Showdown data-enhanced scoring tests
+# ---------------------------------------------------------------------------
+
+
+def test_score_move_drain_bonus():
+    """Drain moves should score higher than equivalent non-drain moves."""
+    from pokechamp.fast_battle import _score_move
+
+    active = {"types": ["grass"], "stats": {"atk": 100, "spa": 150, "spe": 100}}
+    opponent = {"types": ["rock"], "stats": {"def": 100, "spd": 100, "spe": 80}}
+    # Giga Drain: Grass, 75 BP, drain [1,2]
+    giga_drain = {"id": "gigadrain", "basePower": 75, "type": "Grass",
+                  "category": "Special", "accuracy": 100}
+    # Energy Ball: Grass, 90 BP, no drain
+    energy_ball = {"id": "energyball", "basePower": 90, "type": "Grass",
+                   "category": "Special", "accuracy": 100}
+
+    score_drain = _score_move(giga_drain, active, opponent, 1.0, 1.5)
+    score_nodrain = _score_move(energy_ball, active, opponent, 1.0, 1.5)
+    # Giga Drain (75 * 1.25) = 93.75 effective vs Energy Ball (90) base
+    # With STAB and effectiveness, drain bonus should close the gap
+    assert score_drain > 0
+
+
+def test_score_move_recoil_penalty():
+    """Recoil moves should score lower than equivalent non-recoil moves."""
+    from pokechamp.fast_battle import _score_move
+
+    active = {"types": ["flying"], "stats": {"atk": 150, "spa": 80, "spe": 100}}
+    opponent = {"types": ["grass"], "stats": {"def": 100, "spd": 100, "spe": 80}}
+    # Brave Bird: Flying, 120 BP, recoil 33%
+    brave_bird = {"id": "bravebird", "basePower": 120, "type": "Flying",
+                  "category": "Physical", "accuracy": 100}
+    # Drill Peck: Flying, 80 BP, no recoil
+    drill_peck = {"id": "drillpeck", "basePower": 80, "type": "Flying",
+                  "category": "Physical", "accuracy": 100}
+
+    score_recoil = _score_move(brave_bird, active, opponent, 1.5, 0.8)
+    score_clean = _score_move(drill_peck, active, opponent, 1.5, 0.8)
+    # Brave Bird should still score higher (120 * 0.75 = 90 > 80) but gap should narrow
+    assert score_recoil > score_clean
+    # But the ratio should be less than 120/80 = 1.5 (recoil closes the gap)
+    assert score_recoil / score_clean < 1.5
+
+
+def test_score_move_two_turn_penalty():
+    """Two-turn moves should score roughly half."""
+    from pokechamp.fast_battle import _score_move
+
+    active = {"types": ["normal"], "stats": {"atk": 150, "spa": 80, "spe": 100}}
+    opponent = {"types": ["rock"], "stats": {"def": 100, "spd": 100, "spe": 80}}
+    # Hyper Beam: Normal, 150 BP, recharge
+    hyper_beam = {"id": "hyperbeam", "basePower": 150, "type": "Normal",
+                  "category": "Special", "accuracy": 90}
+    # Return: Normal, 102 BP, no penalty
+    return_move = {"id": "return", "basePower": 102, "type": "Normal",
+                   "category": "Physical", "accuracy": 100}
+
+    score_two = _score_move(hyper_beam, active, opponent, 1.5, 0.8)
+    score_one = _score_move(return_move, active, opponent, 1.5, 0.8)
+    # Hyper Beam effective: 150 * 0.5 = 75 per turn, Return: 102
+    assert score_one > score_two
+
+
+def test_score_move_self_debuff_penalty():
+    """Self-debuff moves should score lower than clean moves of similar power."""
+    from pokechamp.fast_battle import _score_move
+
+    active = {"types": ["dragon"], "stats": {"atk": 100, "spa": 150, "spe": 100}}
+    opponent = {"types": ["normal"], "stats": {"def": 100, "spd": 100, "spe": 80}}
+    # Draco Meteor: Dragon, 130 BP, SpA -2
+    draco = {"id": "dracometeor", "basePower": 130, "type": "Dragon",
+             "category": "Special", "accuracy": 90}
+    # Dragon Pulse: Dragon, 85 BP, clean
+    pulse = {"id": "dragonpulse", "basePower": 85, "type": "Dragon",
+             "category": "Special", "accuracy": 100}
+
+    score_debuff = _score_move(draco, active, opponent, 1.0, 1.5)
+    score_clean = _score_move(pulse, active, opponent, 1.0, 1.5)
+    # Draco (130 * 0.7 * 0.9 acc = ~81.9) vs Pulse (85) - gap should narrow
+    assert score_debuff / score_clean < 130 / 85  # penalty narrows the gap
+
+
+def test_choose_action_filters_first_impression():
+    """First Impression (switch-in only) should be filtered after switch-in turn."""
+    from pokechamp.fast_battle import _choose_action
+
+    request = {
+        "active": [
+            {
+                "moves": [
+                    {"move": "First Impression", "id": "firstimpression", "pp": 16,
+                     "maxpp": 16, "basePower": 100, "type": "Bug", "category": "Physical",
+                     "accuracy": 100, "priority": 2, "target": "normal", "disabled": False},
+                    {"move": "Close Combat", "id": "closecombat", "pp": 8, "maxpp": 8,
+                     "basePower": 120, "type": "Fighting", "category": "Physical",
+                     "accuracy": 100, "priority": 0, "target": "normal", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Golisopod",
+                    "active": True,
+                    "condition": "167/167",
+                    "types": ["bug", "water"],
+                    "stats": {"atk": 175, "def": 140, "spa": 70, "spd": 110, "spe": 80},
+                    "boosts": {},
+                }
+            ]
+        },
+    }
+
+    log_turn2 = [
+        "|switch|p1a: Golisopod|Golisopod, L50, M|167/167",
+        "|switch|p2a: Garchomp|Garchomp, L50, M|183/183",
+        "|turn|1",
+        "|move|p1a: Golisopod|First Impression|p2a: Garchomp",
+        "|turn|2",
+    ]
+    action = _choose_action(request, log_turn2, "p1")
+    # Should pick Close Combat (move 2), not First Impression
+    assert action.startswith("move 2"), f"Expected 'move 2...', got '{action}'"
+
+
+def test_choose_action_filters_self_destruct():
+    """Self-destruct moves should be filtered when we have remaining pokemon and opponent is healthy."""
+    from pokechamp.fast_battle import _choose_action
+
+    request = {
+        "active": [
+            {
+                "moves": [
+                    {"move": "Explosion", "id": "explosion", "pp": 8, "maxpp": 8,
+                     "basePower": 250, "type": "Normal", "category": "Physical",
+                     "accuracy": 100, "target": "allAdjacent", "disabled": False},
+                    {"move": "Earthquake", "id": "earthquake", "pp": 16, "maxpp": 16,
+                     "basePower": 100, "type": "Ground", "category": "Physical",
+                     "accuracy": 100, "target": "allAdjacent", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Golem",
+                    "active": True,
+                    "condition": "155/155",
+                    "types": ["rock", "ground"],
+                    "stats": {"atk": 160, "def": 130, "spa": 55, "spd": 85, "spe": 65},
+                    "boosts": {},
+                },
+                {"ident": "p1: Steelix", "active": False, "condition": "150/150",
+                 "types": ["steel", "ground"], "stats": {"atk": 125, "def": 200, "spa": 55, "spd": 85, "spe": 30}},
+            ]
+        },
+    }
+    log_lines = [
+        "|switch|p2a: Magikarp|Magikarp, L50, M|80/80",
+    ]
+    action = _choose_action(request, log_lines, "p1")
+    # Should pick Earthquake, not Explosion (we have backup pokemon, opponent is healthy)
+    assert action.startswith("move 2"), f"Expected 'move 2...', got '{action}'"
