@@ -757,7 +757,23 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     active_boosts = active_pokemon.get("boosts", {})
     opp = _parse_opponent_from_log(log_lines, player_id)
     opp_stats = opp.get("stats", {})
-    opp_boosts: dict[str, int] = {}
+    opp_boosts = _parse_opponent_boosts(log_lines, player_id)
+
+    # Mega evolution decision
+    can_mega = active_req.get("canMegaEvo", False)
+    mega_suffix = ""
+    if can_mega:
+        species_name = active_pokemon.get("ident", "").split(": ", 1)[-1] if active_pokemon else ""
+        weather = _parse_weather(log_lines)
+        if _should_mega_evolve(
+            species=species_name,
+            active_types=active_pokemon.get("types", []),
+            opp_types=opp.get("types", []),
+            opp_boosts=opp_boosts,
+            weather=weather,
+            moves=moves,
+        ):
+            mega_suffix = " mega"
 
     atk_est = _stat_estimation(active_stats.get("atk", 100), active_boosts.get("atk", 0))
     spa_est = _stat_estimation(active_stats.get("spa", 100), active_boosts.get("spa", 0))
@@ -786,7 +802,7 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
 
     # Use the priority KO move if found
     if priority_ko_move is not None:
-        return f"move {moves.index(priority_ko_move) + 1}"
+        return f"move {moves.index(priority_ko_move) + 1}{mega_suffix}"
 
     if available_moves:
         # Entry hazards setup (if opponent has >=3 mons remaining)
@@ -794,14 +810,14 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
         if opp_remaining >= 3:
             for i, move in enumerate(available_moves):
                 if move.get("id") in ("stealthrock", "spikes", "stickyweb", "toxicspikes"):
-                    return f"move {moves.index(move) + 1}"
+                    return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # Hazard removal
         my_conditions = _parse_side_conditions(log_lines, player_id)
         if my_conditions:
             for i, move in enumerate(available_moves):
                 if move.get("id") in ("rapidspin", "defog"):
-                    return f"move {moves.index(move) + 1}"
+                    return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # Setup moves (only when at full HP and winning matchup)
         active_hp = _hp_pct(active_pokemon)
@@ -822,7 +838,7 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                     if boosts and sum(boosts.values()) >= 2 and target == "self":
                         boost_sum = sum(boosts.values())
                         if boost_sum >= 2:
-                            return f"move {moves.index(move) + 1}"
+                            return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # Score moves and pick best
         scored = []
@@ -833,13 +849,13 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
         if scored:
             best_move, best_score = max(scored, key=lambda x: x[1])
             if best_score > 0:
-                return f"move {moves.index(best_move) + 1}"
+                return f"move {moves.index(best_move) + 1}{mega_suffix}"
             # All status moves or 0 power: pick first available
-            return f"move {moves.index(available_moves[0]) + 1}"
+            return f"move {moves.index(available_moves[0]) + 1}{mega_suffix}"
 
     # Fallback to first move
     if moves:
-        return f"move {moves.index(next(m for m in moves if not m.get('disabled')), moves[0]) + 1}"
+        return f"move {moves.index(next(m for m in moves if not m.get('disabled')), moves[0]) + 1}{mega_suffix}"
 
     # If we have switches, switch to best
     if available_switches:

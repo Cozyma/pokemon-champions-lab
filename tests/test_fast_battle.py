@@ -801,3 +801,66 @@ def test_should_mega_evolve_venusaur_no_sun():
         weather="",
         moves=[{"id": "sludgebomb", "basePower": 90, "type": "Poison", "category": "Special"}],
     ) is True
+
+
+def test_choose_action_mega_evolves_by_default():
+    """When canMegaEvo is true and no reason to skip, appends ' mega' to move."""
+    from pokechamp.fast_battle import _choose_action
+
+    request = {
+        "active": [
+            {
+                "canMegaEvo": True,
+                "moves": [
+                    {"move": "Return", "id": "return", "pp": 32, "maxpp": 32,
+                     "basePower": 102, "type": "Normal", "category": "Physical",
+                     "accuracy": 100, "target": "normal", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Lopunny",
+                    "active": True,
+                    "condition": "151/151",
+                    "types": ["normal"],
+                    "stats": {"atk": 150, "def": 94, "spa": 54, "spd": 96, "spe": 170},
+                    "boosts": {},
+                }
+            ]
+        },
+    }
+    action = _choose_action(request, [], "p1")
+    assert action.endswith(" mega"), f"Expected 'move N mega', got '{action}'"
+
+
+def test_choose_action_no_mega_when_not_available():
+    """When canMegaEvo is absent/false, no mega suffix."""
+    from pokechamp.fast_battle import _choose_action
+
+    request = {
+        "active": [
+            {
+                "moves": [
+                    {"move": "Return", "id": "return", "pp": 32, "maxpp": 32,
+                     "basePower": 102, "type": "Normal", "category": "Physical",
+                     "accuracy": 100, "target": "normal", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Lopunny",
+                    "active": True,
+                    "condition": "151/151",
+                    "types": ["normal"],
+                    "stats": {"atk": 150, "def": 94, "spa": 54, "spd": 96, "spe": 170},
+                    "boosts": {},
+                }
+            ]
+        },
+    }
+    action = _choose_action(request, [], "p1")
+    assert "mega" not in action
