@@ -333,34 +333,40 @@ Showdownの`data/`には技・特性・アイテム・ポケモンの**完全な
 
 ### 段階的な活用ステップ
 
-#### Step 1: TSデータのJSON変換パイプライン（基盤）
+#### Step 1: TSデータのJSON変換パイプライン（基盤） ✅ 実装済み
 
-Showdownの`.ts`ファイルをPythonから参照可能なJSONに変換するスクリプトを作成。
+`scripts/extract_showdown_data.js` がShowdown Dex API（Champions mod適用済み）からデータ抽出:
 
 ```
-engines/showdown/data/moves.ts → data/showdown-cache/moves.json
-engines/showdown/data/abilities.ts → data/showdown-cache/abilities.json
-engines/showdown/data/items.ts → data/showdown-cache/items.json
-engines/showdown/data/pokedex.ts → data/showdown-cache/pokedex.json
+engines/showdown/dist/sim → node scripts/extract_showdown_data.js
+  → data/showdown-cache/moves.json (902技)
+  → data/showdown-cache/abilities.json (315特性)
 ```
 
-Showdownの`node build`で`.js`が生成されるので、それをNode.jsで`JSON.stringify`してもよい。
+Pythonローダー: `src/pokechamp/showdown_data.py`
 
-#### Step 2: 技データの参照によるスコアリング改善
+#### Step 2: 技データの参照によるスコアリング改善 ✅ 実装済み
 
-現在のAIは技の`basePower`と`type`しか見ていない。moves.jsonから以下を参照：
+`_score_move` がShowdownデータを参照してスコア補正:
 
-| 参照フィールド | 活用方法 |
-|--------------|---------|
-| `priority` | 先制技の判定（現在は固定リストだがデータ参照に切替） |
-| `flags.contact` | 接触技判定（さめはだ、ゴツメ回避の判断） |
-| `secondary.chance` + `secondary.boosts` | 追加効果の評価（ひるみ30%等をスコアに加算） |
-| `onTry` / `condition` | ねこだまし（ターン1限定）、ねむるの制約等 |
-| `self.boosts` | りゅうせいぐんのC-2等、自己デバフを技スコアに反映 |
-| `drain` | ドレイン技（ギガドレイン等）の回復量をスコアに加算 |
-| `recoil` | 反動技のリスクをスコアから減算 |
+| 参照フィールド | 活用方法 | 補正 |
+|--------------|---------|------|
+| `drain` | ドレイン技の回復評価 | スコア × (1 + drain × 0.5) |
+| `recoil` | 反動ダメージのリスク | スコア × (1 - recoil × 0.75) |
+| `self.boosts` | 自己デバフ（りゅうせいぐん等） | スコア × ペナルティ(0.5〜1.0) |
+| `recharge`/`charge` | 溜め/反動ターン | スコア × 0.5 |
+| `flags.contact` | 接触技ペナルティ | スコア × 0.95 |
+| `secondary.volatileStatus=flinch` | ひるみ（先攻時のみ） | スコア × (1 + flinch × 0.3) |
+| `secondary.status` | 状態異常付与 | スコア × (1 + 状態価値 × 確率) |
 
-#### Step 3: 特性データの参照による対面評価改善
+技フィルタリング:
+
+| フィルタ | 対象技 | 条件 |
+|---------|--------|------|
+| `switchInOnly` | ねこだまし、であいがしら | スイッチイン直後でなければ除外 |
+| `selfdestruct` | だいばくはつ等 | 残り2体以上 & 相手HP30%超なら除外 |
+
+#### Step 3: 特性データの参照による対面評価改善（未実装）
 
 abilities.jsonから相手の特性効果を推定し、技選択と交代判定に反映：
 

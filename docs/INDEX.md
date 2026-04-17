@@ -47,5 +47,6 @@ tags: [index, docs]
 | ファイル | 概要 |
 |---------|------|
 | `env.py` | Gymnasium RL環境 (ChampionsEnv) — バトル状態の観測エンコード・報酬計算 |
+| `showdown_data.py` | ShowdownデータJSONローダー — 技・特性のAI参照用関数群 |
 | `team_converter.py` | チームYAML → Showdown paste 変換 |
 | `type_filter.py` | タイプ相性ベース高速フィルタ — 脅威分析・カバー候補提案 (パーティ構築補助) |
