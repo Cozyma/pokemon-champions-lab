@@ -864,3 +864,79 @@ def test_choose_action_no_mega_when_not_available():
     }
     action = _choose_action(request, [], "p1")
     assert "mega" not in action
+
+
+def test_choose_action_skips_pp_zero_moves():
+    """Moves with pp=0 should be filtered out."""
+    from pokechamp.fast_battle import _choose_action
+
+    request = {
+        "active": [
+            {
+                "moves": [
+                    {"move": "Earthquake", "id": "earthquake", "pp": 0, "maxpp": 16,
+                     "basePower": 100, "type": "Ground", "category": "Physical",
+                     "accuracy": 100, "target": "normal", "disabled": False},
+                    {"move": "Stone Edge", "id": "stoneedge", "pp": 8, "maxpp": 8,
+                     "basePower": 100, "type": "Rock", "category": "Physical",
+                     "accuracy": 80, "target": "normal", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Garchomp",
+                    "active": True,
+                    "condition": "183/183",
+                    "types": ["dragon", "ground"],
+                    "stats": {"atk": 182, "def": 115, "spa": 90, "spd": 105, "spe": 169},
+                    "boosts": {},
+                }
+            ]
+        },
+    }
+    action = _choose_action(request, [], "p1")
+    assert action.startswith("move 2")
+
+
+def test_choose_action_skips_stealth_rock_when_already_set():
+    """AI should not use Stealth Rock when already set on opponent's side."""
+    from pokechamp.fast_battle import _choose_action
+
+    log_lines = [
+        "|switch|p2a: Corviknight|Corviknight, L50, F|173/173",
+        "|-sidestart|p2: p2|Stealth Rock",
+    ]
+    request = {
+        "active": [
+            {
+                "moves": [
+                    {"move": "Stealth Rock", "id": "stealthrock", "pp": 16, "maxpp": 16,
+                     "basePower": 0, "type": "Rock", "category": "Status",
+                     "accuracy": True, "target": "foeSide", "disabled": False},
+                    {"move": "Earthquake", "id": "earthquake", "pp": 16, "maxpp": 16,
+                     "basePower": 100, "type": "Ground", "category": "Physical",
+                     "accuracy": 100, "target": "normal", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Garchomp",
+                    "active": True,
+                    "condition": "183/183",
+                    "types": ["dragon", "ground"],
+                    "stats": {"atk": 182, "def": 115, "spa": 90, "spd": 105, "spe": 169},
+                    "boosts": {},
+                },
+                {"ident": "p1: Corviknight", "active": False, "condition": "173/173",
+                 "types": ["steel", "flying"], "stats": {"spe": 130}},
+                {"ident": "p1: Primarina", "active": False, "condition": "155/155",
+                 "types": ["water", "fairy"], "stats": {"spe": 112}},
+            ]
+        },
+    }
+    action = _choose_action(request, log_lines, "p1")
+    assert action.startswith("move 2"), f"Expected 'move 2...', got '{action}'"

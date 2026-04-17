@@ -783,7 +783,7 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     physical_ratio = atk_est / opp_def_est if opp_def_est else 1.0
     special_ratio = spa_est / opp_spd_est if opp_spd_est else 1.0
 
-    available_moves = [m for m in moves if not m.get("disabled")]
+    available_moves = [m for m in moves if not m.get("disabled") and m.get("pp", 1) > 0]
     available_switches = [p for p in team if not p.get("active") and not _is_fainted(p)]
 
     # Priority move check: if we have a priority move that can KO, use it instead of switching
