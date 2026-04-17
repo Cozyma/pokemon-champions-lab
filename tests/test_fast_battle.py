@@ -1204,3 +1204,36 @@ def test_choose_action_filters_self_destruct():
     action = _choose_action(request, log_lines, "p1")
     # Should pick Earthquake, not Explosion (we have backup pokemon, opponent is healthy)
     assert action.startswith("move 2"), f"Expected 'move 2...', got '{action}'"
+
+
+def test_parse_opponent_ability_from_log():
+    """_parse_opponent_ability extracts ability from |-ability| log line."""
+    from pokechamp.fast_battle import _parse_opponent_ability
+
+    log_lines = [
+        "|switch|p2a: Gyarados|Gyarados, M|202/202",
+        "|-ability|p2a: Gyarados|Intimidate|boost",
+    ]
+    assert _parse_opponent_ability(log_lines, "p1") == "intimidate"
+
+
+def test_parse_opponent_ability_none():
+    """Returns empty string when no ability detected."""
+    from pokechamp.fast_battle import _parse_opponent_ability
+
+    log_lines = [
+        "|switch|p2a: Garchomp|Garchomp, M|183/183",
+    ]
+    assert _parse_opponent_ability(log_lines, "p1") == ""
+
+
+def test_parse_opponent_ability_resets_on_switch():
+    """Ability resets when opponent switches."""
+    from pokechamp.fast_battle import _parse_opponent_ability
+
+    log_lines = [
+        "|switch|p2a: Gyarados|Gyarados, M|202/202",
+        "|-ability|p2a: Gyarados|Intimidate|boost",
+        "|switch|p2a: Garchomp|Garchomp, M|183/183",
+    ]
+    assert _parse_opponent_ability(log_lines, "p1") == ""

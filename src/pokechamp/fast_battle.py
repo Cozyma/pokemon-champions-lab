@@ -196,7 +196,7 @@ def _parse_opponent_from_log(log_lines: list[str], my_player_id: str) -> dict:
     Returns dict with keys: species, types, hp_pct, stats.
     """
     opp_id = "p2" if my_player_id == "p1" else "p1"
-    opponent: dict = {"species": "", "types": [], "hp_pct": 100.0, "stats": {}}
+    opponent: dict = {"species": "", "types": [], "hp_pct": 100.0, "stats": {}, "ability": ""}
 
     for line in reversed(log_lines):
         if f"|switch|{opp_id}a: " in line or f"|drag|{opp_id}a: " in line:
@@ -229,6 +229,7 @@ def _parse_opponent_from_log(log_lines: list[str], my_player_id: str) -> dict:
                     opponent["hp_pct"] = (cur / mx * 100) if mx else 100.0
             break
 
+    opponent["ability"] = _parse_opponent_ability(log_lines, my_player_id)
     return opponent
 
 
@@ -256,6 +257,25 @@ def _parse_opponent_boosts(log_lines: list[str], my_player_id: str) -> dict[str,
             boosts[stat] = boosts.get(stat, 0) - stages
 
     return boosts
+
+
+def _parse_opponent_ability(log_lines: list[str], my_player_id: str) -> str:
+    """Extract opponent's revealed ability from battle log.
+
+    Returns lowercase ability ID (e.g. "intimidate") or "" if not revealed.
+    Resets when opponent switches.
+    """
+    opp_id = "p2" if my_player_id == "p1" else "p1"
+    ability = ""
+
+    for line in log_lines:
+        if f"|switch|{opp_id}a: " in line or f"|drag|{opp_id}a: " in line:
+            ability = ""
+        m = re.match(rf"\|-ability\|{opp_id}a: [^|]+\|([^|]+)", line)
+        if m:
+            ability = m.group(1).strip().lower().replace(" ", "")
+
+    return ability
 
 
 def _parse_weather(log_lines: list[str]) -> str:
