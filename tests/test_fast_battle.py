@@ -1237,3 +1237,77 @@ def test_parse_opponent_ability_resets_on_switch():
         "|switch|p2a: Garchomp|Garchomp, M|183/183",
     ]
     assert _parse_opponent_ability(log_lines, "p1") == ""
+
+
+def test_score_move_contact_penalty_vs_rough_skin():
+    """Contact penalty is stronger vs species with Rough Skin."""
+    from pokechamp.fast_battle import _score_move
+
+    active = {"types": ["fighting"], "stats": {"atk": 150, "spa": 80, "spe": 100}}
+    opp_confirmed = {"types": ["dragon", "ground"], "stats": {"def": 115, "spd": 105, "spe": 102},
+                     "species": "Garchomp", "ability": "roughskin"}
+    opp_unknown = {"types": ["dragon", "ground"], "stats": {"def": 115, "spd": 105, "spe": 102},
+                   "species": "Garchomp", "ability": ""}
+    opp_no_punish = {"types": ["steel", "flying"], "stats": {"def": 172, "spd": 137, "spe": 87},
+                     "species": "Corviknight", "ability": ""}
+
+    cc = {"id": "closecombat", "basePower": 120, "type": "Fighting",
+          "category": "Physical", "accuracy": 100}
+
+    score_confirmed = _score_move(cc, active, opp_confirmed, 1.5, 0.8)
+    score_possible = _score_move(cc, active, opp_unknown, 1.5, 0.8)
+    score_no_punish = _score_move(cc, active, opp_no_punish, 1.5, 0.8)
+
+    # confirmed roughskin (0.875) < possible roughskin (0.93) < no punish (0.97)
+    assert score_confirmed < score_possible < score_no_punish
+
+
+def test_score_move_confirmed_levitate_immune():
+    """Ground moves score 0 vs confirmed Levitate."""
+    from pokechamp.fast_battle import _score_move
+
+    active = {"types": ["ground"], "stats": {"atk": 150, "spa": 80, "spe": 100}}
+    opp = {"types": ["steel", "psychic"], "stats": {"def": 116, "spd": 116, "spe": 33},
+           "species": "Bronzong", "ability": "levitate"}
+
+    eq = {"id": "earthquake", "basePower": 100, "type": "Ground",
+          "category": "Physical", "accuracy": 100}
+
+    assert _score_move(eq, active, opp, 1.5, 0.8) == 0.0
+
+
+def test_score_move_possible_levitate_penalty():
+    """Ground moves penalized vs species that may have Levitate."""
+    from pokechamp.fast_battle import _score_move
+
+    active = {"types": ["ground"], "stats": {"atk": 150, "spa": 80, "spe": 100}}
+    opp_bronzong = {"types": ["steel", "psychic"], "stats": {"def": 116, "spd": 116, "spe": 33},
+                    "species": "Bronzong", "ability": ""}
+    opp_steelix = {"types": ["steel", "ground"], "stats": {"def": 200, "spd": 85, "spe": 35},
+                   "species": "Steelix", "ability": ""}
+
+    eq = {"id": "earthquake", "basePower": 100, "type": "Ground",
+          "category": "Physical", "accuracy": 100}
+
+    score_bronzong = _score_move(eq, active, opp_bronzong, 1.5, 0.8)
+    score_steelix = _score_move(eq, active, opp_steelix, 1.5, 0.8)
+
+    # Bronzong may have Levitate -> EQ penalized
+    # Steelix has no Levitate possibility -> no penalty
+    # (both are Steel so same type effectiveness for ground vs steel)
+    assert score_bronzong < score_steelix
+
+
+def test_estimate_opponent_max_damage_huge_power():
+    """Confirmed Huge Power increases estimated damage."""
+    from pokechamp.fast_battle import _estimate_opponent_max_damage
+
+    dmg_normal = _estimate_opponent_max_damage(
+        "Azumarill", ["water", "fairy"], 100, 100, ["normal"],
+    )
+    dmg_huge = _estimate_opponent_max_damage(
+        "Azumarill", ["water", "fairy"], 100, 100, ["normal"],
+        confirmed_ability="hugepower",
+    )
+    # Confirmed Huge Power (2.0x) should exceed unconfirmed (partial 1.5x)
+    assert dmg_huge > dmg_normal

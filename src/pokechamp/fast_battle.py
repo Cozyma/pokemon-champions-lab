@@ -437,6 +437,7 @@ def _estimate_opponent_max_damage(
     my_def: int,
     my_spd: int,
     my_types: list[str],
+    confirmed_ability: str = "",
 ) -> int:
     """Estimate max STAB damage the opponent can deal to us.
 
@@ -484,6 +485,20 @@ def _estimate_opponent_max_damage(
             stab=True, type_eff=eff,
         )
         max_damage = max(max_damage, max(spec_dmg))
+
+    # Ability-based damage multiplier
+    if confirmed_ability:
+        mult = showdown_data.ability_attack_multiplier(confirmed_ability)
+        if mult:
+            _stat_name, factor = mult
+            max_damage = int(max_damage * factor)
+    else:
+        for ab_id in showdown_data.get_species_abilities(opponent_species):
+            mult = showdown_data.ability_attack_multiplier(ab_id)
+            if mult:
+                _stat_name, factor = mult
+                max_damage = int(max_damage * (1.0 + (factor - 1.0) * 0.5))
+                break
 
     return max_damage
 
@@ -609,7 +624,8 @@ def _should_switch_out(
         my_spd = active_stats.get("spd", 100)
         my_current_hp = _parse_current_hp(active_pokemon)
         max_incoming = _estimate_opponent_max_damage(
-            opp_species, opp_types, my_def, my_spd, active_types
+            opp_species, opp_types, my_def, my_spd, active_types,
+            confirmed_ability=opponent.get("ability", ""),
         )
         if max_incoming > 0 and my_current_hp > 0:
             if max_incoming >= my_current_hp:
@@ -656,7 +672,8 @@ def _choose_best_switch(request: dict, opponent: dict) -> str | None:
             mon_def = mon_stats.get("def", 100)
             mon_spd = mon_stats.get("spd", 100)
             switch_in_dmg = _estimate_opponent_max_damage(
-                opp_species, opp_types, mon_def, mon_spd, mon_types
+                opp_species, opp_types, mon_def, mon_spd, mon_types,
+                confirmed_ability=opponent.get("ability", ""),
             )
             if switch_in_dmg >= mon_current_hp:
                 continue  # would die on switch-in, skip
@@ -738,6 +755,18 @@ def _score_move(
 
     # --- Showdown data enhancements ---
     if move_id:
+        # Type immunity via ability (e.g. Levitate blocks Ground)
+        opp_ability = opponent.get("ability", "")
+        opp_species = opponent.get("species", "")
+        if opp_ability:
+            immune_type = showdown_data.ability_grants_type_immunity(opp_ability)
+            if immune_type and move_type == immune_type:
+                return 0.0
+        elif opp_species:
+            possible_immunities = showdown_data.species_type_immunities(opp_species)
+            if move_type in possible_immunities:
+                score *= 0.5  # ~50% chance of immunity
+
         # Drain: reward HP recovery (e.g. +50% for Giga Drain)
         drain = showdown_data.move_drain_ratio(move_id)
         if drain > 0:
@@ -756,11 +785,16 @@ def _score_move(
         if showdown_data.move_is_two_turn(move_id):
             score *= 0.5
 
-        # Contact move vs contact-punishing ability (Rough Skin, Iron Barbs)
+        # Contact move penalty (Rough Skin, Iron Barbs = 1/8 HP per hit)
         if showdown_data.move_is_contact(move_id):
-            # Simple heuristic: penalize contact slightly as precaution
-            # More precise check would need opponent's actual ability
-            score *= 0.95
+            opp_ability = opponent.get("ability", "")
+            opp_species = opponent.get("species", "")
+            if opp_ability and showdown_data.ability_has_contact_punish(opp_ability):
+                score *= 0.875  # confirmed contact-punish: -12.5%
+            elif opp_species and showdown_data.species_may_have_contact_punish(opp_species):
+                score *= 0.93  # possible contact-punish
+            else:
+                score *= 0.97  # unknown: small default penalty
 
         # Flinch bonus (only valuable when we're faster)
         flinch = showdown_data.move_flinch_chance(move_id)
