@@ -700,7 +700,7 @@ def _should_switch_out(
     # Check if there is a decent switch-in
     has_good_switch = any(
         _estimate_matchup(
-            p.get("types", []), p.get("stats", {}), _hp_pct(p),
+            _get_pokemon_types(p), p.get("stats", {}), _hp_pct(p),
             opp_types, opp_stats, opp_hp,
         ) > 0
         for p in available_switches
@@ -744,6 +744,23 @@ def _should_switch_out(
     return False
 
 
+def _get_pokemon_types(mon: dict) -> list[str]:
+    """Get a pokemon's types, falling back to pokedex lookup from ident."""
+    types = mon.get("types", [])
+    if types:
+        return types
+    # Request JSON doesn't include types for bench pokemon — look up from pokedex
+    ident = mon.get("ident", "")
+    species = ident.split(": ", 1)[-1] if ": " in ident else ""
+    if species:
+        pokedex = showdown_data.load_pokedex()
+        key = species.lower().replace(" ", "").replace("-", "")
+        entry = pokedex.get(key)
+        if entry:
+            return [t.lower() for t in entry.get("types", [])]
+    return []
+
+
 def _choose_best_switch(request: dict, opponent: dict) -> str | None:
     """Return switch command for the best available team member.
 
@@ -762,7 +779,7 @@ def _choose_best_switch(request: dict, opponent: dict) -> str | None:
         if mon.get("active") or _is_fainted(mon):
             continue
 
-        mon_types = mon.get("types", [])
+        mon_types = _get_pokemon_types(mon)
         mon_stats = mon.get("stats", {})
         mon_current_hp = _parse_current_hp(mon)
 
