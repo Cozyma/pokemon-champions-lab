@@ -1042,6 +1042,11 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
 
     available_switches = [p for p in team if not p.get("active") and not _is_fainted(p)]
 
+    # Detect trapped state (Shadow Tag, Arena Trap, etc.)
+    is_trapped = any("|trapped|" in line for line in log_lines[-20:])
+    if is_trapped:
+        available_switches = []  # cannot switch when trapped
+
     # Priority move check: if we have a priority move that can KO, use it instead of switching
     priority_ko_move = None
     for move in available_moves:
@@ -1348,23 +1353,11 @@ def run_battle(
 
             log_lines.extend(output)
 
-            # Handle errors (e.g. "Can't switch: trapped")
+            # Detect trapped state from errors (Shadow Tag, etc.)
             for line in output:
-                if "|error|" in line:
-                    # Find which player had the error and resend as move
-                    for pid in list(pending_requests.keys()):
-                        req = pending_requests.get(pid)
-                        if req:
-                            # Force a move instead of switch
-                            active = req.get("active", [{}])
-                            active_req = active[0] if active else {}
-                            moves = active_req.get("moves", [])
-                            avail = [m for m in moves if not m.get("disabled") and m.get("pp", 1) not in (0, None)]
-                            if avail:
-                                send(f">{pid} move {moves.index(avail[0]) + 1}")
-                            else:
-                                send(f">{pid} move 1")
-                    pending_requests.clear()
+                if "|error|" in line and "trapped" in line.lower():
+                    # Mark in log so _choose_action knows not to switch
+                    log_lines.append("|trapped|")
                     break
 
             # Check for winner / tie
