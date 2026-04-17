@@ -35,6 +35,7 @@ tags: [index, docs]
 | [2026-04-16-rl-roadmap.md](design/decisions/2026-04-16-rl-roadmap.md) | 強化学習ロードマップ（PPO→Self-Play→選出AI→信念状態→ReBeL） | ADR, RL, roadmap |
 | [2026-04-16-showdown-migration-and-ai.md](design/decisions/2026-04-16-showdown-migration-and-ai.md) | Showdown移行・RL環境構築・AI改善の開発経緯 | ADR, log, showdown, AI |
 | [2026-04-17-ai-overhaul.md](design/decisions/2026-04-17-ai-overhaul.md) | ヒューリスティックAI大幅改善（メガシンカ・Showdownデータ・選出・回復/壁） | ADR, log, AI, heuristic |
+| [2026-04-17-integration-lessons.md](design/decisions/2026-04-17-integration-lessons.md) | 外部プロセス統合の教訓（Contract-First Integration原則） | ADR, lessons-learned, integration |
 
 > 設計判断が発生したら `design/decisions/YYYY-MM-DD-{topic}.md` に記録する。
 
