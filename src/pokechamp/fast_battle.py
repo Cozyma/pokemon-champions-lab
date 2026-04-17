@@ -271,6 +271,32 @@ def _parse_weather(log_lines: list[str]) -> str:
     return weather
 
 
+def _parse_current_turn(log_lines: list[str]) -> int:
+    """Return the current turn number from battle log."""
+    turn = 0
+    for line in log_lines:
+        m = re.match(r"\|turn\|(\d+)", line)
+        if m:
+            turn = int(m.group(1))
+    return turn
+
+
+def _parse_switch_in_turn(log_lines: list[str], player_id: str) -> int:
+    """Return the turn number when the player's active pokemon last switched in.
+
+    Returns 0 if switched in before turn 1 (team preview lead).
+    """
+    switch_in_turn = 0
+    current_turn = 0
+    for line in log_lines:
+        m = re.match(r"\|turn\|(\d+)", line)
+        if m:
+            current_turn = int(m.group(1))
+        if f"|switch|{player_id}a: " in line or f"|drag|{player_id}a: " in line:
+            switch_in_turn = current_turn
+    return switch_in_turn
+
+
 def _extract_species_key(species: str) -> str:
     """Normalize species name to lookup key (e.g. 'Charizard' -> 'charizard')."""
     return species.split("-")[0].strip().lower()
@@ -784,6 +810,14 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     special_ratio = spa_est / opp_spd_est if opp_spd_est else 1.0
 
     available_moves = [m for m in moves if not m.get("disabled") and m.get("pp", 1) > 0]
+
+    # Filter Fake Out: only usable on the turn the pokemon switched in
+    current_turn = _parse_current_turn(log_lines)
+    switch_in_turn = _parse_switch_in_turn(log_lines, player_id)
+    is_switch_in_turn = (current_turn <= switch_in_turn + 1)
+    if not is_switch_in_turn:
+        available_moves = [m for m in available_moves if m.get("id") != "fakeout"]
+
     available_switches = [p for p in team if not p.get("active") and not _is_fainted(p)]
 
     # Priority move check: if we have a priority move that can KO, use it instead of switching

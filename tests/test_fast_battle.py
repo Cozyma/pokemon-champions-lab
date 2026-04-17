@@ -943,3 +943,97 @@ def test_choose_action_skips_stealth_rock_when_already_set():
     }
     action = _choose_action(request, log_lines, "p1")
     assert action.startswith("move 2"), f"Expected 'move 2...', got '{action}'"
+
+
+def test_parse_current_turn():
+    """_parse_current_turn extracts current turn number from log."""
+    from pokechamp.fast_battle import _parse_current_turn
+
+    log_lines = ["|turn|1", "|move|p1a: Lopunny|Fake Out", "|turn|2"]
+    assert _parse_current_turn(log_lines) == 2
+
+    assert _parse_current_turn([]) == 0
+    assert _parse_current_turn(["|turn|1"]) == 1
+
+
+def test_parse_switch_in_turn():
+    """_parse_switch_in_turn returns the turn when active pokemon switched in."""
+    from pokechamp.fast_battle import _parse_switch_in_turn
+
+    log_lines = [
+        "|turn|1",
+        "|switch|p1a: Lopunny|Lopunny, L50, F|151/151",
+        "|turn|2",
+        "|move|p1a: Lopunny|Return",
+        "|turn|3",
+    ]
+    assert _parse_switch_in_turn(log_lines, "p1") == 1
+
+
+def test_parse_switch_in_turn_mid_battle():
+    """Switch in during mid-battle tracks latest switch."""
+    from pokechamp.fast_battle import _parse_switch_in_turn
+
+    log_lines = [
+        "|turn|1",
+        "|switch|p1a: Garchomp|Garchomp, L50, M|183/183",
+        "|turn|2",
+        "|switch|p1a: Lopunny|Lopunny, L50, F|151/151",
+        "|turn|3",
+    ]
+    assert _parse_switch_in_turn(log_lines, "p1") == 2
+
+
+def test_parse_switch_in_turn_before_turn1():
+    """Initial switch before turn 1 returns turn 0."""
+    from pokechamp.fast_battle import _parse_switch_in_turn
+
+    log_lines = [
+        "|switch|p1a: Lopunny|Lopunny, L50, F|151/151",
+        "|turn|1",
+    ]
+    assert _parse_switch_in_turn(log_lines, "p1") == 0
+
+
+def test_choose_action_fake_out_only_on_switch_in_turn():
+    """Fake Out should only be used on the turn the pokemon switched in."""
+    from pokechamp.fast_battle import _choose_action
+
+    base_request = {
+        "active": [
+            {
+                "moves": [
+                    {"move": "Fake Out", "id": "fakeout", "pp": 16, "maxpp": 16,
+                     "basePower": 40, "type": "Normal", "category": "Physical",
+                     "accuracy": 100, "priority": 3, "target": "normal", "disabled": False},
+                    {"move": "Return", "id": "return", "pp": 32, "maxpp": 32,
+                     "basePower": 102, "type": "Normal", "category": "Physical",
+                     "accuracy": 100, "priority": 0, "target": "normal", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Lopunny",
+                    "active": True,
+                    "condition": "151/151",
+                    "types": ["normal"],
+                    "stats": {"atk": 150, "def": 94, "spa": 54, "spd": 96, "spe": 170},
+                    "boosts": {},
+                }
+            ]
+        },
+    }
+
+    # Turn 2, Lopunny switched in before turn 1 → NOT switch-in turn → Fake Out filtered
+    log_turn2 = [
+        "|switch|p1a: Lopunny|Lopunny, L50, F|151/151",
+        "|switch|p2a: Gengar|Gengar, L50, M|135/135",
+        "|turn|1",
+        "|move|p1a: Lopunny|Fake Out|p2a: Gengar",
+        "|turn|2",
+    ]
+    action = _choose_action(base_request, log_turn2, "p1")
+    # Should pick Return (move 2), not Fake Out
+    assert action.startswith("move 2"), f"Expected 'move 2...', got '{action}'"
