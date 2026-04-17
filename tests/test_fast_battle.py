@@ -1311,3 +1311,105 @@ def test_estimate_opponent_max_damage_huge_power():
     )
     # Confirmed Huge Power (2.0x) should exceed unconfirmed (partial 1.5x)
     assert dmg_huge > dmg_normal
+
+
+def test_parse_move_order_me_first():
+    """_parse_move_order detects when I moved first."""
+    from pokechamp.fast_battle import _parse_move_order
+
+    log_lines = [
+        "|turn|1",
+        "|move|p1a: Garchomp|Earthquake|p2a: Lopunny",
+        "|move|p2a: Lopunny|Close Combat|p1a: Garchomp",
+    ]
+    assert _parse_move_order(log_lines, "p1") == "me"
+    assert _parse_move_order(log_lines, "p2") == "opp"
+
+
+def test_parse_move_order_opp_first():
+    """_parse_move_order detects when opponent moved first."""
+    from pokechamp.fast_battle import _parse_move_order
+
+    log_lines = [
+        "|turn|1",
+        "|move|p2a: Gengar|Shadow Ball|p1a: Corviknight",
+        "|move|p1a: Corviknight|Iron Head|p2a: Gengar",
+    ]
+    assert _parse_move_order(log_lines, "p1") == "opp"
+
+
+def test_parse_move_order_latest_turn():
+    """_parse_move_order uses only the latest turn."""
+    from pokechamp.fast_battle import _parse_move_order
+
+    log_lines = [
+        "|turn|1",
+        "|move|p1a: Garchomp|Earthquake|p2a: Lopunny",
+        "|move|p2a: Lopunny|Return|p1a: Garchomp",
+        "|turn|2",
+        "|move|p2a: Lopunny|Close Combat|p1a: Garchomp",
+        "|move|p1a: Garchomp|Earthquake|p2a: Lopunny",
+    ]
+    # Turn 2: p2 moved first
+    assert _parse_move_order(log_lines, "p1") == "opp"
+
+
+def test_parse_move_order_single_move():
+    """Returns None when only one move in the turn (opponent fainted)."""
+    from pokechamp.fast_battle import _parse_move_order
+
+    log_lines = [
+        "|turn|1",
+        "|move|p1a: Garchomp|Earthquake|p2a: Lopunny",
+    ]
+    assert _parse_move_order(log_lines, "p1") is None
+
+
+def test_opponent_speed_estimated_from_species():
+    """_parse_opponent_from_log should estimate spe from species base stats."""
+    from pokechamp.fast_battle import _parse_opponent_from_log
+
+    log_lines = [
+        "|switch|p2a: Garchomp|Garchomp, M|183/183",
+    ]
+    opp = _parse_opponent_from_log(log_lines, "p1")
+    # Garchomp base speed 102, EV32, IV31, Lv50, neutral -> should be > 100
+    assert opp["stats"]["spe"] > 100
+
+
+def test_scarf_detection_adjusts_speed():
+    """When opponent outspeeds despite lower base speed, adjust for scarf."""
+    from pokechamp.fast_battle import _choose_action
+
+    request = {
+        "active": [
+            {
+                "moves": [
+                    {"move": "Iron Head", "id": "ironhead", "pp": 16, "maxpp": 16,
+                     "basePower": 80, "type": "Steel", "category": "Physical",
+                     "accuracy": 100, "target": "normal", "disabled": False},
+                ],
+            }
+        ],
+        "side": {
+            "pokemon": [
+                {
+                    "ident": "p1: Corviknight",
+                    "active": True,
+                    "condition": "173/173",
+                    "types": ["steel", "flying"],
+                    "stats": {"atk": 107, "def": 172, "spa": 65, "spd": 137, "spe": 87},
+                    "boosts": {},
+                }
+            ]
+        },
+    }
+    log_lines = [
+        "|switch|p2a: Azumarill|Azumarill, F|207/207",
+        "|turn|1",
+        "|move|p2a: Azumarill|Play Rough|p1a: Corviknight",
+        "|move|p1a: Corviknight|Iron Head|p2a: Azumarill",
+        "|turn|2",
+    ]
+    action = _choose_action(request, log_lines, "p1")
+    assert action.startswith("move ")

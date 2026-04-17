@@ -229,6 +229,11 @@ def _parse_opponent_from_log(log_lines: list[str], my_player_id: str) -> dict:
                     opponent["hp_pct"] = (cur / mx * 100) if mx else 100.0
             break
 
+    # Estimate opponent speed from base stats if species known
+    if opponent["species"] and not opponent["stats"].get("spe"):
+        opp_spe = _estimate_opponent_speed(opponent["species"])
+        opponent["stats"]["spe"] = opp_spe
+
     opponent["ability"] = _parse_opponent_ability(log_lines, my_player_id)
     return opponent
 
@@ -276,6 +281,34 @@ def _parse_opponent_ability(log_lines: list[str], my_player_id: str) -> str:
             ability = m.group(1).strip().lower().replace(" ", "")
 
     return ability
+
+
+def _parse_move_order(log_lines: list[str], my_player_id: str) -> str | None:
+    """Determine who moved first in the most recent turn from battle log.
+
+    Returns "me", "opp", or None if not determinable.
+    Only considers the last turn's moves (ignores priority moves).
+    """
+    opp_id = "p2" if my_player_id == "p1" else "p1"
+
+    # Find moves from the most recent turn
+    last_turn_moves: list[str] = []
+    in_last_turn = False
+
+    for line in log_lines:
+        if re.match(r"\|turn\|\d+", line):
+            in_last_turn = True
+            last_turn_moves.clear()
+        if in_last_turn and line.startswith("|move|"):
+            last_turn_moves.append(line)
+
+    if len(last_turn_moves) < 2:
+        return None
+
+    first_move = last_turn_moves[0]
+    first_mover = my_player_id if f"|move|{my_player_id}a: " in first_move else opp_id
+
+    return "me" if first_mover == my_player_id else "opp"
 
 
 def _parse_weather(log_lines: list[str]) -> str:
@@ -898,6 +931,15 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
             moves=moves,
         ):
             mega_suffix = " mega"
+
+    # Detect possible Choice Scarf from move order
+    # If opponent moved first despite our speed being higher, they may have scarf
+    move_order = _parse_move_order(log_lines, player_id)
+    my_spe = active_stats.get("spe", 100)
+    opp_est_spe = opp.get("stats", {}).get("spe", 100)
+    if move_order == "opp" and my_spe > opp_est_spe:
+        # Opponent outsped us despite lower estimated speed -> likely scarf
+        opp.setdefault("stats", {})["spe"] = int(opp_est_spe * 1.5)
 
     atk_est = _stat_estimation(active_stats.get("atk", 100), active_boosts.get("atk", 0))
     spa_est = _stat_estimation(active_stats.get("spa", 100), active_boosts.get("spa", 0))
