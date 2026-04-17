@@ -387,44 +387,45 @@ Pythonローダー: `src/pokechamp/showdown_data.py`
 | `onStart` | いかくの攻撃低下を交代時の評価に反映 |
 | `onSourceModifyDamage` | マルチスケイル等の被ダメ軽減を確定数計算に反映 |
 
-#### Step 4: アイテムデータの参照
+#### Step 4: アイテムデータの参照（未実装）
 
-items.jsonから持ち物効果を推定：
+**チャンピオンズ環境のアイテム制限:** いのちのたま、こだわりハチマキ/メガネ、とつげきチョッキ、ゴツゴツメット等が全てBAN。合法アイテム58種（メガストーン除く）。
 
-| 参照フィールド | 活用方法 |
-|--------------|---------|
-| `isChoice` | こだわり系（技固定）を検出 → 相手が同じ技を連打してきたら読み交代 |
-| `megaStone` | メガシンカ可能判定（`canMegaEvo`の裏付け） |
-| `onModifySpe` | スカーフのS1.5倍を速度比較に反映 |
-| `fling.basePower` | なげつけるの威力推定 |
+**実装対象（ログ検出可能な3種）:**
 
-#### Step 5: 統合 — request JSON + Showdownデータ で精密判断
+| アイテム | AI影響 | 検出方法 |
+|---------|--------|---------|
+| こだわりスカーフ | 相手の速度×1.5 → 先攻判定修正 | 同じ技を2回連打 or `\|-item\|` |
+| きあいのタスキ | HP100%で確1不可 → 積みor2発前提 | `\|-enditem\|Focus Sash` |
+| 半減きのみ(16種) | 弱点技1回だけ半減 → 初手ゴリ押し注意 | `\|-enditem\|[Berry名]` |
 
-request JSONから得られる情報とShowdownデータを組み合わせ：
+**課題（将来実装候補）:**
 
-```python
-# request JSONから:
-opponent_species = "Garchomp"  # ログから取得
-my_stats = {"atk": 182, "def": 115, ...}  # request JSONから正確に取得
-available_moves = [{"id": "earthquake", "pp": 8}, ...]  # request JSONから
+| アイテム | 検出可能性 | 備考 |
+|---------|-----------|------|
+| タイプ強化アイテム(×1.2, 17種) | 実測ダメージ > 性格+EV最大乱数 で確定検出可能。計算コストは軽いが発動頻度が低い | ベイズ推定で精度向上可能(Phase 3.5以降) |
+| たべのこし | `\|-heal\|`で毎ターン検出 | 被ダメ推定には影響小 |
+| おうじゃのしるし | ひるみ発動で推定 | 低確率で影響小 |
+| ピントレンズ | 急所発動で推定 | 不確実 |
 
-# Showdownデータから:
-move_data = moves_json["earthquake"]  # basePower=100, type=Ground, flags={...}
-opp_data = pokedex_json["garchomp"]  # baseStats, types, abilities
-opp_ability_data = abilities_json[opp_data["abilities"]["0"]]  # 特性効果
+#### Step 5: 統合（部分的に実装済み）
 
-# 統合判断:
-damage = calc_damage(my_stats, move_data, opp_data)  # 精密ダメージ計算
-is_contact = move_data["flags"].get("contact")  # さめはだ回避判断
-opp_can_ohko = estimate_incoming(opp_data, opp_ability_data, my_stats)  # 交代判定
-```
+Step 1〜3の統合は完了。request JSON + Showdownデータ（技・特性・種族値）の組み合わせでAI判断を精密化済み。
+
+残課題:
+- アイテム検出の統合（Step 4実装後）
+- 相手の型推定（使用率データとの連携、Phase 3.5）
+- 精密ダメージ計算（確定数ベースの交代判定）
 
 ### 見積もり
 
-| Step | 実装量 | 優先度 |
-|------|--------|--------|
-| Step 1 (JSON変換) | 小（スクリプト1つ） | **最優先** — 他の全Stepの前提 |
-| Step 2 (技データ) | 中 | 高 — スコアリング精度が大幅に向上 |
+| Step | 実装量 | 優先度 | 状態 |
+|------|--------|--------|------|
+| Step 1 (JSON変換) | 小（スクリプト1つ） | **最優先** | ✅ 実装済み |
+| Step 2 (技データ) | 中 | 高 | ✅ 実装済み |
+| Step 3 (特性データ) | 中 | 高 | ✅ 実装済み |
+| Step 4 (アイテム) | 小〜中 | 中 | 未実装（環境制限で影響小） |
+| Step 5 (統合) | — | — | 部分完了 |
 | Step 3 (特性データ) | 中 | 高 — 交代判定精度が向上 |
 | Step 4 (アイテム) | 小 | 中 — こだわり系の読みが可能に |
 | Step 5 (統合) | 大 | RL Phase 0の前に完了したい |
