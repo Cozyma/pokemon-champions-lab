@@ -134,11 +134,35 @@ for (const [id, ability] of Object.entries(dex.data.Abilities)) {
 }
 
 // ---------------------------------------------------------------------------
+// Pokedex (species -> types, abilities, baseStats)
+// ---------------------------------------------------------------------------
+const pokedex = {};
+for (const [id, species] of Object.entries(dex.data.Pokedex)) {
+  if (species.isNonstandard && species.isNonstandard !== "Past") continue;
+  if (species.num <= 0) continue;
+
+  const entry = {
+    name: species.name,
+    types: species.types,
+    baseStats: species.baseStats,
+    abilities: {},
+  };
+  for (const [slot, abilityName] of Object.entries(species.abilities || {})) {
+    const ab = dex.abilities.get(abilityName);
+    entry.abilities[slot] = ab ? ab.id : abilityName.toLowerCase().replace(/\s/g, "");
+  }
+
+  pokedex[id] = entry;
+}
+
+// ---------------------------------------------------------------------------
 // Write output
 // ---------------------------------------------------------------------------
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 fs.writeFileSync(path.join(OUTPUT_DIR, "moves.json"), JSON.stringify(moves, null, 2));
 fs.writeFileSync(path.join(OUTPUT_DIR, "abilities.json"), JSON.stringify(abilities, null, 2));
 
+fs.writeFileSync(path.join(OUTPUT_DIR, "pokedex.json"), JSON.stringify(pokedex, null, 2));
 console.log(`Extracted ${Object.keys(moves).length} moves -> data/showdown-cache/moves.json`);
 console.log(`Extracted ${Object.keys(abilities).length} abilities -> data/showdown-cache/abilities.json`);
+console.log(`Extracted ${Object.keys(pokedex).length} species -> data/showdown-cache/pokedex.json`);
