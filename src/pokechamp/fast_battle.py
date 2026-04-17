@@ -1148,6 +1148,41 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                         if boost_sum >= 2:
                             return f"move {moves.index(move) + 1}{mega_suffix}"
 
+        # Recovery move evaluation
+        # Use recovery when: HP < 50%, not OHKO'd, recovery would push us out of 2HKO range
+        active_hp_pct = _hp_pct(active_pokemon)
+        if active_hp_pct < 50.0:
+            my_current_hp = _parse_current_hp(active_pokemon)
+            my_max_hp = 0
+            cond = active_pokemon.get("condition", "")
+            cond_m = re.match(r"(\d+)/(\d+)", cond)
+            if cond_m:
+                my_max_hp = int(cond_m.group(2))
+            opp_species = opp.get("species", "")
+            opp_types_for_dmg = opp.get("types", [])
+            my_def = active_stats.get("def", 100)
+            my_spd = active_stats.get("spd", 100)
+            max_incoming = 0
+            if opp_species and opp_types_for_dmg:
+                max_incoming = _estimate_opponent_max_damage(
+                    opp_species, opp_types_for_dmg, my_def, my_spd,
+                    active_pokemon.get("types", []),
+                    confirmed_ability=opp.get("ability", ""),
+                )
+            # Not OHKO'd and recovery would help survive an extra hit
+            if max_incoming < my_current_hp and my_max_hp > 0:
+                recovery_amount = my_max_hp // 2  # most recovery moves heal 50%
+                hp_after_recovery = min(my_current_hp + recovery_amount, my_max_hp)
+                # Would recovery push us out of 2HKO range?
+                survives_2hko_after = (max_incoming * 2) < hp_after_recovery
+                for move in available_moves:
+                    sd = showdown_data.get_move(move.get("id", ""))
+                    if sd and sd.get("isHeal") and sd.get("category") == "Status":
+                        target = sd.get("target", "")
+                        if target == "self":
+                            if survives_2hko_after:
+                                return f"move {moves.index(move) + 1}{mega_suffix}"
+
         # Score moves and pick best
         scored = []
         for move in available_moves:

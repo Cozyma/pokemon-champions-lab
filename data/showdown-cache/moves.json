@@ -147,8 +147,7 @@
     "pp": 5,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "banefulbunker",
-    "switchInOnly": true
+    "volatileStatus": "banefulbunker"
   },
   "barbbarrage": {
     "name": "Barb Barrage",
@@ -173,8 +172,7 @@
     "pp": 5,
     "priority": -3,
     "target": "normal",
-    "bullet": true,
-    "switchInOnly": true
+    "bullet": true
   },
   "belch": {
     "name": "Belch",
@@ -349,8 +347,7 @@
     "pp": 10,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "burningbulwark",
-    "switchInOnly": true
+    "volatileStatus": "burningbulwark"
   },
   "burnup": {
     "name": "Burn Up",
@@ -791,8 +788,7 @@
     "pp": 20,
     "priority": 0,
     "target": "normal",
-    "volatileStatus": "electrify",
-    "switchInOnly": true
+    "volatileStatus": "electrify"
   },
   "electrodrift": {
     "name": "Electro Drift",
@@ -867,7 +863,8 @@
     "secondary": {
       "chance": 100,
       "volatileStatus": "flinch"
-    }
+    },
+    "switchInOnly": true
   },
   "falsesurrender": {
     "name": "False Surrender",
@@ -956,7 +953,8 @@
     "pp": 10,
     "priority": 2,
     "target": "normal",
-    "contact": true
+    "contact": true,
+    "switchInOnly": true
   },
   "fishiousrend": {
     "name": "Fishious Rend",
@@ -1485,8 +1483,7 @@
     "pp": 5,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "kingsshield",
-    "switchInOnly": true
+    "volatileStatus": "kingsshield"
   },
   "leafage": {
     "name": "Leafage",
@@ -1866,8 +1863,7 @@
     "pp": 5,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "obstruct",
-    "switchInOnly": true
+    "volatileStatus": "obstruct"
   },
   "orderup": {
     "name": "Order Up",
@@ -2050,8 +2046,7 @@
     "pp": 5,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "protect",
-    "switchInOnly": true
+    "volatileStatus": "protect"
   },
   "psybeam": {
     "name": "Psybeam",
@@ -2249,8 +2244,7 @@
     "pp": 20,
     "priority": 0,
     "target": "normal",
-    "contact": true,
-    "switchInOnly": true
+    "contact": true
   },
   "ruination": {
     "name": "Ruination",
@@ -2400,8 +2394,7 @@
     "accuracy": 100,
     "pp": 10,
     "priority": -3,
-    "target": "allAdjacentFoes",
-    "switchInOnly": true
+    "target": "allAdjacentFoes"
   },
   "shiftgear": {
     "name": "Shift Gear",
@@ -2447,8 +2440,7 @@
     "pp": 10,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "silktrap",
-    "switchInOnly": true
+    "volatileStatus": "silktrap"
   },
   "sketch": {
     "name": "Sketch",
@@ -2594,8 +2586,7 @@
     "pp": 5,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "spikyshield",
-    "switchInOnly": true
+    "volatileStatus": "spikyshield"
   },
   "spinout": {
     "name": "Spin Out",
@@ -4257,8 +4248,7 @@
     "pp": 10,
     "priority": 0,
     "target": "all",
-    "weather": "snowscape",
-    "switchInOnly": true
+    "weather": "snowscape"
   },
   "chipaway": {
     "name": "Chip Away",
@@ -4518,8 +4508,7 @@
     "pp": 20,
     "priority": -5,
     "target": "scripted",
-    "contact": true,
-    "switchInOnly": true
+    "contact": true
   },
   "covet": {
     "name": "Covet",
@@ -4541,8 +4530,7 @@
     "pp": 10,
     "priority": 3,
     "target": "allySide",
-    "sideCondition": "craftyshield",
-    "switchInOnly": true
+    "sideCondition": "craftyshield"
   },
   "crosschop": {
     "name": "Cross Chop",
@@ -5156,8 +5144,7 @@
     "pp": 10,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "endure",
-    "switchInOnly": true
+    "volatileStatus": "endure"
   },
   "energyball": {
     "name": "Energy Ball",
@@ -5673,8 +5660,7 @@
     "priority": -3,
     "target": "normal",
     "contact": true,
-    "punch": true,
-    "switchInOnly": true
+    "punch": true
   },
   "followme": {
     "name": "Follow Me",
@@ -5685,8 +5671,7 @@
     "pp": 20,
     "priority": 2,
     "target": "self",
-    "volatileStatus": "followme",
-    "switchInOnly": true
+    "volatileStatus": "followme"
   },
   "foresight": {
     "name": "Foresight",
@@ -6217,8 +6202,7 @@
     "pp": 20,
     "priority": 5,
     "target": "adjacentAlly",
-    "volatileStatus": "helpinghand",
-    "switchInOnly": true
+    "volatileStatus": "helpinghand"
   },
   "hex": {
     "name": "Hex",
@@ -6570,8 +6554,7 @@
     "priority": 0,
     "target": "normal",
     "contact": true,
-    "bullet": true,
-    "switchInOnly": true
+    "bullet": true
   },
   "icebeam": {
     "name": "Ice Beam",
@@ -6782,8 +6765,7 @@
     "accuracy": true,
     "pp": 20,
     "priority": 1,
-    "target": "all",
-    "switchInOnly": true
+    "target": "all"
   },
   "irondefense": {
     "name": "Iron Defense",
@@ -7199,8 +7181,7 @@
     "pp": 15,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "magiccoat",
-    "switchInOnly": true
+    "volatileStatus": "magiccoat"
   },
   "magicpowder": {
     "name": "Magic Powder",
@@ -7285,8 +7266,7 @@
     "pp": 10,
     "priority": 0,
     "target": "allySide",
-    "sideCondition": "matblock",
-    "switchInOnly": true
+    "sideCondition": "matblock"
   },
   "matchagotcha": {
     "name": "Matcha Gotcha",
@@ -7372,8 +7352,7 @@
     "priority": 4,
     "target": "self",
     "volatileStatus": "maxguard",
-    "isMax": true,
-    "switchInOnly": true
+    "isMax": true
   },
   "maxhailstorm": {
     "name": "Max Hailstorm",
@@ -7549,8 +7528,7 @@
     "accuracy": true,
     "pp": 20,
     "priority": 0,
-    "target": "adjacentFoe",
-    "switchInOnly": true
+    "target": "adjacentFoe"
   },
   "megahorn": {
     "name": "Megahorn",
@@ -7725,8 +7703,7 @@
     "accuracy": 100,
     "pp": 20,
     "priority": -5,
-    "target": "scripted",
-    "switchInOnly": true
+    "target": "scripted"
   },
   "mirrormove": {
     "name": "Mirror Move",
@@ -8396,8 +8373,7 @@
     "pp": 20,
     "priority": 1,
     "target": "normal",
-    "volatileStatus": "powder",
-    "switchInOnly": true
+    "volatileStatus": "powder"
   },
   "powergem": {
     "name": "Power Gem",
@@ -8615,8 +8591,7 @@
     "pp": 20,
     "priority": 0,
     "target": "normal",
-    "contact": true,
-    "switchInOnly": true
+    "contact": true
   },
   "quash": {
     "name": "Quash",
@@ -8648,8 +8623,7 @@
     "pp": 15,
     "priority": 3,
     "target": "allySide",
-    "sideCondition": "quickguard",
-    "switchInOnly": true
+    "sideCondition": "quickguard"
   },
   "quiverdance": {
     "name": "Quiver Dance",
@@ -8686,8 +8660,7 @@
     "pp": 20,
     "priority": 2,
     "target": "self",
-    "volatileStatus": "ragepowder",
-    "switchInOnly": true
+    "volatileStatus": "ragepowder"
   },
   "ragingbull": {
     "name": "Raging Bull",
@@ -9002,8 +8975,7 @@
     "pp": 5,
     "priority": 0,
     "target": "self",
-    "isHeal": true,
-    "switchInOnly": true
+    "isHeal": true
   },
   "rototiller": {
     "name": "Rototiller",
@@ -9619,8 +9591,7 @@
     "pp": 10,
     "priority": 4,
     "target": "self",
-    "volatileStatus": "snatch",
-    "switchInOnly": true
+    "volatileStatus": "snatch"
   },
   "snore": {
     "name": "Snore",
@@ -9840,8 +9811,7 @@
     "pp": 15,
     "priority": 3,
     "target": "normal",
-    "volatileStatus": "spotlight",
-    "switchInOnly": true
+    "volatileStatus": "spotlight"
   },
   "stealthrock": {
     "name": "Stealth Rock",
@@ -10976,8 +10946,7 @@
     "pp": 10,
     "priority": 3,
     "target": "allySide",
-    "sideCondition": "wideguard",
-    "switchInOnly": true
+    "sideCondition": "wideguard"
   },
   "wildcharge": {
     "name": "Wild Charge",

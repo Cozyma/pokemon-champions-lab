@@ -90,8 +90,9 @@ for (const [id, move] of Object.entries(dex.data.Moves)) {
   if (move.hasCrashDamage) entry.hasCrashDamage = true;
   if (move.isZ) entry.isZ = true;
   if (move.isMax) entry.isMax = true;
-  // Switch-in-only moves (Fake Out, First Impression)
-  if (move.condition && move.condition.duration === 1) entry.switchInOnly = true;
+  // Switch-in-only moves (hardcoded — condition.duration is unreliable,
+  // e.g. Roost has duration=1 for type suppression, not switch-in restriction)
+  if (id === "fakeout" || id === "firstimpression") entry.switchInOnly = true;
 
   moves[id] = entry;
 }
@@ -156,13 +157,32 @@ for (const [id, species] of Object.entries(dex.data.Pokedex)) {
 }
 
 // ---------------------------------------------------------------------------
+// Type Chart
+// ---------------------------------------------------------------------------
+const typechart = {};
+for (const type of dex.types.all()) {
+  const atkName = type.id; // e.g. "fire"
+  typechart[atkName] = {};
+  for (const defType of dex.types.all()) {
+    const defName = defType.id;
+    // damageTaken: 0=normal, 1=super-eff, 2=resist, 3=immune
+    const val = defType.damageTaken[type.name]; // type.name is capitalized e.g. "Fire"
+    if (val === 1) typechart[atkName][defName] = 2.0;
+    else if (val === 2) typechart[atkName][defName] = 0.5;
+    else if (val === 3) typechart[atkName][defName] = 0.0;
+    // val === 0 (neutral) → omit, default is 1.0
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Write output
 // ---------------------------------------------------------------------------
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 fs.writeFileSync(path.join(OUTPUT_DIR, "moves.json"), JSON.stringify(moves, null, 2));
 fs.writeFileSync(path.join(OUTPUT_DIR, "abilities.json"), JSON.stringify(abilities, null, 2));
-
 fs.writeFileSync(path.join(OUTPUT_DIR, "pokedex.json"), JSON.stringify(pokedex, null, 2));
+fs.writeFileSync(path.join(OUTPUT_DIR, "typechart.json"), JSON.stringify(typechart, null, 2));
 console.log(`Extracted ${Object.keys(moves).length} moves -> data/showdown-cache/moves.json`);
 console.log(`Extracted ${Object.keys(abilities).length} abilities -> data/showdown-cache/abilities.json`);
 console.log(`Extracted ${Object.keys(pokedex).length} species -> data/showdown-cache/pokedex.json`);
+console.log(`Extracted ${Object.keys(typechart).length} types -> data/showdown-cache/typechart.json`);
