@@ -204,6 +204,32 @@ def _parse_opponent_from_log(log_lines: list[str], my_player_id: str) -> dict:
     return opponent
 
 
+def _parse_opponent_boosts(log_lines: list[str], my_player_id: str) -> dict[str, int]:
+    """Extract current opponent's stat boosts from battle log.
+
+    Boosts reset on switch. Returns dict like {"atk": 2, "spe": 1}.
+    """
+    opp_id = "p2" if my_player_id == "p1" else "p1"
+    boosts: dict[str, int] = {}
+
+    for line in log_lines:
+        # Reset boosts on opponent switch
+        if f"|switch|{opp_id}a: " in line or f"|drag|{opp_id}a: " in line:
+            boosts.clear()
+        # |-boost|p2a: Garchomp|atk|2
+        m = re.match(rf"\|-boost\|{opp_id}a: [^|]+\|(\w+)\|(\d+)", line)
+        if m:
+            stat, stages = m.group(1), int(m.group(2))
+            boosts[stat] = boosts.get(stat, 0) + stages
+        # |-unboost|p2a: Garchomp|atk|1
+        m = re.match(rf"\|-unboost\|{opp_id}a: [^|]+\|(\w+)\|(\d+)", line)
+        if m:
+            stat, stages = m.group(1), int(m.group(2))
+            boosts[stat] = boosts.get(stat, 0) - stages
+
+    return boosts
+
+
 # ---------------------------------------------------------------------------
 # Damage-based helpers for switch decisions
 # ---------------------------------------------------------------------------

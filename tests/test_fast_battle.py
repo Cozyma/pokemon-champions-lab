@@ -576,3 +576,108 @@ def test_choose_action_priority_ko_prevents_switch():
     action = _choose_action(request, log_lines, "p1")
     # Should use Bullet Punch (move 1) rather than switching
     assert action == "move 1"
+
+
+def test_mega_type_changes_table():
+    """MEGA_TYPE_CHANGES has correct entries for all type-changing megas."""
+    from pokechamp.fast_battle import MEGA_TYPE_CHANGES
+
+    assert len(MEGA_TYPE_CHANGES) == 10
+
+    assert MEGA_TYPE_CHANGES["charizard"] == {
+        "base_types": ["fire", "flying"],
+        "mega_types": ["fire", "dragon"],
+    }
+    assert MEGA_TYPE_CHANGES["aggron"] == {
+        "base_types": ["steel", "rock"],
+        "mega_types": ["steel"],
+    }
+    assert MEGA_TYPE_CHANGES["altaria"] == {
+        "base_types": ["dragon", "flying"],
+        "mega_types": ["dragon", "fairy"],
+    }
+
+
+def test_mega_valuable_abilities_table():
+    """MEGA_VALUABLE_ABILITIES has correct entries."""
+    from pokechamp.fast_battle import MEGA_VALUABLE_ABILITIES
+
+    assert len(MEGA_VALUABLE_ABILITIES) == 2
+    assert MEGA_VALUABLE_ABILITIES["clefable"]["check"] == "opponent_has_boosts"
+    assert MEGA_VALUABLE_ABILITIES["venusaur"]["check"] == "weather_is_sun"
+
+
+def test_parse_weather_sun():
+    """_parse_weather detects sun from log."""
+    from pokechamp.fast_battle import _parse_weather
+
+    log_lines = [
+        "|-weather|SunnyDay|[from] ability: Drought|[of] p1a: Torkoal",
+        "|turn|2",
+    ]
+    assert _parse_weather(log_lines) == "sunnyday"
+
+
+def test_parse_weather_none():
+    """_parse_weather returns empty string when no weather."""
+    from pokechamp.fast_battle import _parse_weather
+
+    log_lines = [
+        "|turn|1",
+        "|move|p1a: Garchomp|Earthquake|p2a: Corviknight",
+    ]
+    assert _parse_weather(log_lines) == ""
+
+
+def test_parse_weather_ends():
+    """_parse_weather detects weather ending."""
+    from pokechamp.fast_battle import _parse_weather
+
+    log_lines = [
+        "|-weather|SunnyDay|[from] ability: Drought|[of] p1a: Torkoal",
+        "|turn|2",
+        "|-weather|none",
+    ]
+    assert _parse_weather(log_lines) == ""
+
+def test_parse_opponent_boosts():
+    """_parse_opponent_boosts extracts stat boosts from log."""
+    from pokechamp.fast_battle import _parse_opponent_boosts
+
+    log_lines = [
+        "|switch|p2a: Garchomp|Garchomp, L50, M|183/183",
+        "|-boost|p2a: Garchomp|atk|2",
+        "|-boost|p2a: Garchomp|spe|1",
+    ]
+    boosts = _parse_opponent_boosts(log_lines, "p1")
+    assert boosts.get("atk", 0) == 2
+    assert boosts.get("spe", 0) == 1
+    assert boosts.get("def", 0) == 0
+
+
+def test_parse_opponent_boosts_unboost():
+    """_parse_opponent_boosts handles unboost correctly."""
+    from pokechamp.fast_battle import _parse_opponent_boosts
+
+    log_lines = [
+        "|switch|p2a: Garchomp|Garchomp, L50, M|183/183",
+        "|-boost|p2a: Garchomp|atk|2",
+        "|-unboost|p2a: Garchomp|atk|1",
+    ]
+    boosts = _parse_opponent_boosts(log_lines, "p1")
+    assert boosts.get("atk", 0) == 1
+
+
+def test_parse_opponent_boosts_reset_on_switch():
+    """Boosts reset when opponent switches."""
+    from pokechamp.fast_battle import _parse_opponent_boosts
+
+    log_lines = [
+        "|switch|p2a: Garchomp|Garchomp, L50, M|183/183",
+        "|-boost|p2a: Garchomp|atk|2",
+        "|switch|p2a: Corviknight|Corviknight, L50, F|173/173",
+        "|-boost|p2a: Corviknight|def|1",
+    ]
+    boosts = _parse_opponent_boosts(log_lines, "p1")
+    assert boosts.get("atk", 0) == 0
+    assert boosts.get("def", 0) == 1
