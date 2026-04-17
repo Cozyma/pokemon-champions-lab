@@ -354,6 +354,29 @@ def _parse_move_order(log_lines: list[str], my_player_id: str) -> str | None:
     return "me" if first_mover == my_player_id else "opp"
 
 
+def _opponent_used_recovery(log_lines: list[str], my_player_id: str) -> bool:
+    """Check if the current opponent has used a recovery move in this matchup.
+
+    Tracks only moves from the current opponent (resets on switch).
+    """
+    opp_id = "p2" if my_player_id == "p1" else "p1"
+    recovery_ids = {
+        "recover", "roost", "softboiled", "slackoff", "moonlight", "synthesis",
+        "morningsun", "milkdrink", "shoreup", "healorder", "rest",
+    }
+    used_recovery = False
+    for line in log_lines:
+        if f"|switch|{opp_id}a: " in line or f"|drag|{opp_id}a: " in line:
+            used_recovery = False
+        if f"|move|{opp_id}a: " in line:
+            parts = line.split("|")
+            if len(parts) > 3:
+                move_name = parts[3].strip().lower().replace(" ", "").replace("-", "")
+                if move_name in recovery_ids:
+                    used_recovery = True
+    return used_recovery
+
+
 def _parse_weather(log_lines: list[str]) -> str:
     """Return current weather from battle log.
 
@@ -1149,15 +1172,16 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                             return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # Recovery move evaluation
-        # Use recovery when: HP < 50%, not OHKO'd, recovery would push us out of 2HKO range
+        # Use recovery when HP is low, not OHKO'd, and recovery helps survive.
+        # If incoming damage < recovery amount (wall matchup), recover more aggressively.
         active_hp_pct = _hp_pct(active_pokemon)
-        if active_hp_pct < 50.0:
-            my_current_hp = _parse_current_hp(active_pokemon)
-            my_max_hp = 0
-            cond = active_pokemon.get("condition", "")
-            cond_m = re.match(r"(\d+)/(\d+)", cond)
-            if cond_m:
-                my_max_hp = int(cond_m.group(2))
+        my_current_hp = _parse_current_hp(active_pokemon)
+        my_max_hp = 0
+        cond = active_pokemon.get("condition", "")
+        cond_m = re.match(r"(\d+)/(\d+)", cond)
+        if cond_m:
+            my_max_hp = int(cond_m.group(2))
+        if my_max_hp > 0 and active_hp_pct < 75.0:
             opp_species = opp.get("species", "")
             opp_types_for_dmg = opp.get("types", [])
             my_def = active_stats.get("def", 100)
@@ -1169,18 +1193,22 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                     active_pokemon.get("types", []),
                     confirmed_ability=opp.get("ability", ""),
                 )
-            # Not OHKO'd and recovery would help survive an extra hit
-            if max_incoming < my_current_hp and my_max_hp > 0:
-                recovery_amount = my_max_hp // 2  # most recovery moves heal 50%
+            if max_incoming < my_current_hp:  # not OHKO'd
+                recovery_amount = my_max_hp // 2
                 hp_after_recovery = min(my_current_hp + recovery_amount, my_max_hp)
-                # Would recovery push us out of 2HKO range?
-                survives_2hko_after = (max_incoming * 2) < hp_after_recovery
-                for move in available_moves:
-                    sd = showdown_data.get_move(move.get("id", ""))
-                    if sd and sd.get("isHeal") and sd.get("category") == "Status":
-                        target = sd.get("target", "")
-                        if target == "self":
-                            if survives_2hko_after:
+                # Wall matchup: incoming < recovery → recover at higher HP threshold
+                is_wall_matchup = max_incoming < recovery_amount
+                should_recover = False
+                if is_wall_matchup and active_hp_pct < 70.0:
+                    should_recover = True  # wall: recover aggressively
+                elif not is_wall_matchup and active_hp_pct < 50.0:
+                    # Not a wall: only recover if it pushes us out of 2HKO range
+                    should_recover = (max_incoming * 2) < hp_after_recovery
+                if should_recover:
+                    for move in available_moves:
+                        sd = showdown_data.get_move(move.get("id", ""))
+                        if sd and sd.get("isHeal") and sd.get("category") == "Status":
+                            if sd.get("target", "") == "self":
                                 return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # Score moves and pick best
@@ -1192,6 +1220,20 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
         if scored:
             best_move, best_score = max(scored, key=lambda x: x[1])
             if best_score > 0:
+                # Check if opponent has recovery and we can't break through
+                # If opponent used recovery AND our best damage < ~50% of their HP,
+                # they'll just recover it back — switch to something that can break them
+                opp_has_recovery = _opponent_used_recovery(log_lines, player_id)
+                if opp_has_recovery and available_switches and not in_switch_loop:
+                    opp_hp_pct = opp.get("hp_pct", 100.0)
+                    # Rough estimate: if our best score is low relative to opponent's bulk,
+                    # we can't 2HKO through recovery. Use score threshold:
+                    # A move that 2HKOs typically scores 150+ (80bp * STAB * ratio * SE).
+                    # If best_score < 80, we likely can't break through recovery.
+                    if best_score < 80 and opp_hp_pct > 50:
+                        switch_cmd = _choose_best_switch(request, opp)
+                        if switch_cmd:
+                            return switch_cmd
                 return f"move {moves.index(best_move) + 1}{mega_suffix}"
             # All moves score 0 (immune/no effect): switch if possible (unless looping)
             if available_switches and not in_switch_loop:
