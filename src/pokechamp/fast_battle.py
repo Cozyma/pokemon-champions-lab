@@ -805,11 +805,24 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
         return f"move {moves.index(priority_ko_move) + 1}{mega_suffix}"
 
     if available_moves:
-        # Entry hazards setup (if opponent has >=3 mons remaining)
+        # Entry hazards setup (if opponent has >=3 mons remaining and not already set)
         opp_remaining = _count_opponent_remaining(log_lines, player_id)
         if opp_remaining >= 3:
+            opp_id = "p2" if player_id == "p1" else "p1"
+            opp_conditions = _parse_side_conditions(log_lines, opp_id)
+            opp_conditions_lower = [c.lower() for c in opp_conditions]
             for i, move in enumerate(available_moves):
-                if move.get("id") in ("stealthrock", "spikes", "stickyweb", "toxicspikes"):
+                move_id = move.get("id", "")
+                if move_id in ("stealthrock", "spikes", "stickyweb", "toxicspikes"):
+                    hazard_names = {
+                        "stealthrock": "stealth rock",
+                        "spikes": "spikes",
+                        "stickyweb": "sticky web",
+                        "toxicspikes": "toxic spikes",
+                    }
+                    hazard_name = hazard_names.get(move_id, "")
+                    if hazard_name and hazard_name in opp_conditions_lower:
+                        continue
                     return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # Hazard removal

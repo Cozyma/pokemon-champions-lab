@@ -905,7 +905,10 @@ def test_choose_action_skips_stealth_rock_when_already_set():
     from pokechamp.fast_battle import _choose_action
 
     log_lines = [
+        # Three p2 switches seen so opp_remaining >= 3 and hazard setup block fires
         "|switch|p2a: Corviknight|Corviknight, L50, F|173/173",
+        "|switch|p2a: Dracovish|Dracovish, L50|155/155",
+        "|switch|p2a: Togekiss|Togekiss, L50, F|177/177",
         "|-sidestart|p2: p2|Stealth Rock",
     ]
     request = {
