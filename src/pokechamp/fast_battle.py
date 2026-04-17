@@ -230,6 +230,20 @@ def _parse_opponent_boosts(log_lines: list[str], my_player_id: str) -> dict[str,
     return boosts
 
 
+def _parse_weather(log_lines: list[str]) -> str:
+    """Return current weather from battle log.
+
+    Returns lowercase weather id (e.g. "sunnyday", "sandstorm") or "" if none.
+    """
+    weather = ""
+    for line in log_lines:
+        m = re.match(r"\|-weather\|(\w+)", line)
+        if m:
+            w = m.group(1).lower()
+            weather = "" if w == "none" else w
+    return weather
+
+
 # ---------------------------------------------------------------------------
 # Damage-based helpers for switch decisions
 # ---------------------------------------------------------------------------
