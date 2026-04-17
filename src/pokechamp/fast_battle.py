@@ -1067,6 +1067,8 @@ def _select_team_preview(
                 continue
             # Best matchup any of our 3 has against this opponent
             best_vs_this_opp = -10.0
+            # Track: can opponent hit all 3 of ours super-effectively?
+            min_incoming = 10.0  # lowest eff opponent deals to any of our 3
             for my_t in combo_types:
                 if not my_t:
                     continue
@@ -1082,7 +1084,15 @@ def _select_team_preview(
                 )
                 matchup = atk_eff - def_eff
                 best_vs_this_opp = max(best_vs_this_opp, matchup)
+                min_incoming = min(min_incoming, def_eff)
             score += best_vs_this_opp
+
+            # Penalty: if opponent hits all 3 of ours super-effectively (min > 1.0),
+            # they can sweep without switching moves. Reward having a resist.
+            if min_incoming > 1.0:
+                score -= min_incoming  # penalty proportional to worst weakness
+            elif min_incoming <= 0.5:
+                score += 0.5  # bonus: we have a solid resist
 
         best_combos.append((score, combo))
 
