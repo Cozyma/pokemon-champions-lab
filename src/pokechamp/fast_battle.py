@@ -855,7 +855,12 @@ def _score_move(
 
         # Two-turn moves: halve effective damage (charge/recharge = 2 turns for 1 hit)
         if showdown_data.move_is_two_turn(move_id):
-            score *= 0.5
+            my_ability = active_pokemon.get("ability", "").lower().replace(" ", "")
+            # Mega Sol allows Solar Beam/Blade without charging
+            if move_id in ("solarbeam", "solarblade") and my_ability == "megasol":
+                pass  # no penalty
+            else:
+                score *= 0.5
 
         # Contact move penalty (Rough Skin, Iron Barbs = 1/8 HP per hit)
         if showdown_data.move_is_contact(move_id):
@@ -1018,6 +1023,22 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
             m for m in available_moves
             if not showdown_data.move_is_self_destruct(m.get("id", ""))
         ]
+
+    # Remove already-set hazards from available moves to prevent fallback selection
+    opp_id_for_hazards = "p2" if player_id == "p1" else "p1"
+    opp_hazard_conditions = _parse_side_conditions(log_lines, opp_id_for_hazards)
+    opp_hazard_lower = [c.lower() for c in opp_hazard_conditions]
+    hazard_name_map = {
+        "stealthrock": "stealth rock",
+        "spikes": "spikes",
+        "stickyweb": "sticky web",
+        "toxicspikes": "toxic spikes",
+    }
+    available_moves = [
+        m for m in available_moves
+        if m.get("id", "") not in hazard_name_map
+        or hazard_name_map.get(m.get("id", ""), "") not in opp_hazard_lower
+    ]
 
     available_switches = [p for p in team if not p.get("active") and not _is_fainted(p)]
 
@@ -1327,6 +1348,25 @@ def run_battle(
 
             log_lines.extend(output)
 
+            # Handle errors (e.g. "Can't switch: trapped")
+            for line in output:
+                if "|error|" in line:
+                    # Find which player had the error and resend as move
+                    for pid in list(pending_requests.keys()):
+                        req = pending_requests.get(pid)
+                        if req:
+                            # Force a move instead of switch
+                            active = req.get("active", [{}])
+                            active_req = active[0] if active else {}
+                            moves = active_req.get("moves", [])
+                            avail = [m for m in moves if not m.get("disabled") and m.get("pp", 1) not in (0, None)]
+                            if avail:
+                                send(f">{pid} move {moves.index(avail[0]) + 1}")
+                            else:
+                                send(f">{pid} move 1")
+                    pending_requests.clear()
+                    break
+
             # Check for winner / tie
             win_result = _find_winner(output)
             if win_result is not None:
@@ -1348,6 +1388,8 @@ def run_battle(
 
             # Respond to all pending requests
             for pid, req in list(pending_requests.items()):
+                if req.get("wait"):
+                    continue  # skip wait requests
                 action = _choose_action(req, log_lines, pid)
                 send(f">{pid} {action}")
             pending_requests.clear()

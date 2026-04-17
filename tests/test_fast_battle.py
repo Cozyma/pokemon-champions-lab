@@ -1516,3 +1516,24 @@ def test_choose_action_avoids_draco_meteor_at_minus6():
     # Pulse: 85 * 1.0acc * (2/(2+6)) ratio * 1.0
     # Dragon Pulse should be preferred
     assert action.startswith("move 2"), f"Expected Dragon Pulse (move 2), got '{action}'"
+
+
+def test_score_move_solar_beam_mega_sol_no_penalty():
+    """Solar Beam should not have two-turn penalty when user has Mega Sol ability."""
+    from pokechamp.fast_battle import _score_move
+
+    active_megasol = {"types": ["grass", "fairy"], "ability": "megasol",
+                      "stats": {"atk": 92, "spa": 143, "spe": 80}}
+    active_normal = {"types": ["grass", "fairy"], "ability": "overgrow",
+                     "stats": {"atk": 92, "spa": 143, "spe": 80}}
+    opp = {"types": ["water"], "stats": {"def": 100, "spd": 100, "spe": 80},
+           "species": "", "ability": ""}
+
+    solar = {"id": "solarbeam", "basePower": 120, "type": "Grass",
+             "category": "Special", "accuracy": 100}
+
+    score_megasol = _score_move(solar, active_megasol, opp, 1.0, 1.43)
+    score_normal = _score_move(solar, active_normal, opp, 1.0, 1.43)
+
+    # Mega Sol should score roughly 2x normal (no 0.5 penalty)
+    assert score_megasol > score_normal * 1.8
