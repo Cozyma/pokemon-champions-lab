@@ -1042,8 +1042,11 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
 
     available_switches = [p for p in team if not p.get("active") and not _is_fainted(p)]
 
-    # Detect trapped state (Shadow Tag, Arena Trap, etc.)
-    is_trapped = any("|trapped|" in line for line in log_lines[-20:])
+    # Detect trapped state (Shadow Tag, Arena Trap, charge moves, etc.)
+    # Showdown's request JSON includes "trapped": true when switching is impossible
+    is_trapped = active_req.get("trapped", False) or any(
+        "|trapped|" in line for line in log_lines[-20:]
+    )
     if is_trapped:
         available_switches = []  # cannot switch when trapped
 
