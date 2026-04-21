@@ -31,9 +31,10 @@ ALL_TYPES = [
 TYPE_TO_IDX = {t: i for i, t in enumerate(ALL_TYPES)}
 N_TYPES = len(ALL_TYPES)
 
-# Action type labels
-ACTION_TYPES = ["move", "switch", "mega_move"]
-ACTION_TYPE_TO_IDX = {a: i for i, a in enumerate(ACTION_TYPES)}
+# Action type labels (binary: attack includes move+mega_move)
+# Mega decision is handled separately by _should_mega_evolve (rule-based)
+ACTION_TYPES = ["attack", "switch"]
+ACTION_TYPE_TO_IDX = {"attack": 0, "switch": 1}
 
 
 def _encode_species_types(species: str) -> list[float]:
@@ -157,8 +158,13 @@ def encode_state(sample: dict) -> np.ndarray:
 
 
 def encode_action_type(sample: dict) -> int:
-    """Encode action type as integer label."""
-    return ACTION_TYPE_TO_IDX.get(sample.get("action_type", "move"), 0)
+    """Encode action type as binary label: 0=attack, 1=switch.
+
+    Mega moves are merged into attack — mega decision is rule-based.
+    """
+    if sample.get("action_type") == "switch":
+        return 1
+    return 0  # move and mega_move → attack
 
 
 # ---------------------------------------------------------------------------
@@ -200,10 +206,10 @@ def load_training_data(
 
 
 def train_action_type_model(
-    min_rating: int = 1300,
-    winners_only: bool = True,
+    min_rating: int = 1200,
+    winners_only: bool = False,
 ) -> dict:
-    """Train Stage 1: action type classifier.
+    """Train Stage 1: binary attack/switch classifier.
 
     Returns dict with model, accuracy, and feature info.
     """
