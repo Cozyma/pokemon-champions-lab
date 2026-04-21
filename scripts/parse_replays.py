@@ -208,6 +208,16 @@ def parse_replay(log_text: str) -> list[dict]:
             weather = "" if w == "none" else w
             continue
 
+    # Post-process: backfill full selected teams from final state
+    # Each replay has a definitive set of 3 selected per player
+    final_selected: dict[str, list[str]] = {"p1": list(selected.get("p1", [])),
+                                             "p2": list(selected.get("p2", []))}
+    for s in samples:
+        player = s["player"]
+        opp = "p2" if player == "p1" else "p1"
+        s["selected_full"] = final_selected.get(player, [])
+        s["opp_selected_full"] = final_selected.get(opp, [])
+
     return samples
 
 
@@ -232,7 +242,7 @@ def _make_sample(
         "action_detail": action_detail,
         "team_preview_self": team_preview[player],
         "team_preview_opp": team_preview[opp],
-        "selected": list(selected),
+        "selected_known": list(selected),  # what's known at this point in time
         "active_species": active.get(player, ""),
         "active_hp_pct": hp.get(player, {}).get(active.get(player, ""), 100.0),
         "opp_active_species": active.get(opp, ""),
@@ -242,6 +252,7 @@ def _make_sample(
         "weather": weather,
         "winner": winner,
         "won": winner == player,
+        # selected_full and opp_selected_full are added in post-processing
     }
 
 
