@@ -26,9 +26,9 @@ TEAMS_DIR = Path(__file__).resolve().parent.parent / "teams"
 MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 RESULTS_PATH = MODELS_DIR / "longrun_results.json"
 
-TOTAL_STEPS = 10000
-CHECKPOINT_EVERY = 1000
-EVAL_GAMES_PER_OPP = 3
+TOTAL_STEPS = 80000
+CHECKPOINT_EVERY = 5000
+EVAL_GAMES_PER_OPP = 5
 
 
 def load_teams() -> dict[str, str]:
