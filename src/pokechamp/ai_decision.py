@@ -1,0 +1,675 @@
+"""AI decision-making: action selection, switching, mega evolution, team selection.
+
+Main entry point is _choose_action which orchestrates all heuristic decisions.
+"""
+from __future__ import annotations
+
+import itertools
+import random
+import re
+
+from pokechamp import showdown_data
+from pokechamp.ai_scoring import (
+    _calc_type_effectiveness,
+    _estimate_matchup,
+    _estimate_opponent_max_damage,
+    _estimate_opponent_speed,
+    _get_pokemon_types,
+    _hp_pct,
+    _is_fainted,
+    _parse_current_hp,
+    _priority_can_ko,
+    _score_move,
+    _stat_estimation,
+)
+from pokechamp.log_parser import (
+    _count_opponent_remaining,
+    _opponent_used_recovery,
+    _parse_current_turn,
+    _parse_move_order,
+    _parse_opponent_boosts,
+    _parse_opponent_from_log,
+    _parse_self_boosts,
+    _parse_side_conditions,
+    _parse_switch_in_turn,
+    _parse_weather,
+)
+
+# ---------------------------------------------------------------------------
+# Mega Evolution lookup tables
+# ---------------------------------------------------------------------------
+
+# Type-changing megas: species -> {base_types, mega_types}
+# Only the 10 megas whose types change on evolution.
+MEGA_TYPE_CHANGES: dict[str, dict[str, list[str]]] = {
+    "charizard": {"base_types": ["fire", "flying"], "mega_types": ["fire", "dragon"]},  # X
+    "pinsir": {"base_types": ["bug"], "mega_types": ["bug", "flying"]},
+    "gyarados": {"base_types": ["water", "flying"], "mega_types": ["water", "dark"]},
+    "ampharos": {"base_types": ["electric"], "mega_types": ["electric", "dragon"]},
+    "aggron": {"base_types": ["steel", "rock"], "mega_types": ["steel"]},
+    "altaria": {"base_types": ["dragon", "flying"], "mega_types": ["dragon", "fairy"]},
+    "chimecho": {"base_types": ["psychic"], "mega_types": ["psychic", "steel"]},
+    "audino": {"base_types": ["normal"], "mega_types": ["normal", "fairy"]},
+    "feraligatr": {"base_types": ["water"], "mega_types": ["water", "dragon"]},
+    "meganium": {"base_types": ["grass"], "mega_types": ["grass", "fairy"]},
+}
+
+# Pre-mega abilities that are situationally valuable.
+# species -> {ability, check} where check is the condition type.
+MEGA_VALUABLE_ABILITIES: dict[str, dict[str, str]] = {
+    "clefable": {"ability": "unaware", "check": "opponent_has_boosts"},
+    "venusaur": {"ability": "chlorophyll", "check": "weather_is_sun"},
+}
+
+SWITCH_OUT_MATCHUP_THRESHOLD = -2.0
+
+
+def _extract_species_key(species: str) -> str:
+    """Normalize species name to lookup key (e.g. 'Charizard' -> 'charizard')."""
+    return species.split("-")[0].strip().lower()
+
+
+def _should_mega_evolve(
+    species: str,
+    active_types: list[str],
+    opp_types: list[str],
+    opp_boosts: dict[str, int],
+    weather: str,
+    moves: list[dict],
+) -> bool:
+    """Decide whether to mega evolve this turn.
+
+    Default: True (always mega).
+    Exceptions:
+      - Category A: Type change increases opponent's max damage against us,
+        OR type change reduces our best move's effective score.
+      - Category B: Pre-mega ability is situationally valuable
+        (Clefable/Unaware when opponent has boosts, Venusaur/Chlorophyll in sun).
+    """
+    key = _extract_species_key(species)
+
+    # --- Category B: valuable pre-mega ability ---
+    if key in MEGA_VALUABLE_ABILITIES:
+        entry = MEGA_VALUABLE_ABILITIES[key]
+        check = entry["check"]
+        if check == "opponent_has_boosts":
+            if any(v > 0 for v in opp_boosts.values()):
+                return False
+        elif check == "weather_is_sun":
+            if weather == "sunnyday":
+                return False
+
+    # --- Category A: type change evaluation ---
+    if key not in MEGA_TYPE_CHANGES:
+        return True
+
+    info = MEGA_TYPE_CHANGES[key]
+    base_types = info["base_types"]
+    mega_types = info["mega_types"]
+
+    # 1. Defensive check: does mega increase max incoming damage?
+    base_incoming = max(
+        (_calc_type_effectiveness(t, base_types) for t in opp_types),
+        default=1.0,
+    )
+    mega_incoming = max(
+        (_calc_type_effectiveness(t, mega_types) for t in opp_types),
+        default=1.0,
+    )
+    if mega_incoming > base_incoming:
+        return False
+
+    # 2. Offensive check: does mega reduce our best move score?
+    base_best = 0.0
+    mega_best = 0.0
+    for move in moves:
+        bp = move.get("basePower", 0) or 0
+        if bp == 0:
+            continue
+        move_type = (move.get("type") or "").lower()
+        eff = _calc_type_effectiveness(move_type, opp_types)
+        base_stab = 1.5 if move_type in [t.lower() for t in base_types] else 1.0
+        mega_stab = 1.5 if move_type in [t.lower() for t in mega_types] else 1.0
+        base_best = max(base_best, bp * base_stab * eff)
+        mega_best = max(mega_best, bp * mega_stab * eff)
+
+    if mega_best < base_best:
+        return False
+
+    return True
+
+
+def _should_switch_out(
+    request: dict,
+    opponent: dict,
+) -> bool:
+    """Decide whether we should switch out (mirrors SimpleHeuristicsPlayer._should_switch_out).
+
+    Enhanced with damage-based OHKO/2HKO detection.
+    """
+    team = request.get("side", {}).get("pokemon", [])
+    active_pokemon = next((p for p in team if p.get("active")), None)
+    if active_pokemon is None:
+        return False
+
+    available_switches = [
+        p for p in team
+        if not p.get("active")
+        and not _is_fainted(p)
+    ]
+    if not available_switches:
+        return False
+
+    active_types = active_pokemon.get("types", [])
+    active_stats = active_pokemon.get("stats", {})
+    active_hp = _hp_pct(active_pokemon)
+    opp_types = opponent.get("types", [])
+    opp_stats = opponent.get("stats", {})
+    opp_hp = opponent.get("hp_pct", 100.0)
+    opp_species = opponent.get("species", "")
+
+    # Check if there is a decent switch-in
+    has_good_switch = any(
+        _estimate_matchup(
+            _get_pokemon_types(p), p.get("stats", {}), _hp_pct(p),
+            opp_types, opp_stats, opp_hp,
+        ) > 0
+        for p in available_switches
+    )
+    if not has_good_switch:
+        return False
+
+    # Check for 'good' reason to switch out
+    boosts = active_pokemon.get("boosts", {})
+    if boosts.get("def", 0) <= -3 or boosts.get("spd", 0) <= -3:
+        return True
+    if boosts.get("atk", 0) <= -3 and active_stats.get("atk", 0) >= active_stats.get("spa", 0):
+        return True
+    if boosts.get("spa", 0) <= -3 and active_stats.get("spa", 0) > active_stats.get("atk", 0):
+        return True
+
+    # Damage-based OHKO/2HKO check
+    if opp_species and opp_types:
+        my_def = active_stats.get("def", 100)
+        my_spd = active_stats.get("spd", 100)
+        my_current_hp = _parse_current_hp(active_pokemon)
+        max_incoming = _estimate_opponent_max_damage(
+            opp_species, opp_types, my_def, my_spd, active_types,
+            confirmed_ability=opponent.get("ability", ""),
+        )
+        if max_incoming > 0 and my_current_hp > 0:
+            if max_incoming >= my_current_hp:
+                return True  # confirmed OHKO
+            my_spe = active_stats.get("spe", 100)
+            opp_spe = _estimate_opponent_speed(opp_species)
+            if max_incoming * 2 >= my_current_hp and opp_spe > my_spe:
+                return True  # 2HKO and we're slower
+
+    matchup = _estimate_matchup(
+        active_types, active_stats, active_hp,
+        opp_types, opp_stats, opp_hp,
+    )
+    if matchup < SWITCH_OUT_MATCHUP_THRESHOLD:
+        return True
+
+    return False
+
+
+def _choose_best_switch(request: dict, opponent: dict) -> str | None:
+    """Return switch command for the best available team member.
+
+    Enhanced to skip switch targets that would be OHKO'd on switch-in.
+    """
+    team = request.get("side", {}).get("pokemon", [])
+    opp_types = opponent.get("types", [])
+    opp_stats = opponent.get("stats", {})
+    opp_hp = opponent.get("hp_pct", 100.0)
+    opp_species = opponent.get("species", "")
+
+    best_idx = None
+    best_score = float("-inf")
+
+    for i, mon in enumerate(team):
+        if mon.get("active") or _is_fainted(mon):
+            continue
+
+        mon_types = _get_pokemon_types(mon)
+        mon_stats = mon.get("stats", {})
+        mon_current_hp = _parse_current_hp(mon)
+
+        # Skip if this switch target would be OHKO'd on switch-in
+        if opp_species and opp_types and mon_current_hp > 0:
+            mon_def = mon_stats.get("def", 100)
+            mon_spd = mon_stats.get("spd", 100)
+            switch_in_dmg = _estimate_opponent_max_damage(
+                opp_species, opp_types, mon_def, mon_spd, mon_types,
+                confirmed_ability=opponent.get("ability", ""),
+            )
+            if switch_in_dmg >= mon_current_hp:
+                continue  # would die on switch-in, skip
+
+        score = _estimate_matchup(
+            mon_types, mon_stats, _hp_pct(mon),
+            opp_types, opp_stats, opp_hp,
+        )
+
+        # Defensive safety bonus: if opponent deals very little damage,
+        # this pokemon can safely wall even without offensive advantage.
+        # switch_in_dmg is already computed above (0 if estimation failed).
+        if opp_species and opp_types and mon_current_hp > 0 and switch_in_dmg > 0:
+            dmg_ratio = switch_in_dmg / mon_current_hp
+            if dmg_ratio < 0.15:
+                score += 1.0  # can tank ~7+ hits: excellent wall
+            elif dmg_ratio < 0.25:
+                score += 0.5  # can tank 4-6 hits: solid wall
+
+        if score > best_score:
+            best_score = score
+            best_idx = i + 1  # 1-indexed
+
+    return f"switch {best_idx}" if best_idx is not None else None
+
+
+def _choose_first_switch(request: dict) -> str | None:
+    """Return first available (non-fainted, non-active) switch index."""
+    team = request.get("side", {}).get("pokemon", [])
+    for i, mon in enumerate(team):
+        if not mon.get("active") and not _is_fainted(mon):
+            return f"switch {i + 1}"
+    return None
+
+
+def _select_team_preview(
+    team: list[dict], log_lines: list[str], max_size: int,
+) -> list[int]:
+    """Select best pokemon for team preview based on type matchup vs opponent.
+
+    Parses opponent team from |poke| lines in log, scores all C(n, max_size)
+    combinations, and picks from the top candidates with slight randomness.
+    Returns 1-indexed picks like [2, 4, 5].
+    """
+    # Parse opponent species from |poke| lines
+    opp_species_list: list[str] = []
+    for line in log_lines:
+        if "|poke|" in line:
+            parts = line.split("|")
+            if len(parts) >= 4:
+                # |poke|p2|Garchomp, L50, M|
+                poke_info = parts[3]
+                species = poke_info.split(",")[0].strip()
+                # Only opponent's pokemon (detect from p1/p2)
+                player_tag = parts[2].strip()
+                # We don't know which player we are at this point,
+                # so collect all and deduplicate by player
+                opp_species_list.append((player_tag, species))
+
+    # Determine which player tag is ours from team idents
+    my_tag = ""
+    if team:
+        ident = team[0].get("ident", "")
+        if ident.startswith("p1"):
+            my_tag = "p1"
+        elif ident.startswith("p2"):
+            my_tag = "p2"
+
+    opp_species = [sp for tag, sp in opp_species_list if tag != my_tag]
+
+    if not opp_species:
+        # Fallback: pick first max_size
+        return list(range(1, min(max_size, len(team)) + 1))
+
+    # Get types for our team and opponent
+    my_pokemon: list[tuple[int, list[str]]] = []
+    for i, mon in enumerate(team):
+        types = _get_pokemon_types(mon)
+        my_pokemon.append((i, types))
+
+    opp_types_list: list[list[str]] = []
+    pokedex = showdown_data.load_pokedex()
+    for sp in opp_species:
+        key = sp.lower().replace(" ", "").replace("-", "")
+        entry = pokedex.get(key)
+        if entry:
+            opp_types_list.append([t.lower() for t in entry.get("types", [])])
+        else:
+            opp_types_list.append([])
+
+    # Score each combination of max_size pokemon
+    indices = list(range(len(team)))
+    best_combos: list[tuple[float, tuple[int, ...]]] = []
+
+    for combo in itertools.combinations(indices, min(max_size, len(team))):
+        score = 0.0
+        combo_types = [my_pokemon[i][1] for i in combo]
+
+        for opp_t in opp_types_list:
+            if not opp_t:
+                continue
+            # Best matchup any of our 3 has against this opponent
+            best_vs_this_opp = -10.0
+            # Track: can opponent hit all 3 of ours super-effectively?
+            min_incoming = 10.0  # lowest eff opponent deals to any of our 3
+            for my_t in combo_types:
+                if not my_t:
+                    continue
+                # Offensive: best type eff we deal
+                atk_eff = max(
+                    (_calc_type_effectiveness(t, opp_t) for t in my_t),
+                    default=1.0,
+                )
+                # Defensive: best type eff they deal to us
+                def_eff = max(
+                    (_calc_type_effectiveness(t, my_t) for t in opp_t),
+                    default=1.0,
+                )
+                matchup = atk_eff - def_eff
+                best_vs_this_opp = max(best_vs_this_opp, matchup)
+                min_incoming = min(min_incoming, def_eff)
+            score += best_vs_this_opp
+
+            # Penalty: if opponent hits all 3 of ours super-effectively (min > 1.0),
+            # they can sweep without switching moves. Reward having a resist.
+            if min_incoming > 1.0:
+                score -= min_incoming  # penalty proportional to worst weakness
+            elif min_incoming <= 0.5:
+                score += 0.5  # bonus: we have a solid resist
+
+        best_combos.append((score, combo))
+
+    # Sort by score descending, pick from top 3 with randomness
+    # Use hash of opponent species as deterministic seed for reproducibility
+    best_combos.sort(key=lambda x: -x[0])
+    top_n = min(3, len(best_combos))
+    if top_n > 0:
+        rng = random.Random(hash(tuple(opp_species)))
+        chosen = rng.choice(best_combos[:top_n])
+        return [i + 1 for i in chosen[1]]
+
+    return list(range(1, min(max_size, len(team)) + 1))
+
+
+def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
+    """Choose an action given the current request JSON.
+
+    Returns a command string like 'move 1', 'switch 2', 'team 123', etc.
+    """
+    # Team preview — select best 3 based on type matchup vs opponent team
+    if request.get("teamPreview"):
+        max_size = request.get("maxChosenTeamSize", 3)
+        team = request.get("side", {}).get("pokemon", [])
+        picks = _select_team_preview(team, log_lines, max_size)
+        return f"team {''.join(str(p) for p in picks)}"
+
+    # Force switch
+    if request.get("forceSwitch"):
+        opp = _parse_opponent_from_log(log_lines, player_id)
+        switch_cmd = _choose_best_switch(request, opp)
+        return switch_cmd or _choose_first_switch(request) or "move 1"
+
+    # No active moves (pass)
+    if request.get("wait"):
+        return "move 1"  # should not happen but fallback
+
+    active_list = request.get("active", [{}])
+    active_req = active_list[0] if active_list else {}
+    moves = active_req.get("moves", [])
+    team = request.get("side", {}).get("pokemon", [])
+    active_pokemon = next((p for p in team if p.get("active")), {})
+
+    # Derive stat ratios for physical/special scoring
+    active_stats = active_pokemon.get("stats", {})
+    active_boosts = active_pokemon.get("boosts", {})
+    # Merge self boosts from log (request JSON misses move-induced self-debuffs)
+    log_boosts = _parse_self_boosts(log_lines, player_id)
+    if log_boosts:
+        active_boosts = dict(active_boosts)  # copy to avoid mutating request
+        for stat, val in log_boosts.items():
+            active_boosts[stat] = active_boosts.get(stat, 0) + val
+    opp = _parse_opponent_from_log(log_lines, player_id)
+    opp_stats = opp.get("stats", {})
+    opp_boosts = _parse_opponent_boosts(log_lines, player_id)
+
+    # Mega evolution decision
+    can_mega = active_req.get("canMegaEvo", False)
+    mega_suffix = ""
+    if can_mega:
+        species_name = active_pokemon.get("ident", "").split(": ", 1)[-1] if active_pokemon else ""
+        weather = _parse_weather(log_lines)
+        if _should_mega_evolve(
+            species=species_name,
+            active_types=active_pokemon.get("types", []),
+            opp_types=opp.get("types", []),
+            opp_boosts=opp_boosts,
+            weather=weather,
+            moves=moves,
+        ):
+            mega_suffix = " mega"
+
+    # Detect possible Choice Scarf from move order
+    # If opponent moved first despite our speed being higher, they may have scarf
+    move_order = _parse_move_order(log_lines, player_id)
+    my_spe = active_stats.get("spe", 100)
+    opp_est_spe = opp.get("stats", {}).get("spe", 100)
+    if move_order == "opp" and my_spe > opp_est_spe:
+        # Opponent outsped us despite lower estimated speed -> likely scarf
+        opp.setdefault("stats", {})["spe"] = int(opp_est_spe * 1.5)
+
+    atk_est = _stat_estimation(active_stats.get("atk", 100), active_boosts.get("atk", 0))
+    spa_est = _stat_estimation(active_stats.get("spa", 100), active_boosts.get("spa", 0))
+    opp_def_est = _stat_estimation(opp_stats.get("def", 100), opp_boosts.get("def", 0))
+    opp_spd_est = _stat_estimation(opp_stats.get("spd", 100), opp_boosts.get("spd", 0))
+
+    physical_ratio = atk_est / opp_def_est if opp_def_est else 1.0
+    special_ratio = spa_est / opp_spd_est if opp_spd_est else 1.0
+
+    available_moves = [
+        m for m in moves
+        if not m.get("disabled") and m.get("pp", 1) not in (0, None)
+    ]
+
+    # Filter switch-in-only moves (Fake Out, First Impression, etc.)
+    current_turn = _parse_current_turn(log_lines)
+    switch_in_turn = _parse_switch_in_turn(log_lines, player_id)
+    is_switch_in_turn = (current_turn <= switch_in_turn + 1)
+    if not is_switch_in_turn:
+        available_moves = [
+            m for m in available_moves
+            if not showdown_data.move_is_switch_in_only(m.get("id", ""))
+        ]
+
+    # Filter self-destruct moves unless it's a favorable trade
+    # (only use when we're on last pokemon or opponent is low HP)
+    my_remaining = sum(1 for p in team if not _is_fainted(p))
+    opp_hp = opp.get("hp_pct", 100.0)
+    if my_remaining > 1 and opp_hp > 30:
+        available_moves = [
+            m for m in available_moves
+            if not showdown_data.move_is_self_destruct(m.get("id", ""))
+        ]
+
+    # Remove already-set hazards from available moves to prevent fallback selection
+    opp_id_for_hazards = "p2" if player_id == "p1" else "p1"
+    opp_hazard_conditions = _parse_side_conditions(log_lines, opp_id_for_hazards)
+    opp_hazard_lower = [c.lower() for c in opp_hazard_conditions]
+    hazard_name_map = {
+        "stealthrock": "stealth rock",
+        "spikes": "spikes",
+        "stickyweb": "sticky web",
+        "toxicspikes": "toxic spikes",
+    }
+    available_moves = [
+        m for m in available_moves
+        if m.get("id", "") not in hazard_name_map
+        or hazard_name_map.get(m.get("id", ""), "") not in opp_hazard_lower
+    ]
+
+    available_switches = [p for p in team if not p.get("active") and not _is_fainted(p)]
+
+    # Detect trapped state (Shadow Tag, Arena Trap, charge moves, etc.)
+    # Showdown's request JSON includes "trapped": true when switching is impossible
+    is_trapped = active_req.get("trapped", False) or any(
+        "|trapped|" in line for line in log_lines[-20:]
+    )
+    if is_trapped:
+        available_switches = []  # cannot switch when trapped
+
+    # Priority move check: if we have a priority move that can KO, use it instead of switching
+    priority_ko_move = None
+    for move in available_moves:
+        if move.get("priority", 0) > 0:
+            if _priority_can_ko(move, active_pokemon, opp, physical_ratio, special_ratio):
+                priority_ko_move = move
+                break
+
+    # Detect switch loop: if we've switched 3+ times in a row recently, stop switching
+    recent_switches = 0
+    for line in reversed(log_lines[-30:]):
+        if f"|switch|{player_id}a: " in line:
+            recent_switches += 1
+        elif f"|move|{player_id}a: " in line:
+            break
+    in_switch_loop = recent_switches >= 3
+
+    # Determine if we should switch out (but not if we have a priority KO available)
+    if (priority_ko_move is None and available_switches
+            and not in_switch_loop and _should_switch_out(request, opp)):
+        switch_cmd = _choose_best_switch(request, opp)
+        if switch_cmd:
+            return switch_cmd
+
+    # Use the priority KO move if found
+    if priority_ko_move is not None:
+        return f"move {moves.index(priority_ko_move) + 1}{mega_suffix}"
+
+    if available_moves:
+        # Entry hazards setup (if opponent has >=3 mons remaining and not already set)
+        opp_remaining = _count_opponent_remaining(log_lines, player_id)
+        if opp_remaining >= 3:
+            opp_id = "p2" if player_id == "p1" else "p1"
+            opp_conditions = _parse_side_conditions(log_lines, opp_id)
+            opp_conditions_lower = [c.lower() for c in opp_conditions]
+            for i, move in enumerate(available_moves):
+                move_id = move.get("id", "")
+                if move_id in ("stealthrock", "spikes", "stickyweb", "toxicspikes"):
+                    hazard_names = {
+                        "stealthrock": "stealth rock",
+                        "spikes": "spikes",
+                        "stickyweb": "sticky web",
+                        "toxicspikes": "toxic spikes",
+                    }
+                    hazard_name = hazard_names.get(move_id, "")
+                    if hazard_name and hazard_name in opp_conditions_lower:
+                        continue
+                    return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # Hazard removal
+        my_conditions = _parse_side_conditions(log_lines, player_id)
+        if my_conditions:
+            for i, move in enumerate(available_moves):
+                if move.get("id") in ("rapidspin", "defog"):
+                    return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # Setup moves (only when at full HP and winning matchup)
+        active_hp = _hp_pct(active_pokemon)
+        opp_hp = opp.get("hp_pct", 100.0)
+        if active_hp >= 100.0:
+            matchup = _estimate_matchup(
+                active_pokemon.get("types", []),
+                active_stats,
+                active_hp,
+                opp.get("types", []),
+                opp_stats,
+                opp_hp,
+            )
+            if matchup > 0:
+                for move in available_moves:
+                    boosts = move.get("boosts") or {}
+                    target = move.get("target", "")
+                    if boosts and sum(boosts.values()) >= 2 and target == "self":
+                        boost_sum = sum(boosts.values())
+                        if boost_sum >= 2:
+                            return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # Recovery move evaluation
+        # Use recovery when HP is low, not OHKO'd, and recovery helps survive.
+        # If incoming damage < recovery amount (wall matchup), recover more aggressively.
+        active_hp_pct = _hp_pct(active_pokemon)
+        my_current_hp = _parse_current_hp(active_pokemon)
+        my_max_hp = 0
+        cond = active_pokemon.get("condition", "")
+        cond_m = re.match(r"(\d+)/(\d+)", cond)
+        if cond_m:
+            my_max_hp = int(cond_m.group(2))
+        if my_max_hp > 0 and active_hp_pct < 75.0:
+            opp_species = opp.get("species", "")
+            opp_types_for_dmg = opp.get("types", [])
+            my_def = active_stats.get("def", 100)
+            my_spd = active_stats.get("spd", 100)
+            max_incoming = 0
+            if opp_species and opp_types_for_dmg:
+                max_incoming = _estimate_opponent_max_damage(
+                    opp_species, opp_types_for_dmg, my_def, my_spd,
+                    active_pokemon.get("types", []),
+                    confirmed_ability=opp.get("ability", ""),
+                )
+            if max_incoming < my_current_hp:  # not OHKO'd
+                recovery_amount = my_max_hp // 2
+                hp_after_recovery = min(my_current_hp + recovery_amount, my_max_hp)
+                # Wall matchup: incoming < recovery → recover at higher HP threshold
+                is_wall_matchup = max_incoming < recovery_amount
+                should_recover = False
+                if is_wall_matchup and active_hp_pct < 70.0:
+                    should_recover = True  # wall: recover aggressively
+                elif not is_wall_matchup and active_hp_pct < 50.0:
+                    # Not a wall: only recover if it pushes us out of 2HKO range
+                    should_recover = (max_incoming * 2) < hp_after_recovery
+                if should_recover:
+                    for move in available_moves:
+                        sd = showdown_data.get_move(move.get("id", ""))
+                        if sd and sd.get("isHeal") and sd.get("category") == "Status":
+                            if sd.get("target", "") == "self":
+                                return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # Score moves and pick best
+        scored = []
+        for move in available_moves:
+            score = _score_move(move, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
+            scored.append((move, score))
+
+        if scored:
+            best_move, best_score = max(scored, key=lambda x: x[1])
+            if best_score > 0:
+                # Check if opponent has recovery and we can't break through
+                # If opponent used recovery AND our best damage < ~50% of their HP,
+                # they'll just recover it back — switch to something that can break them
+                opp_has_recovery = _opponent_used_recovery(log_lines, player_id)
+                if opp_has_recovery and available_switches and not in_switch_loop:
+                    opp_hp_pct = opp.get("hp_pct", 100.0)
+                    # Rough estimate: if our best score is low relative to opponent's bulk,
+                    # we can't 2HKO through recovery. Use score threshold:
+                    # A move that 2HKOs typically scores 150+ (80bp * STAB * ratio * SE).
+                    # If best_score < 80, we likely can't break through recovery.
+                    if best_score < 80 and opp_hp_pct > 50:
+                        switch_cmd = _choose_best_switch(request, opp)
+                        if switch_cmd:
+                            return switch_cmd
+                return f"move {moves.index(best_move) + 1}{mega_suffix}"
+            # All moves score 0 (immune/no effect): switch if possible (unless looping)
+            if available_switches and not in_switch_loop:
+                switch_cmd = _choose_best_switch(request, opp)
+                if switch_cmd:
+                    return switch_cmd
+            # No switch available: use first move as last resort
+            return f"move {moves.index(available_moves[0]) + 1}{mega_suffix}"
+
+    # Fallback to first move
+    if moves:
+        first_avail = next((m for m in moves if not m.get("disabled")), moves[0])
+        return f"move {moves.index(first_avail) + 1}{mega_suffix}"
+
+    # If we have switches, switch to best
+    if available_switches:
+        switch_cmd = _choose_best_switch(request, opp)
+        return switch_cmd or "move 1"
+
+    return "move 1"
