@@ -205,6 +205,221 @@ def load_training_data(
 # ---------------------------------------------------------------------------
 
 
+# ---------------------------------------------------------------------------
+# Stage 2: Move / Switch target scoring
+# ---------------------------------------------------------------------------
+
+
+def _encode_move_candidate(move_id: str, active_types: list[str], opp_types: list[str]) -> list[float]:
+    """Encode a move candidate as features for scoring."""
+    sd = showdown_data.get_move(move_id)
+    if not sd:
+        return [0.0] * 8
+
+    from pokechamp.ai_scoring import _calc_type_effectiveness
+
+    bp = min(sd.get("basePower", 0), 250) / 250.0
+    move_type = sd.get("type", "").lower()
+
+    # STAB
+    stab = 1.0 if move_type in active_types else 0.0
+
+    # Type effectiveness vs opponent
+    eff = _calc_type_effectiveness(move_type, opp_types) if opp_types else 1.0
+    eff_norm = min(eff, 4.0) / 4.0
+
+    # Category: physical=1, special=0.5, status=0
+    cat_map = {"Physical": 1.0, "Special": 0.5, "Status": 0.0}
+    cat = cat_map.get(sd.get("category", ""), 0.0)
+
+    # Priority
+    priority = max(min(sd.get("priority", 0), 5), -5) / 5.0
+
+    # Is recovery
+    is_heal = 1.0 if sd.get("isHeal") and sd.get("category") == "Status" else 0.0
+
+    # Is setup (boosts)
+    has_boosts = 1.0 if sd.get("boosts") and sd.get("category") == "Status" else 0.0
+
+    # Is hazard
+    is_hazard = 1.0 if sd.get("sideCondition") else 0.0
+
+    return [bp, stab, eff_norm, cat, priority, is_heal, has_boosts, is_hazard]
+
+
+def _encode_switch_candidate(
+    species: str, opp_types: list[str], opp_species: str,
+) -> list[float]:
+    """Encode a switch candidate as features for scoring."""
+    from pokechamp.ai_scoring import _calc_type_effectiveness
+
+    pokedex = showdown_data.load_pokedex()
+    key = species.lower().replace(" ", "").replace("-", "")
+    entry = pokedex.get(key)
+
+    if not entry:
+        return [0.0] * 6
+
+    types = [t.lower() for t in entry.get("types", [])]
+    bs = entry.get("baseStats", {})
+
+    # Defensive: how well we resist opponent's STAB
+    def_eff = 1.0
+    if opp_types and types:
+        def_eff = max(
+            (_calc_type_effectiveness(t, types) for t in opp_types),
+            default=1.0,
+        )
+    resist_score = 1.0 - min(def_eff, 4.0) / 4.0  # higher = better resist
+
+    # Offensive: how well we hit opponent
+    atk_eff = 1.0
+    if types and opp_types:
+        atk_eff = max(
+            (_calc_type_effectiveness(t, opp_types) for t in types),
+            default=1.0,
+        )
+    atk_score = min(atk_eff, 4.0) / 4.0
+
+    # Bulk (defense + spdef normalized)
+    bulk = (bs.get("def", 80) + bs.get("spd", 80)) / 400.0
+
+    # Speed
+    speed = bs.get("spe", 80) / 200.0
+
+    # Offensive power
+    power = max(bs.get("atk", 80), bs.get("spa", 80)) / 200.0
+
+    # HP base
+    hp = bs.get("hp", 80) / 200.0
+
+    return [resist_score, atk_score, bulk, speed, power, hp]
+
+
+def build_stage2_data(
+    samples: list[dict],
+) -> tuple[dict[str, tuple[np.ndarray, np.ndarray]], dict]:
+    """Build Stage 2 training data: move and switch candidate scoring.
+
+    For each sample, encodes the CHOSEN action as positive (1) and
+    generates features. Returns separate datasets for moves and switches.
+    """
+    pokedex = showdown_data.load_pokedex()
+
+    move_X: list[list[float]] = []
+    move_y: list[int] = []
+    switch_X: list[list[float]] = []
+    switch_y: list[int] = []
+
+    stats = {"move_samples": 0, "switch_samples": 0, "skipped": 0}
+
+    # Pre-build: (replay_id, player, species) -> all moves used
+    from collections import defaultdict
+    instance_moves: dict[tuple, list[str]] = defaultdict(list)
+    for s in samples:
+        if s["action_type"] in ("move", "mega_move"):
+            key = (s.get("replay_id", ""), s["player"], s["active_species"])
+            move = s["action_detail"]
+            if move not in instance_moves[key]:
+                instance_moves[key].append(move)
+
+    for s in samples:
+        active = s.get("active_species", "")
+        opp = s.get("opp_active_species", "")
+
+        # Get types
+        active_key = active.lower().replace(" ", "").replace("-", "")
+        opp_key = opp.lower().replace(" ", "").replace("-", "")
+        active_entry = pokedex.get(active_key, {})
+        opp_entry = pokedex.get(opp_key, {})
+        active_types = [t.lower() for t in active_entry.get("types", [])]
+        opp_types = [t.lower() for t in opp_entry.get("types", [])]
+
+        if s["action_type"] in ("move", "mega_move"):
+            # Positive: the chosen move
+            move_name = s["action_detail"]
+            move_id = move_name.lower().replace(" ", "").replace("-", "").replace("'", "")
+            features = _encode_move_candidate(move_id, active_types, opp_types)
+            state_features = encode_state(s).tolist()
+            move_X.append(state_features + features)
+            move_y.append(1)
+            stats["move_samples"] += 1
+
+            # Hard negatives: other moves this pokemon used in same replay
+            key = (s.get("replay_id", ""), s["player"], active)
+            alternatives = [m for m in instance_moves.get(key, []) if m != move_name]
+            for alt in alternatives:
+                alt_id = alt.lower().replace(" ", "").replace("-", "").replace("'", "")
+                neg_features = _encode_move_candidate(alt_id, active_types, opp_types)
+                move_X.append(state_features + neg_features)
+                move_y.append(0)
+
+        elif s["action_type"] == "switch":
+            chosen = s["action_detail"]
+            selected = s.get("selected_full", [])
+            if len(selected) < 2:
+                stats["skipped"] += 1
+                continue
+
+            state_features = encode_state(s).tolist()
+
+            # Positive: chosen switch target
+            features = _encode_switch_candidate(chosen, opp_types, opp)
+            switch_X.append(state_features + features)
+            switch_y.append(1)
+            stats["switch_samples"] += 1
+
+            # Negative: other team members that weren't chosen
+            for sp in selected:
+                if sp != chosen and sp != active:
+                    features = _encode_switch_candidate(sp, opp_types, opp)
+                    switch_X.append(state_features + features)
+                    switch_y.append(0)
+
+    result = {}
+    if move_X:
+        result["move"] = (np.array(move_X, dtype=np.float32), np.array(move_y, dtype=np.int64))
+    if switch_X:
+        result["switch"] = (np.array(switch_X, dtype=np.float32), np.array(switch_y, dtype=np.int64))
+
+    return result, stats
+
+
+def train_stage2_models(min_rating: int = 1200) -> dict:
+    """Train Stage 2: move scorer and switch scorer.
+
+    Returns dict with models and metrics.
+    """
+    from sklearn.ensemble import GradientBoostingClassifier
+    from sklearn.model_selection import train_test_split
+    from sklearn.metrics import classification_report
+
+    _, _, samples = load_training_data(min_rating=min_rating)
+    datasets, stats = build_stage2_data(samples)
+    print(f"Stage 2 data: {stats}")
+
+    results = {}
+    for name, (X, y) in datasets.items():
+        print(f"\n--- {name} scorer ---")
+        print(f"  Samples: {len(X)}, Features: {X.shape[1]}, Pos: {(y==1).sum()}, Neg: {(y==0).sum()}")
+
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42, stratify=y,
+        )
+        model = GradientBoostingClassifier(
+            n_estimators=150, max_depth=4, learning_rate=0.1, random_state=42,
+        )
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        accuracy = (y_pred == y_test).mean()
+
+        print(f"  Accuracy: {accuracy:.3f}")
+        print(classification_report(y_test, y_pred, target_names=["not_chosen", "chosen"]))
+        results[name] = {"model": model, "accuracy": accuracy}
+
+    return results
+
+
 def train_action_type_model(
     min_rating: int = 1200,
     winners_only: bool = False,
