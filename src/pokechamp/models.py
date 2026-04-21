@@ -210,3 +210,80 @@ class MatchupResult(BaseModel):
     selection_ranking: list[SelectionScore]
     overall_score: float
     sequence_results: list[SequenceResult] = Field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# ダメージ計算クエリ / 逆算推定
+# ---------------------------------------------------------------------------
+
+
+class DamageReport(BaseModel):
+    """順方向ダメージ計算結果"""
+    attacker_name: str
+    defender_name: str
+    move_name: str
+    move_type: TypeName
+    move_category: str  # "physical" | "special"
+    # 実数値
+    attack_stat: int
+    defense_stat: int
+    defender_hp: int
+    # ダメージ
+    damage_all: list[int]  # 16 rolls
+    min_damage: int
+    max_damage: int
+    min_percent: float
+    max_percent: float
+    # n発
+    type_eff: float
+    stab: bool
+    nhko_guaranteed: int  # 確定n発
+    nhko_random: int | None = None  # 乱数n発 (None=確定と同じ)
+    nhko_random_count: int = 16  # 乱数時の KO 本数 (/16)
+
+
+class BuildCandidate(BaseModel):
+    """逆算で推定されたビルド候補"""
+    nature: Nature
+    ev: int  # 攻撃/特攻の EV 値
+    item: str  # アイテム key ("" = なし)
+    item_label: str
+    stat_value: int  # 補正前の実数値
+
+
+class AttackerEstimate(BaseModel):
+    """被ダメージからの攻撃側推定結果"""
+    attacker_species: str
+    move_name: str
+    stat_name: str  # "attack" | "sp_attack"
+    observed_damage: int
+    defender_hp: int
+    defender_stat: int
+    type_eff: float
+    stab: bool
+    candidates: list[BuildCandidate]
+
+
+class DefenderCandidate(BaseModel):
+    """防御側推定の候補"""
+    nature: Nature
+    hp_ev: int
+    def_ev: int
+    hp: int
+    def_stat: int
+    damage_min: int
+    damage_max: int
+    survive_count: int  # 耐えるロール数 (/16), 16=確定耐え
+    remaining_ev: int  # 他に振れる残りEV
+    is_standard: bool  # H32 前提の標準配分か
+
+
+class DefenderEstimate(BaseModel):
+    """攻撃を耐えたことからの防御側推定結果"""
+    defender_species: str
+    attacker_species: str
+    move_name: str
+    attacker_stat: int
+    type_eff: float
+    stab: bool
+    candidates: list[DefenderCandidate]

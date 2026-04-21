@@ -2,8 +2,10 @@ from __future__ import annotations
 import asyncio
 import typer
 from pokechamp.battle import simulate_1v1
+from pokechamp.damage_calc import damage_query, estimate_attacker, parse_evs
 from pokechamp.loader import list_pokemon, list_teams, load_pokemon, load_team
 from pokechamp.matchup import evaluate_matchup, build_battle_pokemon_from_team
+from pokechamp.models import Nature
 from pokechamp.output import format_battle_result, format_matchup_result
 from pokechamp.type_filter import analyze_team
 
@@ -96,6 +98,135 @@ def show(
                     f"C{poke.base_stats.sp_attack} D{poke.base_stats.sp_defense} S{poke.base_stats.speed}")
         typer.echo(f"特性: {', '.join(poke.abilities)}")
         typer.echo(f"習得技: {', '.join(poke.learnable_moves)}")
+
+@app.command()
+def damage(
+    attacker: str = typer.Argument(help="攻撃側ポケモン (name_en)"),
+    move: str = typer.Argument(help="技名 (name_en)"),
+    defender: str = typer.Argument(help="防御側ポケモン (name_en)"),
+    atk_nature: str = typer.Option("hardy", "--atk-nature", help="攻撃側の性格"),
+    atk_evs: str = typer.Option("", "--atk-evs", help="攻撃側EV (例: h32,c32,s2)"),
+    atk_item: str = typer.Option("", "--atk-item", help="攻撃側アイテム"),
+    atk_ability: str = typer.Option("", "--atk-ability", help="攻撃側特性"),
+    def_nature: str = typer.Option("hardy", "--def-nature", help="防御側の性格"),
+    def_evs: str = typer.Option("", "--def-evs", help="防御側EV (例: h32,d32)"),
+    def_item: str = typer.Option("", "--def-item", help="防御側アイテム"),
+    def_ability: str = typer.Option("", "--def-ability", help="防御側特性"),
+    json: bool = typer.Option(False, "--json", help="JSON出力"),
+) -> None:
+    """ダメージ計算 — ビルド指定で乱数・n発情報を表示。
+
+    例:
+      pokechamp damage gengar shadow-ball skeledirge \\
+        --atk-nature timid --atk-evs c32,s32 --atk-item gengar-mega-stone \\
+        --def-nature modest --def-evs h32,c32 --def-item assault-vest
+    """
+    import json as json_mod
+
+    report = damage_query(
+        attacker_species=attacker,
+        attacker_nature=Nature(atk_nature.lower()),
+        attacker_evs=parse_evs(atk_evs),
+        attacker_item=atk_item,
+        attacker_ability=atk_ability,
+        move_name=move,
+        defender_species=defender,
+        defender_nature=Nature(def_nature.lower()),
+        defender_evs=parse_evs(def_evs),
+        defender_item=def_item,
+        defender_ability=def_ability,
+    )
+
+    if json:
+        typer.echo(json_mod.dumps(report.model_dump(), ensure_ascii=False, indent=2, default=str))
+        return
+
+    # 人間向け表示
+    typer.echo("\n=== ダメージ計算 ===")
+    typer.echo(f"{report.attacker_name} の {report.move_name} → {report.defender_name}")
+    typer.echo(f"タイプ相性: ×{report.type_eff}  STAB: {'あり' if report.stab else 'なし'}")
+    typer.echo(f"攻撃実数値: {report.attack_stat}  防御実数値: {report.defense_stat}")
+    typer.echo(f"HP: {report.defender_hp}")
+    typer.echo(f"ダメージ: {report.min_damage}〜{report.max_damage} ({report.min_percent}%〜{report.max_percent}%)")
+
+    if report.nhko_random is not None:
+        typer.echo(f"確定{report.nhko_guaranteed}発 / 乱数{report.nhko_random}発 ({report.nhko_random_count}/16)")
+    else:
+        typer.echo(f"確定{report.nhko_guaranteed}発")
+
+
+@app.command()
+def estimate(
+    observed_damage: int = typer.Argument(help="受けたダメージ値"),
+    defender: str = typer.Argument(help="自分のポケモン (name_en)"),
+    attacker: str = typer.Argument(help="相手のポケモン (name_en)"),
+    move: str = typer.Argument(help="使われた技 (name_en)"),
+    def_nature: str = typer.Option("hardy", "--def-nature", help="自分の性格"),
+    def_evs: str = typer.Option("", "--def-evs", help="自分のEV (例: h32,d32)"),
+    def_item: str = typer.Option("", "--def-item", help="自分のアイテム"),
+    def_ability: str = typer.Option("", "--def-ability", help="自分の特性"),
+    atk_ability: str = typer.Option("", "--atk-ability", help="相手の特性 (分かれば)"),
+    mega: bool = typer.Option(False, "--mega", help="相手がメガシンカしているか"),
+    json: bool = typer.Option(False, "--json", help="JSON出力"),
+) -> None:
+    """被ダメージから相手の構成を推定する。
+
+    例:
+      pokechamp estimate 168 skeledirge gengar shadow-ball \\
+        --def-nature modest --def-evs h32,c32 --def-item assault-vest --mega
+    """
+    import json as json_mod
+
+    result = estimate_attacker(
+        observed_damage=observed_damage,
+        defender_species=defender,
+        defender_nature=Nature(def_nature.lower()),
+        defender_evs=parse_evs(def_evs),
+        defender_item=def_item,
+        defender_ability=def_ability,
+        attacker_species=attacker,
+        move_name=move,
+        attacker_ability=atk_ability,
+        attacker_is_mega=mega,
+    )
+
+    if json:
+        typer.echo(json_mod.dumps(result.model_dump(), ensure_ascii=False, indent=2, default=str))
+        return
+
+    # 人間向け表示
+    stat_label = "C" if result.stat_name == "sp_attack" else "A"
+    typer.echo("\n=== 構成推定 ===")
+    typer.echo(f"相手: {result.attacker_species} の {result.move_name} → 観測ダメージ: {result.observed_damage}")
+    typer.echo(f"自分: HP {result.defender_hp} / {'D' if result.stat_name == 'sp_attack' else 'B'}{result.defender_stat}")
+    typer.echo(f"タイプ相性: ×{result.type_eff}  STAB: {'あり' if result.stab else 'なし'}")
+    typer.echo(f"候補数: {len(result.candidates)}")
+
+    if not result.candidates:
+        typer.echo("該当するビルド候補なし")
+        return
+
+    # アイテム別にグルーピング
+    by_item: dict[str, list] = {}
+    for c in result.candidates:
+        by_item.setdefault(c.item_label, []).append(c)
+
+    for item_label, cands in by_item.items():
+        typer.echo(f"\n--- アイテム: {item_label} ---")
+        # stat 値でグルーピング
+        by_stat: dict[int, list] = {}
+        for c in cands:
+            by_stat.setdefault(c.stat_value, []).append(c)
+
+        for stat_val, group in sorted(by_stat.items()):
+            natures = sorted(set(c.nature.value for c in group))
+            evs = sorted(set(c.ev for c in group))
+            ev_range = f"EV {min(evs)}-{max(evs)}" if min(evs) != max(evs) else f"EV {min(evs)}"
+            nature_str = ", ".join(natures[:5])
+            if len(natures) > 5:
+                nature_str += f" 他{len(natures)-5}件"
+            typer.echo(f"  {stat_label}{stat_val}: {ev_range} / {nature_str}")
+
 
 @app.command("import")
 def import_cmd(

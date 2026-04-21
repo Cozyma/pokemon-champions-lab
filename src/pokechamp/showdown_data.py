@@ -247,3 +247,42 @@ def species_type_immunities(species: str) -> list[str]:
         if immune_type:
             immunities.append(immune_type)
     return immunities
+
+
+# ---------------------------------------------------------------------------
+# Species form data (e.g. Aegislash-Blade)
+# ---------------------------------------------------------------------------
+
+# Showdown stat key → pokechamp stat key
+_STAT_KEY_MAP = {
+    "hp": "hp", "atk": "attack", "def": "defense",
+    "spa": "sp_attack", "spd": "sp_defense", "spe": "speed",
+}
+
+
+def get_species_base_stats(species: str) -> dict[str, int] | None:
+    """Return base stats from pokedex.json for any form (e.g. 'aegislash-blade').
+
+    Returns dict with pokechamp keys: hp, attack, defense, sp_attack, sp_defense, speed.
+    Returns None if species not found.
+    """
+    key = species.lower().replace(" ", "").replace("-", "")
+    pokedex = load_pokedex()
+    entry = pokedex.get(key)
+    if not entry or "baseStats" not in entry:
+        return None
+    raw = entry["baseStats"]
+    return {_STAT_KEY_MAP[k]: v for k, v in raw.items() if k in _STAT_KEY_MAP}
+
+
+def get_species_types(species: str) -> list[str] | None:
+    """Return types from pokedex.json for any form (e.g. 'aegislash-blade').
+
+    Returns list of lowercase type strings, or None if not found.
+    """
+    key = species.lower().replace(" ", "").replace("-", "")
+    pokedex = load_pokedex()
+    entry = pokedex.get(key)
+    if not entry or "types" not in entry:
+        return None
+    return [t.lower() for t in entry["types"]]

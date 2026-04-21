@@ -1,176 +1,49 @@
 """ダメージ計算エンジン
 
 タイプ相性・ステータス計算・ダメージ範囲計算を提供する。
+タイプ相性テーブルは data/showdown-cache/typechart.json (SSOT) から自動構築する。
 """
 from __future__ import annotations
 
+import json
 import math
+from pathlib import Path
 
 from pokechamp.models import Nature, TypeName, NATURE_MODIFIERS
 
 # ---------------------------------------------------------------------------
 # タイプ相性テーブル (18×18)
-# デフォルト 1.0 のエントリは省略。
+# data/showdown-cache/typechart.json を SSOT として読み込む。
+# フォールバック: JSON が見つからない場合は空テーブル (全て等倍) になるため、
+# 必ず extract_showdown_data.js を事前に実行すること。
 # _TYPE_CHART[attack_type][defend_type] = multiplier
 # ---------------------------------------------------------------------------
-_TYPE_CHART: dict[TypeName, dict[TypeName, float]] = {
-    TypeName.NORMAL: {
-        TypeName.ROCK: 0.5,
-        TypeName.GHOST: 0.0,
-        TypeName.STEEL: 0.5,
-    },
-    TypeName.FIRE: {
-        TypeName.FIRE: 0.5,
-        TypeName.WATER: 0.5,
-        TypeName.GRASS: 2.0,
-        TypeName.ICE: 2.0,
-        TypeName.BUG: 2.0,
-        TypeName.ROCK: 0.5,
-        TypeName.DRAGON: 0.5,
-        TypeName.STEEL: 2.0,
-    },
-    TypeName.WATER: {
-        TypeName.FIRE: 2.0,
-        TypeName.WATER: 0.5,
-        TypeName.GRASS: 0.5,
-        TypeName.GROUND: 2.0,
-        TypeName.ROCK: 2.0,
-        TypeName.DRAGON: 0.5,
-    },
-    TypeName.ELECTRIC: {
-        TypeName.WATER: 2.0,
-        TypeName.ELECTRIC: 0.5,
-        TypeName.GRASS: 0.5,
-        TypeName.GROUND: 0.0,
-        TypeName.FLYING: 2.0,
-        TypeName.DRAGON: 0.5,
-    },
-    TypeName.GRASS: {
-        TypeName.FIRE: 0.5,
-        TypeName.WATER: 2.0,
-        TypeName.GRASS: 0.5,
-        TypeName.POISON: 0.5,
-        TypeName.GROUND: 2.0,
-        TypeName.FLYING: 0.5,
-        TypeName.BUG: 0.5,
-        TypeName.ROCK: 2.0,
-        TypeName.DRAGON: 0.5,
-        TypeName.STEEL: 0.5,
-    },
-    TypeName.ICE: {
-        TypeName.FIRE: 0.5,
-        TypeName.WATER: 0.5,
-        TypeName.GRASS: 2.0,
-        TypeName.ICE: 0.5,
-        TypeName.GROUND: 2.0,
-        TypeName.FLYING: 2.0,
-        TypeName.DRAGON: 2.0,
-        TypeName.STEEL: 0.5,
-    },
-    TypeName.FIGHTING: {
-        TypeName.NORMAL: 2.0,
-        TypeName.ICE: 2.0,
-        TypeName.POISON: 0.5,
-        TypeName.FLYING: 0.5,
-        TypeName.PSYCHIC: 0.5,
-        TypeName.BUG: 0.5,
-        TypeName.ROCK: 2.0,
-        TypeName.GHOST: 0.0,
-        TypeName.DARK: 2.0,
-        TypeName.STEEL: 2.0,
-        TypeName.FAIRY: 0.5,
-    },
-    TypeName.POISON: {
-        TypeName.GRASS: 2.0,
-        TypeName.POISON: 0.5,
-        TypeName.GROUND: 0.5,
-        TypeName.ROCK: 0.5,
-        TypeName.GHOST: 0.5,
-        TypeName.STEEL: 0.0,
-        TypeName.FAIRY: 2.0,
-    },
-    TypeName.GROUND: {
-        TypeName.FIRE: 2.0,
-        TypeName.ELECTRIC: 2.0,
-        TypeName.GRASS: 0.5,
-        TypeName.POISON: 2.0,
-        TypeName.FLYING: 0.0,
-        TypeName.BUG: 0.5,
-        TypeName.ROCK: 2.0,
-        TypeName.STEEL: 2.0,
-    },
-    TypeName.FLYING: {
-        TypeName.ELECTRIC: 0.5,
-        TypeName.GRASS: 2.0,
-        TypeName.FIGHTING: 2.0,
-        TypeName.BUG: 2.0,
-        TypeName.ROCK: 0.5,
-        TypeName.STEEL: 0.5,
-    },
-    TypeName.PSYCHIC: {
-        TypeName.FIGHTING: 2.0,
-        TypeName.POISON: 2.0,
-        TypeName.PSYCHIC: 0.5,
-        TypeName.DARK: 0.0,
-        TypeName.STEEL: 0.5,
-    },
-    TypeName.BUG: {
-        TypeName.FIRE: 0.5,
-        TypeName.GRASS: 2.0,
-        TypeName.FIGHTING: 0.5,
-        TypeName.POISON: 0.5,
-        TypeName.FLYING: 0.5,
-        TypeName.PSYCHIC: 2.0,
-        TypeName.GHOST: 0.5,
-        TypeName.DARK: 2.0,
-        TypeName.STEEL: 0.5,
-        TypeName.FAIRY: 0.5,
-    },
-    TypeName.ROCK: {
-        TypeName.FIRE: 2.0,
-        TypeName.ICE: 2.0,
-        TypeName.FIGHTING: 0.5,
-        TypeName.GROUND: 0.5,
-        TypeName.FLYING: 2.0,
-        TypeName.BUG: 2.0,
-        TypeName.STEEL: 0.5,
-    },
-    TypeName.GHOST: {
-        TypeName.NORMAL: 0.0,
-        TypeName.PSYCHIC: 2.0,
-        TypeName.GHOST: 2.0,
-        TypeName.DARK: 0.5,
-    },
-    TypeName.DRAGON: {
-        TypeName.DRAGON: 2.0,
-        TypeName.STEEL: 0.5,
-        TypeName.FAIRY: 0.0,
-    },
-    TypeName.DARK: {
-        TypeName.FIGHTING: 0.5,
-        TypeName.PSYCHIC: 2.0,
-        TypeName.GHOST: 2.0,
-        TypeName.DARK: 0.5,
-        TypeName.FAIRY: 0.5,
-    },
-    TypeName.STEEL: {
-        TypeName.FIRE: 0.5,
-        TypeName.WATER: 0.5,
-        TypeName.ELECTRIC: 0.5,
-        TypeName.ICE: 2.0,
-        TypeName.ROCK: 2.0,
-        TypeName.STEEL: 0.5,
-        TypeName.FAIRY: 2.0,
-    },
-    TypeName.FAIRY: {
-        TypeName.FIRE: 0.5,
-        TypeName.FIGHTING: 2.0,
-        TypeName.POISON: 0.5,
-        TypeName.DRAGON: 2.0,
-        TypeName.DARK: 2.0,
-        TypeName.STEEL: 0.5,
-    },
-}
+_TYPECHART_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "showdown-cache" / "typechart.json"
+
+
+def _load_type_chart() -> dict[TypeName, dict[TypeName, float]]:
+    """typechart.json からタイプ相性テーブルを構築する。"""
+    if not _TYPECHART_PATH.exists():
+        return {}
+    with open(_TYPECHART_PATH) as f:
+        raw: dict[str, dict[str, float]] = json.load(f)
+    chart: dict[TypeName, dict[TypeName, float]] = {}
+    for atk_str, defenses in raw.items():
+        try:
+            atk_type = TypeName(atk_str)
+        except ValueError:
+            continue
+        inner: dict[TypeName, float] = {}
+        for def_str, mult in defenses.items():
+            try:
+                inner[TypeName(def_str)] = float(mult)
+            except ValueError:
+                continue
+        chart[atk_type] = inner
+    return chart
+
+
+_TYPE_CHART: dict[TypeName, dict[TypeName, float]] = _load_type_chart()
 
 
 def type_effectiveness(attack_type: TypeName, defend_type: TypeName) -> float:
