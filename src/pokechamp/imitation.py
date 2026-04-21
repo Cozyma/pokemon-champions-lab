@@ -120,6 +120,39 @@ def encode_state(sample: dict) -> np.ndarray:
     # Turn number (normalized)
     features.append(min(sample.get("turn", 1), 30) / 30.0)
 
+    # Type matchup features: how well we hit them / they hit us
+    active_types = _encode_species_types(sample.get("active_species", ""))
+    opp_types = _encode_species_types(sample.get("opp_active_species", ""))
+    my_types_list = [ALL_TYPES[i] for i, v in enumerate(active_types) if v > 0]
+    opp_types_list = [ALL_TYPES[i] for i, v in enumerate(opp_types) if v > 0]
+
+    from pokechamp.ai_scoring import _calc_type_effectiveness
+    # Best offensive matchup (max type eff we deal)
+    if my_types_list and opp_types_list:
+        best_atk = max(
+            (_calc_type_effectiveness(t, opp_types_list) for t in my_types_list),
+            default=1.0,
+        )
+        best_def = max(
+            (_calc_type_effectiveness(t, my_types_list) for t in opp_types_list),
+            default=1.0,
+        )
+    else:
+        best_atk = 1.0
+        best_def = 1.0
+    features.append(best_atk / 4.0)  # normalize: max 4x
+    features.append(best_def / 4.0)
+
+    # HP advantage
+    features.append((sample.get("active_hp_pct", 100) - sample.get("opp_active_hp_pct", 100)) / 100.0)
+
+    # Team advantage: count alive own vs opponent
+    team_hp = sample.get("team_hp", {})
+    opp_hp = sample.get("opp_known_hp", {})
+    own_alive = sum(1 for v in team_hp.values() if v > 0)
+    opp_alive = sum(1 for v in opp_hp.values() if v > 0)
+    features.append((own_alive - opp_alive) / 3.0)
+
     return np.array(features, dtype=np.float32)
 
 
