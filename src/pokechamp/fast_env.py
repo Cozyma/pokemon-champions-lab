@@ -304,12 +304,22 @@ class FastBattleEnv(gym.Env):
     def __init__(
         self,
         team_paste: str,
-        opponent_paste: str,
+        opponent_paste: str | None = None,
+        opponent_pool: list[str] | None = None,
         format_id: str = "gen9championsbssregma",
     ):
+        """Create battle environment.
+
+        Args:
+            team_paste: RL agent's team (Showdown paste format)
+            opponent_paste: Single opponent team (fixed matchup)
+            opponent_pool: List of opponent teams (random each episode)
+                          If both are None, opponent_paste defaults to team_paste.
+        """
         super().__init__()
         self.team_paste = team_paste
-        self.opponent_paste = opponent_paste
+        self._opponent_pool = opponent_pool or ([opponent_paste] if opponent_paste else [team_paste])
+        self.opponent_paste = self._opponent_pool[0]
         self.format_id = format_id
 
         self.observation_space = spaces.Box(
@@ -339,6 +349,11 @@ class FastBattleEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
+
+        # Randomize opponent from pool
+        if len(self._opponent_pool) > 1:
+            idx = int(self.np_random.integers(0, len(self._opponent_pool)))
+            self.opponent_paste = self._opponent_pool[idx]
 
         # Kill previous process cleanly
         if self._proc:

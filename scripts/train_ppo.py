@@ -52,28 +52,19 @@ class EvalCallback(BaseCallback):
         return True
 
 
-def make_env(team_name: str = "screenshot-team", opp_name: str = "mega-gengar-team"):
-    """Create a FastBattleEnv with specified teams."""
-    teams = {t.parent.name: t.read_text() for t in TEAMS_DIR.glob("*/team.txt") if not t.parent.name.startswith("test-")}
+def _load_all_teams() -> dict[str, str]:
+    return {t.parent.name: t.read_text() for t in TEAMS_DIR.glob("*/team.txt") if not t.parent.name.startswith("test-")}
+
+
+def make_env(team_name: str = "screenshot-team", opp_name: str | None = None):
+    """Create a FastBattleEnv. If opp_name is None, use all teams as opponent pool."""
+    teams = _load_all_teams()
     team_paste = teams.get(team_name, list(teams.values())[0])
-    opp_paste = teams.get(opp_name, list(teams.values())[1])
-    return FastBattleEnv(team_paste=team_paste, opponent_paste=opp_paste)
-
-
-def make_random_matchup_env():
-    """Create env with random team matchup each reset."""
-    teams = {t.parent.name: t.read_text() for t in TEAMS_DIR.glob("*/team.txt") if not t.parent.name.startswith("test-")}
-    team_list = list(teams.values())
-
-    class RandomMatchupEnv(FastBattleEnv):
-        def reset(self, **kwargs):
-            # Randomize teams each episode
-            idx = np.random.choice(len(team_list), size=2, replace=False)
-            self.team_paste = team_list[idx[0]]
-            self.opponent_paste = team_list[idx[1]]
-            return super().reset(**kwargs)
-
-    return RandomMatchupEnv(team_paste=team_list[0], opponent_paste=team_list[1])
+    if opp_name:
+        return FastBattleEnv(team_paste=team_paste, opponent_paste=teams.get(opp_name, list(teams.values())[1]))
+    # Use all other teams as opponent pool
+    opp_pool = [v for k, v in teams.items() if k != team_name]
+    return FastBattleEnv(team_paste=team_paste, opponent_pool=opp_pool)
 
 
 def evaluate_agent(model, env_fn, n_games: int = 10) -> float:
