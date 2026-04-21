@@ -340,12 +340,18 @@ class FastBattleEnv(gym.Env):
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
 
-        # Kill previous process
+        # Kill previous process cleanly
         if self._proc:
             try:
-                self._proc.kill()
+                self._proc.stdin.close()
             except Exception:
                 pass
+            try:
+                self._proc.kill()
+                self._proc.wait(timeout=2.0)
+            except Exception:
+                pass
+            self._proc = None
 
         # Start new battle
         packed_a = _paste_to_packed(self.team_paste)
@@ -396,13 +402,18 @@ class FastBattleEnv(gym.Env):
 
     def _advance_to_p1_request(self) -> np.ndarray:
         """Read output and respond as p2 until p1 has a non-wait request."""
-        max_iters = 50
+        max_iters = 20
+        empty_reads = 0
         for _ in range(max_iters):
             output = self._read_output()
             if not output:
+                empty_reads += 1
                 if self._proc and self._proc.poll() is not None:
                     break
+                if empty_reads >= 3:
+                    break  # avoid long hangs
                 continue
+            empty_reads = 0
 
             self._log_lines.extend(output)
 
