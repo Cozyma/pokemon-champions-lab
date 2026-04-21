@@ -335,7 +335,7 @@ class FastBattleEnv(gym.Env):
             return []
         if first:
             return _read_until_idle(self._proc, first_line_timeout=5.0, idle_timeout=0.1)
-        return _read_until_idle(self._proc, first_line_timeout=3.0, idle_timeout=0.05)
+        return _read_until_idle(self._proc, first_line_timeout=1.0, idle_timeout=0.03)
 
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
