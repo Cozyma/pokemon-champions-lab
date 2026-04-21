@@ -210,11 +210,23 @@ def load_training_data(
 # ---------------------------------------------------------------------------
 
 
-def _encode_move_candidate(move_id: str, active_types: list[str], opp_types: list[str]) -> list[float]:
+MOVE_CANDIDATE_DIM = 20
+
+
+def _encode_move_candidate(
+    move_id: str,
+    active_types: list[str],
+    opp_types: list[str],
+    active_hp_pct: float = 100.0,
+    opp_hp_pct: float = 100.0,
+    is_faster: bool = True,
+    opp_remaining: int = 3,
+    turn: int = 1,
+) -> list[float]:
     """Encode a move candidate as features for scoring."""
     sd = showdown_data.get_move(move_id)
     if not sd:
-        return [0.0] * 8
+        return [0.0] * MOVE_CANDIDATE_DIM
 
     from pokechamp.ai_scoring import _calc_type_effectiveness
 
@@ -244,7 +256,54 @@ def _encode_move_candidate(move_id: str, active_types: list[str], opp_types: lis
     # Is hazard
     is_hazard = 1.0 if sd.get("sideCondition") else 0.0
 
-    return [bp, stab, eff_norm, cat, priority, is_heal, has_boosts, is_hazard]
+    # --- Situational value features ---
+
+    # KO estimate: rough (bp * eff * stab_mult) / opp_hp
+    stab_mult = 1.5 if stab else 1.0
+    raw_power = sd.get("basePower", 0) * stab_mult * eff
+    ko_estimate = min(raw_power / max(opp_hp_pct, 1.0), 3.0) / 3.0
+
+    # Recovery value: higher when own HP is low
+    recovery_value = is_heal * (1.0 - active_hp_pct / 100.0)
+
+    # Setup value: higher when own HP is high and early game
+    setup_value = has_boosts * (active_hp_pct / 100.0) * (1.0 - min(turn, 15) / 15.0)
+
+    # Hazard value: proportional to opponent remaining pokemon
+    hazard_value = is_hazard * (opp_remaining / 3.0)
+
+    # Priority value: higher when slower or opponent low HP
+    priority_value = 0.0
+    if sd.get("priority", 0) > 0:
+        priority_value = (1.0 - opp_hp_pct / 100.0)
+        if not is_faster:
+            priority_value += 0.3
+
+    # Drain value: more valuable at low HP
+    drain = 0.0
+    if sd.get("drain"):
+        drain = sd["drain"][0] / sd["drain"][1]
+    drain_value = drain * (1.0 - active_hp_pct / 100.0)
+
+    # Recoil risk: more dangerous at low HP
+    recoil = 0.0
+    if sd.get("recoil"):
+        recoil = sd["recoil"][0] / sd["recoil"][1]
+    recoil_risk = recoil * (1.0 - active_hp_pct / 100.0)
+
+    # Self-debuff penalty
+    self_debuff = 0.0
+    if sd.get("selfBoosts"):
+        self_debuff = -sum(v for v in sd["selfBoosts"].values() if v < 0) / 6.0
+
+    return [
+        bp, stab, eff_norm, cat, priority, is_heal, has_boosts, is_hazard,
+        ko_estimate, recovery_value, setup_value, hazard_value,
+        priority_value, drain_value, recoil_risk, self_debuff,
+        active_hp_pct / 100.0, opp_hp_pct / 100.0,
+        1.0 if is_faster else 0.0,
+        min(turn, 30) / 30.0,
+    ]
 
 
 def _encode_switch_candidate(
@@ -336,10 +395,27 @@ def build_stage2_data(
         opp_types = [t.lower() for t in opp_entry.get("types", [])]
 
         if s["action_type"] in ("move", "mega_move"):
+            # Common context for move encoding
+            active_hp = s.get("active_hp_pct", 100.0)
+            opp_hp = s.get("opp_active_hp_pct", 100.0)
+            turn = s.get("turn", 1)
+            opp_known = s.get("opp_known_hp", {})
+            opp_remaining = max(sum(1 for v in opp_known.values() if v > 0), 1)
+
+            # Speed comparison (rough: use base stats)
+            active_bs = active_entry.get("baseStats", {})
+            opp_bs = opp_entry.get("baseStats", {})
+            is_faster = active_bs.get("spe", 80) >= opp_bs.get("spe", 80)
+
+            move_ctx = dict(
+                active_hp_pct=active_hp, opp_hp_pct=opp_hp,
+                is_faster=is_faster, opp_remaining=opp_remaining, turn=turn,
+            )
+
             # Positive: the chosen move
             move_name = s["action_detail"]
             move_id = move_name.lower().replace(" ", "").replace("-", "").replace("'", "")
-            features = _encode_move_candidate(move_id, active_types, opp_types)
+            features = _encode_move_candidate(move_id, active_types, opp_types, **move_ctx)
             state_features = encode_state(s).tolist()
             move_X.append(state_features + features)
             move_y.append(1)
@@ -350,7 +426,7 @@ def build_stage2_data(
             alternatives = [m for m in instance_moves.get(key, []) if m != move_name]
             for alt in alternatives:
                 alt_id = alt.lower().replace(" ", "").replace("-", "").replace("'", "")
-                neg_features = _encode_move_candidate(alt_id, active_types, opp_types)
+                neg_features = _encode_move_candidate(alt_id, active_types, opp_types, **move_ctx)
                 move_X.append(state_features + neg_features)
                 move_y.append(0)
 
