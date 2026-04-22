@@ -401,21 +401,30 @@ def _select_team_preview(
         # Shadow Tag penalty: if opponent has trapping ability,
         # getting caught in a bad matchup is devastating.
         # Penalize combos where ANY of our 3 has a terrible matchup vs the trapper.
+        # Exception: pokemon with U-turn/Volt Switch/Flip Turn can escape.
         if opp_has_shadow_tag:
-            # Find the trapper's index
+            # Check which of our combo members have pivot moves
+            pivot_move_ids = {"uturn", "voltswitch", "flipturn", "teleport", "batonpass"}
+            combo_has_pivot = []
+            for ci in combo:
+                mon_moves = team[ci].get("moves", [])
+                has_pivot = any(m in pivot_move_ids for m in mon_moves)
+                combo_has_pivot.append(has_pivot)
+
             for oi, abs_list in enumerate(opp_abilities_list):
                 if "shadowtag" in abs_list:
-                    # Check worst matchup of our 3 vs this trapper
                     opp_t = opp_types_list[oi]
-                    for my_t in combo_types:
+                    for mi, my_t in enumerate(combo_types):
                         if not my_t or not opp_t:
                             continue
                         atk = max((_calc_type_effectiveness(t, opp_t) for t in my_t), default=1.0)
                         dfe = max((_calc_type_effectiveness(t, my_t) for t in opp_t), default=1.0)
                         this_matchup = atk - dfe
                         if this_matchup < -1.0:
-                            # One of our pokemon is heavily disadvantaged vs trapper
-                            score -= 2.0  # heavy penalty per trapped victim
+                            if combo_has_pivot[mi]:
+                                score -= 0.5  # can escape, mild penalty
+                            else:
+                                score -= 2.0  # trapped and disadvantaged
 
         best_combos.append((score, combo))
 
