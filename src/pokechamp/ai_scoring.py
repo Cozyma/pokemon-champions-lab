@@ -297,6 +297,23 @@ def _score_move(
             if move_type in possible_immunities:
                 score *= 0.5  # ~50% chance of immunity
 
+        # Damage reduction via ability (Thick Fat, Filter, Purifying Salt, etc.)
+        sd_move = showdown_data.get_move(move_id)
+        is_super = effectiveness > 1.0
+        is_special = (sd_move.get("category", "") == "Special") if sd_move else False
+        if opp_ability:
+            dmg_mod = showdown_data.ability_damage_modifier(
+                opp_ability, move_type, is_supereffective=is_super, is_special=is_special,
+            )
+            score *= dmg_mod
+        elif opp_species:
+            dmg_mod = showdown_data.species_damage_modifier(
+                opp_species, move_type, is_supereffective=is_super, is_special=is_special,
+            )
+            if dmg_mod < 1.0:
+                # Possible reduction: apply partially (might not have that ability)
+                score *= (1.0 + dmg_mod) / 2.0  # average of 1.0 and modifier
+
         # Drain: reward HP recovery (e.g. +50% for Giga Drain)
         drain = showdown_data.move_drain_ratio(move_id)
         if drain > 0:

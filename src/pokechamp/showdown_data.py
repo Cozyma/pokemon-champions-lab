@@ -212,6 +212,20 @@ _TYPE_IMMUNITY_ABILITIES: dict[str, str] = {
     "wellbakedbody": "fire",
 }
 
+# Damage reduction abilities: ability_id -> {type: multiplier}
+# These reduce incoming damage of specific types
+_DAMAGE_REDUCTION_ABILITIES: dict[str, dict[str, float]] = {
+    "thickfat": {"fire": 0.5, "ice": 0.5},
+    "heatproof": {"fire": 0.5},
+    "waterbubble": {"fire": 0.5},
+    "fluffy": {"fire": 2.0, "contact_reduce": 0.5},  # fire 2x, but contact 0.5x
+    "dryskin": {"fire": 1.25},  # fire INCREASE (already has water immunity above)
+    "filter": {"_supereffective": 0.75},  # reduces all super-effective damage
+    "solidrock": {"_supereffective": 0.75},
+    "icescales": {"_special": 0.5},  # halves special damage
+    "purifyingsalt": {"ghost": 0.5},  # halves ghost damage
+}
+
 # Attack multiplier abilities: ability_id -> (stat, multiplier)
 _ATTACK_MULTIPLIER_ABILITIES: dict[str, tuple[str, float]] = {
     "hugepower": ("atk", 2.0),
@@ -229,6 +243,44 @@ def ability_grants_type_immunity(ability_id: str) -> str | None:
 def ability_attack_multiplier(ability_id: str) -> tuple[str, float] | None:
     """Return (stat, multiplier) if ability boosts attack, else None."""
     return _ATTACK_MULTIPLIER_ABILITIES.get(ability_id)
+
+
+def ability_damage_modifier(ability_id: str, move_type: str, is_supereffective: bool = False, is_special: bool = False) -> float:
+    """Return damage multiplier for an ability vs a specific move type.
+
+    Returns 1.0 if no modification. Examples:
+    - Thick Fat vs Fire move: 0.5
+    - Filter vs super-effective move: 0.75
+    - Dry Skin vs Fire move: 1.25
+    """
+    entry = _DAMAGE_REDUCTION_ABILITIES.get(ability_id)
+    if not entry:
+        return 1.0
+
+    mult = 1.0
+    # Type-specific reduction
+    if move_type in entry:
+        mult *= entry[move_type]
+    # Super-effective reduction (Filter, Solid Rock)
+    if is_supereffective and "_supereffective" in entry:
+        mult *= entry["_supereffective"]
+    # Special move reduction (Ice Scales)
+    if is_special and "_special" in entry:
+        mult *= entry["_special"]
+    return mult
+
+
+def species_damage_modifier(species: str, move_type: str, is_supereffective: bool = False, is_special: bool = False) -> float:
+    """Return best-case damage modifier from any of the species' abilities.
+
+    Returns the lowest multiplier (worst case for attacker) since we
+    assume the opponent has the ability that hurts us most.
+    """
+    best = 1.0
+    for ab_id in get_species_abilities(species):
+        mod = ability_damage_modifier(ab_id, move_type, is_supereffective, is_special)
+        best = min(best, mod)
+    return best
 
 
 def species_may_have_contact_punish(species: str) -> bool:
