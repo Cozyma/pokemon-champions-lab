@@ -38,6 +38,7 @@ tags: [index, docs]
 | [2026-04-17-ai-overhaul.md](design/decisions/2026-04-17-ai-overhaul.md) | ヒューリスティックAI大幅改善（メガシンカ・Showdownデータ・選出・回復/壁） | ADR, log, AI, heuristic |
 | [2026-04-17-integration-lessons.md](design/decisions/2026-04-17-integration-lessons.md) | 外部プロセス統合の教訓（Contract-First Integration原則） | ADR, lessons-learned, integration |
 | [2026-04-21-rl-phase0-start.md](design/decisions/2026-04-21-rl-phase0-start.md) | RL Phase 0開始（リファクタリング・リプレイ収集・模倣学習Stage 1） | ADR, log, RL, imitation-learning |
+| [2026-04-22-rl-iteration.md](design/decisions/2026-04-22-rl-iteration.md) | RL訓練イテレーション（MaskablePPO、101次元obs、71%達成、メタ分析） | ADR, log, RL, PPO |
 
 > 設計判断が発生したら `design/decisions/YYYY-MM-DD-{topic}.md` に記録する。
 
