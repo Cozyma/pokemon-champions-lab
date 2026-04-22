@@ -824,11 +824,63 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
             if best_pivot and best_pivot_score > 0:
                 return f"move {moves.index(best_pivot) + 1}{mega_suffix}"
 
-        # Score moves and pick best
+        # Score ALL moves: attacking moves via _score_move, status moves via context
         scored = []
+        opp_spe_val = opp_stats.get("spe", 100)
+        my_spe_val = active_stats.get("spe", 100)
+
         for move in available_moves:
-            score = _score_move(move, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
-            scored.append((move, score))
+            mid = move.get("id", "")
+            sd = showdown_data.get_move(mid) if mid else None
+
+            # Attacking move score
+            atk_score = _score_move(move, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
+
+            # Status move score (context-dependent)
+            status_score = 0.0
+            if sd and sd.get("category") == "Status" and atk_score == 0:
+                # Will-O-Wisp: halve physical attacker's damage
+                if mid == "willowisp":
+                    opp_atk = opp_stats.get("atk", 100)
+                    opp_spa = opp_stats.get("spa", 100)
+                    if opp_atk >= opp_spa:  # physical or mixed attacker
+                        status_score = 120.0  # very valuable
+                    else:
+                        status_score = 30.0  # less useful vs special
+
+                # Thunder Wave: cripple fast opponent's speed
+                elif mid in ("thunderwave", "glare", "stunspore"):
+                    if opp_spe_val > my_spe_val:
+                        status_score = 110.0  # outsped → paralyze is huge
+                    else:
+                        status_score = 40.0  # already faster, less value
+
+                # Yawn: force switch or sleep
+                elif mid == "yawn":
+                    status_score = 80.0  # always good, forces action
+
+                # Toxic: beats walls and recovery users
+                elif mid == "toxic":
+                    opp_has_rec = _opponent_used_recovery(log_lines, player_id)
+                    status_score = 100.0 if opp_has_rec else 50.0
+
+                # Sleep moves: very strong
+                elif mid in ("spore", "sleeppowder", "hypnosis", "darkvoid", "lovelykiss"):
+                    acc = sd.get("accuracy", 75)
+                    if acc is True:
+                        acc = 100
+                    status_score = 130.0 * (acc / 100.0)
+
+                # Encore: lock opponent into bad move
+                elif mid == "encore":
+                    status_score = 60.0
+
+                # Taunt: shut down setup/recovery
+                elif mid == "taunt":
+                    status_score = 70.0
+
+            final_score = max(atk_score, status_score)
+            scored.append((move, final_score))
 
         if scored:
             best_move, best_score = max(scored, key=lambda x: x[1])
