@@ -569,26 +569,82 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                 if move.get("id") in ("rapidspin", "defog"):
                     return f"move {moves.index(move) + 1}{mega_suffix}"
 
-        # Setup moves (only when at full HP and winning matchup)
-        active_hp = _hp_pct(active_pokemon)
-        opp_hp = opp.get("hp_pct", 100.0)
-        if active_hp >= 100.0:
-            matchup = _estimate_matchup(
+        # Setup moves — only when safe to spend a turn not attacking.
+        # Condition: survive the opponent's attack during setup turn,
+        # AND (setup+recovery walls the opponent, OR setup lets us OHKO)
+        active_hp_for_setup = _hp_pct(active_pokemon)
+        my_hp_abs = _parse_current_hp(active_pokemon)
+        my_max_hp_abs = 0
+        cond_setup = active_pokemon.get("condition", "")
+        cond_setup_m = re.match(r"(\d+)/(\d+)", cond_setup)
+        if cond_setup_m:
+            my_max_hp_abs = int(cond_setup_m.group(2))
+
+        opp_species_setup = opp.get("species", "")
+        opp_types_setup = opp.get("types", [])
+        max_incoming_setup = 0
+        if opp_species_setup and opp_types_setup and my_max_hp_abs > 0:
+            max_incoming_setup = _estimate_opponent_max_damage(
+                opp_species_setup, opp_types_setup,
+                active_stats.get("def", 100), active_stats.get("spd", 100),
                 active_pokemon.get("types", []),
-                active_stats,
-                active_hp,
-                opp.get("types", []),
-                opp_stats,
-                opp_hp,
+                confirmed_ability=opp.get("ability", ""),
             )
-            if matchup > 0:
-                for move in available_moves:
-                    boosts = move.get("boosts") or {}
-                    target = move.get("target", "")
-                    if boosts and sum(boosts.values()) >= 2 and target == "self":
-                        boost_sum = sum(boosts.values())
-                        if boost_sum >= 2:
-                            return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # Can we survive the setup turn?
+        survives_setup_turn = (max_incoming_setup < my_hp_abs) if my_hp_abs > 0 else False
+
+        # Do we have a recovery move? (for setup+recovery wall check)
+        has_recovery = any(
+            showdown_data.get_move(m.get("id", "")) and
+            showdown_data.get_move(m.get("id", "")).get("isHeal") and
+            showdown_data.get_move(m.get("id", "")).get("category") == "Status" and
+            showdown_data.get_move(m.get("id", "")).get("target") == "self"
+            for m in available_moves
+        )
+        recovery_amount = my_max_hp_abs // 2 if my_max_hp_abs > 0 else 0
+
+        if survives_setup_turn:
+            for move in available_moves:
+                sd_setup = showdown_data.get_move(move.get("id", ""))
+                if not sd_setup:
+                    continue
+                boosts = sd_setup.get("boosts") or {}
+                if not boosts or sd_setup.get("category") != "Status":
+                    continue
+                boost_sum = sum(v for v in boosts.values() if v > 0)
+                if boost_sum < 2:
+                    continue
+                target = sd_setup.get("target", move.get("target", ""))
+                if target != "self":
+                    continue
+
+                # Check: does setup + recovery wall the opponent?
+                # After defensive boost (+1 def/spd), incoming damage is roughly * 2/3
+                has_def_boost = boosts.get("def", 0) > 0 or boosts.get("spd", 0) > 0
+                boosted_incoming = int(max_incoming_setup * 2 / 3) if has_def_boost else max_incoming_setup
+
+                # Check if relevant stats are already maxed
+                already_maxed = all(
+                    active_boosts.get(stat, 0) >= 6
+                    for stat, val in boosts.items() if val > 0
+                )
+                if already_maxed:
+                    continue
+
+                if has_recovery and boosted_incoming < recovery_amount:
+                    # Setup + recovery = wall. Go for it.
+                    return f"move {moves.index(move) + 1}{mega_suffix}"
+
+                # Check: does setup let us survive AND hit harder?
+                # Only if HP is high enough to take a hit during setup
+                # AND we haven't already maxed the relevant stats
+                already_maxed = all(
+                    active_boosts.get(stat, 0) >= 6
+                    for stat, val in boosts.items() if val > 0
+                )
+                if not already_maxed and active_hp_for_setup >= 60.0:
+                    return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # Recovery move evaluation
         # Use recovery when HP is low, not OHKO'd, and recovery helps survive.
