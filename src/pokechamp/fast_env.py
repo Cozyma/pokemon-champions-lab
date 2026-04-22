@@ -55,7 +55,7 @@ N_TYPES = len(ALL_TYPES)
 # Observation dimensions:
 # active: types(18) + stats(6) + hp(1) + status(1) = 26
 # moves: 4 * (bp + type_eff + stab + priority + category) = 20
-# opponent active: types(18) + hp(1) + status(1) = 20
+# opponent active: types(18) + stats(5) + hp(1) + status(1) + ability(3) = 28
 # team hp: 3
 # opp team hp: 3
 # weather: 8
@@ -63,8 +63,8 @@ N_TYPES = len(ALL_TYPES)
 # force_switch: 1
 # trapped: 1
 # action mask: 9
-# Total: 93
-OBS_DIM = 93
+# Total: 101
+OBS_DIM = 101
 
 
 # ---------------------------------------------------------------------------
@@ -183,8 +183,20 @@ def encode_request(
         else:
             obs.extend([0.0] * 5)
 
-    # --- Opponent active (20) ---
+    # --- Opponent active (28) ---
     obs.extend(_encode_types_onehot(opp_types))  # 18
+
+    # Opponent stats from pokedex (base stats as proxy)
+    opp_pokedex = showdown_data.load_pokedex()
+    opp_key = opp_species.lower().replace(" ", "").replace("-", "") if opp_species else ""
+    opp_entry = opp_pokedex.get(opp_key, {})
+    opp_bs = opp_entry.get("baseStats", {})
+    obs.append(opp_bs.get("atk", 80) / 200.0)
+    obs.append(opp_bs.get("def", 80) / 200.0)
+    obs.append(opp_bs.get("spa", 80) / 200.0)
+    obs.append(opp_bs.get("spd", 80) / 200.0)
+    obs.append(opp_bs.get("spe", 80) / 200.0)  # 5 dims
+
     # Opponent HP from log
     opp_hp = 1.0
     for line in reversed(log_lines):
@@ -198,8 +210,54 @@ def encode_request(
                 elif "fnt" in hp_str:
                     opp_hp = 0.0
             break
-    obs.append(opp_hp)
-    obs.append(0.0)  # opponent status (unknown from log, placeholder)
+    obs.append(opp_hp)  # 1 dim
+    obs.append(0.0)  # opponent status (unknown from log, placeholder)  # 1 dim
+
+    # Opponent ability features (3 dims)
+    # Parse confirmed ability from log
+    opp_confirmed_ability = ""
+    for line in reversed(log_lines[-50:]):
+        if f"|switch|{opp_id}a:" in line or f"|drag|{opp_id}a:" in line:
+            break
+        if f"{opp_id}a:" in line and "[from] ability:" in line:
+            idx = line.index("[from] ability:") + len("[from] ability: ")
+            opp_confirmed_ability = line[idx:].split("|")[0].strip().lower().replace(" ", "")
+            break
+        if f"|-ability|{opp_id}a:" in line:
+            parts = line.split("|")
+            if len(parts) > 3:
+                opp_confirmed_ability = parts[3].strip().lower().replace(" ", "")
+            break
+
+    # Feature 1: has contact punish (Rough Skin, Iron Barbs)
+    if opp_confirmed_ability:
+        has_contact_punish = 1.0 if showdown_data.ability_has_contact_punish(opp_confirmed_ability) else 0.0
+    elif opp_species:
+        has_contact_punish = 1.0 if showdown_data.species_may_have_contact_punish(opp_species) else 0.0
+    else:
+        has_contact_punish = 0.0
+
+    # Feature 2: has type immunity ability (Levitate, Flash Fire, etc.)
+    has_immunity = 0.0
+    if opp_confirmed_ability:
+        has_immunity = 1.0 if showdown_data.ability_grants_type_immunity(opp_confirmed_ability) else 0.0
+    elif opp_species:
+        has_immunity = 1.0 if showdown_data.species_type_immunities(opp_species) else 0.0
+
+    # Feature 3: has damage reduction (Thick Fat, Filter, etc.)
+    has_reduction = 0.0
+    if opp_confirmed_ability:
+        has_reduction = 1.0 if showdown_data.ability_damage_modifier(opp_confirmed_ability, "", is_supereffective=True) < 1.0 else 0.0
+    elif opp_species:
+        # Check any ability
+        for ab in showdown_data.get_species_abilities(opp_species):
+            if showdown_data.ability_damage_modifier(ab, "fire") < 1.0 or showdown_data.ability_damage_modifier(ab, "ice") < 1.0:
+                has_reduction = 1.0
+                break
+
+    obs.append(has_contact_punish)
+    obs.append(has_immunity)
+    obs.append(has_reduction)  # 3 dims
 
     # --- Team HP (3) ---
     for i in range(3):
