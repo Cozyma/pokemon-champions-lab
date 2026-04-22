@@ -30,9 +30,9 @@ TEAMS_DIR = Path(__file__).resolve().parent.parent / "teams"
 MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 RESULTS_PATH = MODELS_DIR / "longrun_results.json"
 
-CHECKPOINT_EVERY = 5000
+CHECKPOINT_EVERY = 2000
 EVAL_GAMES_PER_OPP = 5
-EARLY_STOP_PATIENCE = 3  # stop after N checkpoints without improvement
+EARLY_STOP_PATIENCE = 5  # stop after N checkpoints without improvement
 
 
 def load_teams() -> dict[str, str]:
