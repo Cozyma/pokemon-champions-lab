@@ -736,6 +736,94 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                             if sd.get("target", "") == "self":
                                 return f"move {moves.index(move) + 1}{mega_suffix}"
 
+        # --- Advantageous position: predict opponent switch and choose best pivot ---
+        # If we're clearly winning this matchup, the opponent may switch.
+        # In that case, prefer moves that are good regardless of who comes in:
+        #   - U-turn/Volt Switch: damage + see what switches in
+        #   - Stealth Rock: chip all switch-ins
+        #   - Status moves (Thunder Wave, Will-O-Wisp, Yawn): cripple any switch-in
+        #   - Attacks with broad coverage across opponent's known team
+        matchup_score = _estimate_matchup(
+            active_pokemon.get("types", []), active_stats, _hp_pct(active_pokemon),
+            opp.get("types", []), opp_stats, opp.get("hp_pct", 100.0),
+        )
+        opp_likely_to_switch = matchup_score > 1.5  # we're strongly winning
+
+        if opp_likely_to_switch:
+            # Collect opponent's known pokemon types for coverage calc
+            opp_known_species = list(opp.get("opp_known_hp", {}).keys()) if "opp_known_hp" in opp else []
+            # Also use team preview info from log (|poke| lines)
+            opp_all_types: list[list[str]] = []
+            opp_id_str = "p2" if player_id == "p1" else "p1"
+            for line in log_lines:
+                if f"|poke|{opp_id_str}|" in line:
+                    parts = line.split("|")
+                    if len(parts) >= 4:
+                        sp = parts[3].split(",")[0].strip()
+                        sp_types = _get_pokemon_types({"ident": f"{opp_id_str}: {sp}"})
+                        if sp_types:
+                            opp_all_types.append(sp_types)
+
+            # Score each available move for "pivot value"
+            best_pivot = None
+            best_pivot_score = -1.0
+
+            for move in available_moves:
+                mid = move.get("id", "")
+                sd = showdown_data.get_move(mid)
+                if not sd:
+                    continue
+
+                pivot_score = 0.0
+
+                # U-turn / Volt Switch: damage + switch advantage
+                if mid in ("uturn", "voltswitch", "flipturn"):
+                    pivot_score = 80.0  # high base value for pivot moves
+
+                # Stealth Rock (not yet set)
+                elif mid == "stealthrock":
+                    opp_side = "p2" if player_id == "p1" else "p1"
+                    opp_conds = _parse_side_conditions(log_lines, opp_side)
+                    if "Stealth Rock" not in [c for c in opp_conds]:
+                        opp_rem = _count_opponent_remaining(log_lines, player_id)
+                        pivot_score = 60.0 * (opp_rem / 3.0)
+
+                # Status moves: Thunder Wave, Will-O-Wisp, Yawn, Toxic
+                elif mid in ("thunderwave", "willowisp", "yawn", "toxic", "toxicspikes",
+                             "glare", "stunspore", "sleeppowder", "spore"):
+                    pivot_score = 50.0  # cripples any switch-in
+
+                # Spikes / Sticky Web (not yet set)
+                elif mid in ("spikes", "stickyweb"):
+                    opp_side = "p2" if player_id == "p1" else "p1"
+                    opp_conds = _parse_side_conditions(log_lines, opp_side)
+                    hazard_map = {"spikes": "Spikes", "stickyweb": "Sticky Web"}
+                    if hazard_map.get(mid, "") not in opp_conds:
+                        pivot_score = 45.0
+
+                # Attacking move: score by coverage across opponent's team
+                elif sd.get("basePower", 0) > 0:
+                    move_type = sd.get("type", "").lower()
+                    coverage_hits = 0
+                    for opp_t in opp_all_types:
+                        eff = _calc_type_effectiveness(move_type, opp_t)
+                        if eff >= 1.0:
+                            coverage_hits += 1
+                    if opp_all_types:
+                        coverage_ratio = coverage_hits / len(opp_all_types)
+                    else:
+                        coverage_ratio = 0.5
+                    # Combine: normal score × coverage bonus
+                    normal_score = _score_move(move, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
+                    pivot_score = normal_score * (0.7 + 0.6 * coverage_ratio)
+
+                if pivot_score > best_pivot_score:
+                    best_pivot_score = pivot_score
+                    best_pivot = move
+
+            if best_pivot and best_pivot_score > 0:
+                return f"move {moves.index(best_pivot) + 1}{mega_suffix}"
+
         # Score moves and pick best
         scored = []
         for move in available_moves:
