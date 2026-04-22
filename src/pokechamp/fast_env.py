@@ -525,6 +525,13 @@ class FastBattleEnv(gym.Env):
 
         return reward
 
+    def action_masks(self) -> np.ndarray:
+        """Return valid action mask (required by MaskablePPO from sb3-contrib).
+
+        Returns boolean array: True = valid action, False = invalid.
+        """
+        return self.get_action_mask().astype(bool)
+
     def close(self):
         if self._proc:
             try:
