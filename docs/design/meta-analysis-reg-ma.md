@@ -56,7 +56,7 @@ tags: [design, meta, champions, analysis]
 | 9 | Cosmic Power | 323 | 1.8% | 積み |
 | 10 | Shadow Sneak | 296 | 1.6% | 先制 |
 
-**積み技が多い。** Swords Dance(2位), Calm Mind(4位), Cosmic Power(9位)。チャンピオンズのEV制限(各32)で耐久が低く、1回の積みで確定数が変わりやすい。
+**積み技が多い。** Swords Dance(2位), Calm Mind(4位), Cosmic Power(9位)。チャンピオンズはEV上限が各32だが計算式が異なり（`stat = base + EV + 20`）、最終実数値は本編のLv50 EV252とほぼ同じ。積み技の多さはEV制限ではなく、環境の戦術傾向による。
 
 ---
 
