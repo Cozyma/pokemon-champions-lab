@@ -325,14 +325,30 @@ def _select_team_preview(
         my_pokemon.append((i, types))
 
     opp_types_list: list[list[str]] = []
+    opp_abilities_list: list[list[str]] = []  # abilities per opponent pokemon
     pokedex = showdown_data.load_pokedex()
     for sp in opp_species:
         key = sp.lower().replace(" ", "").replace("-", "")
         entry = pokedex.get(key)
         if entry:
             opp_types_list.append([t.lower() for t in entry.get("types", [])])
+            opp_abilities_list.append(list(entry.get("abilities", {}).values()))
         else:
             opp_types_list.append([])
+            opp_abilities_list.append([])
+
+    # Detect threatening abilities in opponent team
+    opp_has_shadow_tag = any(
+        "shadowtag" in ab for abs_list in opp_abilities_list for ab in abs_list
+    )
+    # Abilities that reduce specific type damage
+    opp_damage_reducers: dict[int, dict[str, float]] = {}  # opp_idx -> {type: mult}
+    for oi, abs_list in enumerate(opp_abilities_list):
+        for ab in abs_list:
+            for check_type in ("fire", "ice", "ground", "water", "electric", "grass", "ghost"):
+                mod = showdown_data.ability_damage_modifier(ab, check_type)
+                if mod != 1.0:
+                    opp_damage_reducers.setdefault(oi, {})[check_type] = mod
 
     # Score each combination of max_size pokemon
     indices = list(range(len(team)))
@@ -342,11 +358,12 @@ def _select_team_preview(
         score = 0.0
         combo_types = [my_pokemon[i][1] for i in combo]
 
-        for opp_t in opp_types_list:
+        for oi, opp_t in enumerate(opp_types_list):
             if not opp_t:
                 continue
             # Best matchup any of our 3 has against this opponent
             best_vs_this_opp = -10.0
+            worst_vs_this_opp = 10.0  # for Shadow Tag check
             # Track: can opponent hit all 3 of ours super-effectively?
             min_incoming = 10.0  # lowest eff opponent deals to any of our 3
             for my_t in combo_types:
@@ -357,6 +374,13 @@ def _select_team_preview(
                     (_calc_type_effectiveness(t, opp_t) for t in my_t),
                     default=1.0,
                 )
+                # Adjust for opponent's damage reduction abilities
+                if oi in opp_damage_reducers:
+                    for my_atk_type in my_t:
+                        if my_atk_type in opp_damage_reducers[oi]:
+                            # Our best STAB is reduced
+                            atk_eff *= opp_damage_reducers[oi][my_atk_type]
+
                 # Defensive: best type eff they deal to us
                 def_eff = max(
                     (_calc_type_effectiveness(t, my_t) for t in opp_t),
@@ -364,15 +388,34 @@ def _select_team_preview(
                 )
                 matchup = atk_eff - def_eff
                 best_vs_this_opp = max(best_vs_this_opp, matchup)
+                worst_vs_this_opp = min(worst_vs_this_opp, matchup)
                 min_incoming = min(min_incoming, def_eff)
             score += best_vs_this_opp
 
-            # Penalty: if opponent hits all 3 of ours super-effectively (min > 1.0),
-            # they can sweep without switching moves. Reward having a resist.
+            # Penalty: if opponent hits all 3 of ours super-effectively
             if min_incoming > 1.0:
-                score -= min_incoming  # penalty proportional to worst weakness
+                score -= min_incoming
             elif min_incoming <= 0.5:
-                score += 0.5  # bonus: we have a solid resist
+                score += 0.5
+
+        # Shadow Tag penalty: if opponent has trapping ability,
+        # getting caught in a bad matchup is devastating.
+        # Penalize combos where ANY of our 3 has a terrible matchup vs the trapper.
+        if opp_has_shadow_tag:
+            # Find the trapper's index
+            for oi, abs_list in enumerate(opp_abilities_list):
+                if "shadowtag" in abs_list:
+                    # Check worst matchup of our 3 vs this trapper
+                    opp_t = opp_types_list[oi]
+                    for my_t in combo_types:
+                        if not my_t or not opp_t:
+                            continue
+                        atk = max((_calc_type_effectiveness(t, opp_t) for t in my_t), default=1.0)
+                        dfe = max((_calc_type_effectiveness(t, my_t) for t in opp_t), default=1.0)
+                        this_matchup = atk - dfe
+                        if this_matchup < -1.0:
+                            # One of our pokemon is heavily disadvantaged vs trapper
+                            score -= 2.0  # heavy penalty per trapped victim
 
         best_combos.append((score, combo))
 
