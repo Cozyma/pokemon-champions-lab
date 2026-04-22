@@ -25,6 +25,7 @@ tags: [index, docs]
 | [pool-m-a-1.md](design/pool-m-a-1.md) | 使用可能プール一覧 M-A-1（ポケモン186種・メガシンカ59形態・アイテム117種） | design, pool, regulation |
 | [heuristic-ai-spec.md](design/heuristic-ai-spec.md) | ヒューリスティックAI行動原則（技選択・交代判定・積み判断と改善候補） | design, AI, heuristic |
 | [showdown-request-spec.md](design/showdown-request-spec.md) | Showdown Request JSON 仕様書（全フィールド・ログ行・補完要件） | design, showdown, protocol |
+| [meta-analysis-reg-ma.md](design/meta-analysis-reg-ma.md) | チャンピオンズ Reg M-A メタ分析（1,092リプレイから使用率・勝率・コア分析） | design, meta, analysis |
 
 ### design/decisions/ — ADR（Architecture Decision Records）
 
