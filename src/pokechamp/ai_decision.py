@@ -513,6 +513,24 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     if is_trapped:
         available_switches = []  # cannot switch when trapped
 
+    # Pre-compute damage estimation (used by setup, slugfest, recovery, and switch decisions)
+    my_hp_abs = _parse_current_hp(active_pokemon)
+    my_max_hp_abs = 0
+    cond_pre = active_pokemon.get("condition", "")
+    cond_pre_m = re.match(r"(\d+)/(\d+)", cond_pre)
+    if cond_pre_m:
+        my_max_hp_abs = int(cond_pre_m.group(2))
+    opp_species_dmg = opp.get("species", "")
+    opp_types_dmg = opp.get("types", [])
+    max_incoming_setup = 0
+    if opp_species_dmg and opp_types_dmg and my_max_hp_abs > 0:
+        max_incoming_setup = _estimate_opponent_max_damage(
+            opp_species_dmg, opp_types_dmg,
+            active_stats.get("def", 100), active_stats.get("spd", 100),
+            active_pokemon.get("types", []),
+            confirmed_ability=opp.get("ability", ""),
+        )
+
     # Priority move check: if we have a priority move that can KO, use it instead of switching
     priority_ko_move = None
     for move in available_moves:
@@ -530,11 +548,29 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
             break
     in_switch_loop = recent_switches >= 3
 
-    # Determine if we should switch out (but not if we have a priority KO available,
-    # or if we have positive boosts from setup — don't waste the investment)
+    # Determine if we should switch out (but not if we have a priority KO available)
+    # If we have boosts, only switch if we lose the slugfest (boosts aren't saving us)
     has_positive_boosts = any(v > 0 for v in active_boosts.values())
+    should_consider_switch = True
+    if has_positive_boosts and my_max_hp_abs > 0 and max_incoming_setup > 0:
+        # Check if boosts make us win the slugfest — if so, stay
+        def_boost = active_boosts.get("def", 0) + active_boosts.get("spd", 0)
+        boost_factor = 2.0 / (2.0 + def_boost) if def_boost > 0 else 1.0
+        adjusted = int(max_incoming_setup * boost_factor)
+        best_score = max(
+            (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
+             for m in available_moves),
+            default=0.0,
+        )
+        if best_score > 0 and adjusted > 0:
+            opp_hp_now = opp.get("hp_pct", 100.0)
+            our_turns = max(opp_hp_now / max(best_score / 3.0, 1.0), 1.0)
+            their_turns = my_hp_abs / adjusted
+            if our_turns <= their_turns:
+                should_consider_switch = False  # we win — stay and fight
+
     if (priority_ko_move is None and available_switches
-            and not in_switch_loop and not has_positive_boosts
+            and not in_switch_loop and should_consider_switch
             and _should_switch_out(request, opp)):
         switch_cmd = _choose_best_switch(request, opp)
         if switch_cmd:
@@ -575,24 +611,8 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
         # Setup moves — only when safe to spend a turn not attacking.
         # Condition: survive the opponent's attack during setup turn,
         # AND (setup+recovery walls the opponent, OR setup lets us OHKO)
+        # Setup uses pre-computed damage estimates (my_hp_abs, my_max_hp_abs, max_incoming_setup)
         active_hp_for_setup = _hp_pct(active_pokemon)
-        my_hp_abs = _parse_current_hp(active_pokemon)
-        my_max_hp_abs = 0
-        cond_setup = active_pokemon.get("condition", "")
-        cond_setup_m = re.match(r"(\d+)/(\d+)", cond_setup)
-        if cond_setup_m:
-            my_max_hp_abs = int(cond_setup_m.group(2))
-
-        opp_species_setup = opp.get("species", "")
-        opp_types_setup = opp.get("types", [])
-        max_incoming_setup = 0
-        if opp_species_setup and opp_types_setup and my_max_hp_abs > 0:
-            max_incoming_setup = _estimate_opponent_max_damage(
-                opp_species_setup, opp_types_setup,
-                active_stats.get("def", 100), active_stats.get("spd", 100),
-                active_pokemon.get("types", []),
-                confirmed_ability=opp.get("ability", ""),
-            )
 
         # Can we survive the setup turn?
         survives_setup_turn = (max_incoming_setup < my_hp_abs) if my_hp_abs > 0 else False
