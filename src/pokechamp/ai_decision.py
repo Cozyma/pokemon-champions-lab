@@ -530,9 +530,12 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
             break
     in_switch_loop = recent_switches >= 3
 
-    # Determine if we should switch out (but not if we have a priority KO available)
+    # Determine if we should switch out (but not if we have a priority KO available,
+    # or if we have positive boosts from setup — don't waste the investment)
+    has_positive_boosts = any(v > 0 for v in active_boosts.values())
     if (priority_ko_move is None and available_switches
-            and not in_switch_loop and _should_switch_out(request, opp)):
+            and not in_switch_loop and not has_positive_boosts
+            and _should_switch_out(request, opp)):
         switch_cmd = _choose_best_switch(request, opp)
         if switch_cmd:
             return switch_cmd
@@ -645,6 +648,33 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                 )
                 if not already_maxed and active_hp_for_setup >= 60.0:
                     return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # "Win the slugfest" check: if our best attack can KO before they KO us,
+        # skip recovery and go for the kill. This triggers after setup is complete.
+        if my_max_hp_abs > 0 and max_incoming_setup > 0:
+            # Adjust incoming damage for our defensive boosts
+            def_boost = active_boosts.get("def", 0) + active_boosts.get("spd", 0)
+            if def_boost > 0:
+                # Each +1 stage roughly reduces damage by ~33% (2/3), +2 = ~50% (2/4)
+                boost_factor = 2.0 / (2.0 + def_boost)
+                adjusted_incoming = int(max_incoming_setup * boost_factor)
+            else:
+                adjusted_incoming = max_incoming_setup
+
+            best_atk_score = 0.0
+            for move in available_moves:
+                s = _score_move(move, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
+                best_atk_score = max(best_atk_score, s)
+            if best_atk_score > 0:
+                opp_hp_pct_now = opp.get("hp_pct", 100.0)
+                our_ko_turns = max(opp_hp_pct_now / max(best_atk_score / 3.0, 1.0), 1.0)
+                their_ko_turns = my_hp_abs / max(adjusted_incoming, 1) if adjusted_incoming > 0 else 99
+                if our_ko_turns <= their_ko_turns:
+                    # We win the slugfest — attack, don't recover
+                    best_move_obj = max(available_moves,
+                                        key=lambda m: _score_move(m, active_pokemon, opp,
+                                                                   physical_ratio, special_ratio, active_boosts))
+                    return f"move {moves.index(best_move_obj) + 1}{mega_suffix}"
 
         # Recovery move evaluation
         # Use recovery when HP is low, not OHKO'd, and recovery helps survive.
