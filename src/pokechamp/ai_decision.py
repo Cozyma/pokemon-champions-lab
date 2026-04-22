@@ -624,6 +624,12 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     if (priority_ko_move is None and available_switches
             and not in_switch_loop and should_consider_switch
             and _should_switch_out(request, opp)):
+        # Prefer pivot moves (U-turn, Volt Switch) over raw switch:
+        # deals damage + switches, strictly better than plain switch
+        pivot_ids = {"uturn", "voltswitch", "flipturn"}
+        for move in available_moves:
+            if move.get("id", "") in pivot_ids:
+                return f"move {moves.index(move) + 1}{mega_suffix}"
         switch_cmd = _choose_best_switch(request, opp)
         if switch_cmd:
             return switch_cmd
