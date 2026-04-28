@@ -310,7 +310,7 @@ def _score_move(
     # STAB
     stab = 1.5 if move_type in active_types else 1.0
 
-    # Category ratio
+    # Category ratio (with boost stages applied)
     category = (move.get("category") or (sd_move.get("category", "") if sd_move else "") or "").lower()
     if category == "physical":
         ratio = physical_ratio
@@ -327,8 +327,23 @@ def _score_move(
                         ratio *= (2 + def_boost) / 2
                     elif def_boost < 0:
                         ratio *= 2 / (2 - def_boost)
+        else:
+            # Normal physical: apply atk boosts
+            if active_boosts:
+                atk_boost = active_boosts.get("atk", 0)
+                if atk_boost > 0:
+                    ratio *= (2 + atk_boost) / 2
+                elif atk_boost < 0:
+                    ratio *= 2 / (2 - atk_boost)
     elif category == "special":
         ratio = special_ratio
+        # Apply spa boosts
+        if active_boosts:
+            spa_boost = active_boosts.get("spa", 0)
+            if spa_boost > 0:
+                ratio *= (2 + spa_boost) / 2
+            elif spa_boost < 0:
+                ratio *= 2 / (2 - spa_boost)
     else:
         return 0.0  # status move
 
