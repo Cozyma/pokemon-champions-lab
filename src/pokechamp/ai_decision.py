@@ -141,6 +141,62 @@ def _should_mega_evolve(
     return True
 
 
+def _estimate_incoming_after_boost(
+    boost_stages: dict[str, int],
+    base_incoming: int,
+    opp_species: str,
+) -> int:
+    """Estimate incoming damage after defensive boosts.
+
+    def boosts only reduce physical; spd boosts only reduce special.
+    Stage formula: damage * 2/(2+stages).
+    """
+    if base_incoming <= 0:
+        return 0
+    opp_base = _load_pokemon_base_stats(opp_species)
+    opp_atk = opp_base["attack"] if opp_base else 100
+    opp_spa = opp_base["sp_attack"] if opp_base else 100
+    opp_is_physical = opp_atk >= opp_spa
+
+    stages = boost_stages.get("def", 0) if opp_is_physical else boost_stages.get("spd", 0)
+    if stages > 0:
+        return int(base_incoming * 2 / (2 + stages))
+    return base_incoming
+
+
+def _count_action_turns(
+    my_hp: int,
+    incoming_per_turn: int,
+    recovery_per_turn: int = 0,
+) -> float:
+    """How many turns can we act before fainting?
+
+    Each turn: take incoming damage, then recover.
+    Returns the number of turns we survive (can be fractional).
+    """
+    if incoming_per_turn <= 0:
+        return 99.0  # effectively infinite
+    net_damage = max(incoming_per_turn - recovery_per_turn, 1)
+    return my_hp / net_damage
+
+
+def _turns_to_ko(
+    atk_score: float,
+    opp_hp_pct: float,
+) -> float:
+    """Estimated turns to KO opponent given our attack score.
+
+    atk_score is from _score_move (roughly proportional to %HP damage).
+    """
+    if atk_score <= 0:
+        return 99.0
+    # _score_move returns ~bp*stab*ratio*eff; a score of ~300 is roughly 100% HP
+    dmg_pct = atk_score / 3.0  # rough: score/3 ≈ %HP per hit
+    if dmg_pct <= 0:
+        return 99.0
+    return max(opp_hp_pct / dmg_pct, 1.0)
+
+
 def _should_switch_out(
     request: dict,
     opponent: dict,
@@ -703,16 +759,20 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                 if move.get("id") in ("rapidspin", "defog"):
                     return f"move {moves.index(move) + 1}{mega_suffix}"
 
-        # Setup moves — only when safe to spend a turn not attacking.
-        # Condition: survive the opponent's attack during setup turn,
-        # AND (setup+recovery walls the opponent, OR setup lets us OHKO)
-        # Setup uses pre-computed damage estimates (my_hp_abs, my_max_hp_abs, max_incoming_setup)
-        active_hp_for_setup = _hp_pct(active_pokemon)
+        # =================================================================
+        # Action-turn accounting: compare "attack now" vs "setup first"
+        # by estimating how many total action turns each path yields.
+        #
+        # action_turns_now:  survive turns with current stats
+        # action_turns_setup: spend 1 turn setting up → survive turns
+        #                     with boosted stats (+ recovery if available)
+        # If setup path yields more net action turns → setup is worth it.
+        # =================================================================
 
-        # Can we survive the setup turn?
+        _pivot_ids_setup = {"uturn", "voltswitch", "flipturn"}
         survives_setup_turn = (max_incoming_setup < my_hp_abs) if my_hp_abs > 0 else False
 
-        # Do we have a recovery move? (for setup+recovery wall check)
+        # Detect recovery move and amount
         has_recovery = any(
             showdown_data.get_move(m.get("id", "")) and
             showdown_data.get_move(m.get("id", "")).get("isHeal") and
@@ -720,9 +780,30 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
             showdown_data.get_move(m.get("id", "")).get("target") == "self"
             for m in available_moves
         )
-        recovery_amount = my_max_hp_abs // 2 if my_max_hp_abs > 0 else 0
+        recovery_per_turn = my_max_hp_abs // 2 if (my_max_hp_abs > 0 and has_recovery) else 0
+
+        # Current incoming damage (adjusted for existing boosts)
+        current_incoming = _estimate_incoming_after_boost(
+            active_boosts, max_incoming_setup, opp.get("species", ""),
+        )
+
+        # Current best attack score (excluding pivots for "stay and fight" evaluation)
+        best_atk_now = max(
+            (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
+             for m in available_moves if m.get("id", "") not in _pivot_ids_setup),
+            default=0.0,
+        )
+
+        # How many turns can we act right now?
+        my_action_turns_now = _count_action_turns(my_hp_abs, current_incoming, recovery_per_turn)
+
+        # Evaluate each setup move
+        best_setup_move = None
+        best_setup_gain = 0.0  # must be positive to justify setup
 
         if survives_setup_turn:
+            opp_hp_pct = opp.get("hp_pct", 100.0)
+
             for move in available_moves:
                 sd_setup = showdown_data.get_move(move.get("id", ""))
                 if not sd_setup:
@@ -730,113 +811,89 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                 boosts = sd_setup.get("boosts") or {}
                 if not boosts or sd_setup.get("category") != "Status":
                     continue
-                boost_sum = sum(v for v in boosts.values() if v > 0)
-                if boost_sum < 2:
+                if sum(v for v in boosts.values() if v > 0) < 2:
                     continue
-                target = sd_setup.get("target", move.get("target", ""))
-                if target != "self":
+                if (sd_setup.get("target", move.get("target", "")) != "self"):
+                    continue
+                # Already maxed?
+                if all(active_boosts.get(s, 0) >= 6 for s, v in boosts.items() if v > 0):
                     continue
 
-                # Check: does setup + recovery wall the opponent?
-                # After defensive boost (+1 def/spd), incoming damage is roughly * 2/3
-                # BUT: def boosts only help vs physical attacks, spd boosts only vs special.
-                # Estimate whether opponent hits harder physically or specially.
-                has_def_boost = boosts.get("def", 0) > 0
-                has_spd_boost = boosts.get("spd", 0) > 0
-                boosted_incoming = max_incoming_setup
-                if has_def_boost or has_spd_boost:
-                    opp_base = _load_pokemon_base_stats(opp.get("species", ""))
-                    opp_atk_base = opp_base["attack"] if opp_base else 100
-                    opp_spa_base = opp_base["sp_attack"] if opp_base else 100
-                    opp_is_physical = opp_atk_base >= opp_spa_base
-                    # def boost only reduces physical, spd boost only reduces special
-                    if has_def_boost and opp_is_physical:
-                        boosted_incoming = int(max_incoming_setup * 2 / 3)
-                    elif has_spd_boost and not opp_is_physical:
-                        boosted_incoming = int(max_incoming_setup * 2 / 3)
-                    # If boosting the wrong stat, no damage reduction
+                # Simulate boosts after setup
+                sim_boosts = dict(active_boosts)
+                for stat, val in boosts.items():
+                    sim_boosts[stat] = min(sim_boosts.get(stat, 0) + val, 6)
 
-                # Check if relevant stats are already maxed
-                already_maxed = all(
-                    active_boosts.get(stat, 0) >= 6
-                    for stat, val in boosts.items() if val > 0
+                # Attack score after setup
+                atk_after = max(
+                    (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, sim_boosts)
+                     for m in available_moves if m.get("id", "") not in _pivot_ids_setup),
+                    default=0.0,
                 )
-                if already_maxed:
-                    continue
+                if atk_after <= 0:
+                    continue  # no effective attack even after boosting — skip
 
-                if has_recovery and boosted_incoming < recovery_amount:
-                    # Setup + recovery = wall — but only if we can actually damage the opponent.
-                    # If our best move scores 0 (e.g. Fighting→Ghost immune), walling is pointless.
-                    # Exclude pivot moves (U-turn etc.) — they escape, not KO.
-                    _pivot_ids_setup = {"uturn", "voltswitch", "flipturn"}
-                    best_atk_after = max(
-                        (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
-                         for m in available_moves if m.get("id", "") not in _pivot_ids_setup),
-                        default=0.0,
-                    )
-                    if best_atk_after > 0:
-                        return f"move {moves.index(move) + 1}{mega_suffix}"
-
-                # Check: does setup let us survive AND hit harder?
-                # Only if HP is high enough to take a hit during setup
-                # AND we haven't already maxed the relevant stats
-                already_maxed = all(
-                    active_boosts.get(stat, 0) >= 6
-                    for stat, val in boosts.items() if val > 0
+                # Incoming damage after setup (defensive boosts applied)
+                incoming_after = _estimate_incoming_after_boost(
+                    sim_boosts, max_incoming_setup, opp.get("species", ""),
                 )
-                if not already_maxed and active_hp_for_setup >= 60.0:
-                    # Don't setup if we can't damage the opponent at all.
-                    # Exclude pivot moves — if the only "attack" is U-turn,
-                    # we'd just escape anyway, so setup is pointless.
-                    _pivot_ids_setup2 = {"uturn", "voltswitch", "flipturn"}
-                    best_atk_now = max(
-                        (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
-                         for m in available_moves if m.get("id", "") not in _pivot_ids_setup2),
-                        default=0.0,
-                    )
-                    if best_atk_now <= 0:
-                        continue
-                    # Don't boost def if opponent is special attacker, or spd if physical
-                    if boosts.get("def", 0) > 0 and not boosts.get("spd", 0):
-                        opp_base_s = _load_pokemon_base_stats(opp.get("species", ""))
-                        if opp_base_s and opp_base_s["sp_attack"] > opp_base_s["attack"]:
-                            continue  # opponent is special — def boost is wasted
-                    if boosts.get("spd", 0) > 0 and not boosts.get("def", 0):
-                        opp_base_s = _load_pokemon_base_stats(opp.get("species", ""))
-                        if opp_base_s and opp_base_s["attack"] > opp_base_s["sp_attack"]:
-                            continue  # opponent is physical — spd boost is wasted
-                    return f"move {moves.index(move) + 1}{mega_suffix}"
 
-        # "Win the slugfest" check: if our best attack can KO before they KO us,
-        # skip recovery and go for the kill. This triggers after setup is complete.
-        if my_max_hp_abs > 0 and max_incoming_setup > 0:
-            # Adjust incoming damage for our defensive boosts
-            # Only apply def boosts if opponent is physical, spd boosts if special
-            opp_base_slug = _load_pokemon_base_stats(opp.get("species", ""))
-            opp_atk_slug = opp_base_slug["attack"] if opp_base_slug else 100
-            opp_spa_slug = opp_base_slug["sp_attack"] if opp_base_slug else 100
-            opp_is_phys_slug = opp_atk_slug >= opp_spa_slug
-            relevant_boost = active_boosts.get("def", 0) if opp_is_phys_slug else active_boosts.get("spd", 0)
-            if relevant_boost > 0:
-                boost_factor = 2.0 / (2.0 + relevant_boost)
-                adjusted_incoming = int(max_incoming_setup * boost_factor)
-            else:
-                adjusted_incoming = max_incoming_setup
+                # HP after taking one hit during setup turn
+                hp_after_setup = my_hp_abs - max_incoming_setup
 
-            best_atk_score = 0.0
-            for move in available_moves:
-                s = _score_move(move, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
-                best_atk_score = max(best_atk_score, s)
-            if best_atk_score > 0:
-                opp_hp_pct_now = opp.get("hp_pct", 100.0)
-                our_ko_turns = max(opp_hp_pct_now / max(best_atk_score / 3.0, 1.0), 1.0)
-                their_ko_turns = my_hp_abs / max(adjusted_incoming, 1) if adjusted_incoming > 0 else 99
-                if our_ko_turns <= their_ko_turns:
-                    # We win the slugfest — attack, don't recover
-                    best_move_obj = max(available_moves,
-                                        key=lambda m: _score_move(m, active_pokemon, opp,
-                                                                   physical_ratio, special_ratio, active_boosts))
-                    return f"move {moves.index(best_move_obj) + 1}{mega_suffix}"
+                # Action turns after setup (with new survivability)
+                action_turns_after = _count_action_turns(
+                    hp_after_setup, incoming_after, recovery_per_turn,
+                )
+
+                # KO turns: how fast do we KO the opponent with/without setup?
+                ko_turns_now = _turns_to_ko(best_atk_now, opp_hp_pct)
+                ko_turns_after = _turns_to_ko(atk_after, opp_hp_pct)
+
+                # Net gain from setup. Two benefits:
+                # A) Survive longer (action_turns increase) — matters when we die before KO
+                # B) KO faster (ko_turns decrease) — matters when we can already survive
+                # Score = "can we KO before dying" improvement
+                can_ko_now = my_action_turns_now >= ko_turns_now
+                can_ko_after = action_turns_after >= ko_turns_after
+                if can_ko_after and not can_ko_now:
+                    # Setup turns a loss into a win — huge gain
+                    gain = 5.0
+                elif can_ko_after and can_ko_now:
+                    # Both can KO, but setup might KO faster (saves HP for next matchup)
+                    # Only worth it if we actually gain at least 1 turn
+                    gain = ko_turns_now - ko_turns_after  # positive = faster KO after setup
+                    if gain < 1.0:
+                        gain = 0.0  # marginal speedup not worth a turn of setup
+                elif not can_ko_after and not can_ko_now:
+                    # Neither can KO — but setup might let us deal more total damage
+                    # (action_turns_after * atk_after) vs (action_turns_now * best_atk_now)
+                    total_dmg_now = my_action_turns_now * best_atk_now
+                    total_dmg_after = action_turns_after * atk_after
+                    gain = (total_dmg_after - total_dmg_now) / max(total_dmg_now, 1.0)
+                else:
+                    # Setup makes us die before KO when we could KO without — bad
+                    gain = -5.0
+
+                if gain > best_setup_gain:
+                    best_setup_gain = gain
+                    best_setup_move = move
+
+        if best_setup_move is not None:
+            return f"move {moves.index(best_setup_move) + 1}{mega_suffix}"
+
+        # Slugfest check: if we can KO before they KO us, attack now
+        if best_atk_now > 0 and current_incoming > 0 and my_hp_abs > 0:
+            opp_hp_pct_now = opp.get("hp_pct", 100.0)
+            our_ko = _turns_to_ko(best_atk_now, opp_hp_pct_now)
+            their_ko = _count_action_turns(my_hp_abs, current_incoming, recovery_per_turn)
+            if our_ko <= their_ko:
+                best_move_obj = max(
+                    available_moves,
+                    key=lambda m: _score_move(m, active_pokemon, opp,
+                                              physical_ratio, special_ratio, active_boosts),
+                )
+                return f"move {moves.index(best_move_obj) + 1}{mega_suffix}"
 
         # Recovery move evaluation
         # Use recovery when HP is low, not OHKO'd, and recovery helps survive.
