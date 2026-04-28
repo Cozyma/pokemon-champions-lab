@@ -17,6 +17,7 @@ from pokechamp.ai_scoring import (
     _get_pokemon_types,
     _hp_pct,
     _is_fainted,
+    _load_pokemon_base_stats,
     _parse_current_hp,
     _parse_max_hp,
     _priority_can_ko,
@@ -737,8 +738,22 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
 
                 # Check: does setup + recovery wall the opponent?
                 # After defensive boost (+1 def/spd), incoming damage is roughly * 2/3
-                has_def_boost = boosts.get("def", 0) > 0 or boosts.get("spd", 0) > 0
-                boosted_incoming = int(max_incoming_setup * 2 / 3) if has_def_boost else max_incoming_setup
+                # BUT: def boosts only help vs physical attacks, spd boosts only vs special.
+                # Estimate whether opponent hits harder physically or specially.
+                has_def_boost = boosts.get("def", 0) > 0
+                has_spd_boost = boosts.get("spd", 0) > 0
+                boosted_incoming = max_incoming_setup
+                if has_def_boost or has_spd_boost:
+                    opp_base = _load_pokemon_base_stats(opp.get("species", ""))
+                    opp_atk_base = opp_base["attack"] if opp_base else 100
+                    opp_spa_base = opp_base["sp_attack"] if opp_base else 100
+                    opp_is_physical = opp_atk_base >= opp_spa_base
+                    # def boost only reduces physical, spd boost only reduces special
+                    if has_def_boost and opp_is_physical:
+                        boosted_incoming = int(max_incoming_setup * 2 / 3)
+                    elif has_spd_boost and not opp_is_physical:
+                        boosted_incoming = int(max_incoming_setup * 2 / 3)
+                    # If boosting the wrong stat, no damage reduction
 
                 # Check if relevant stats are already maxed
                 already_maxed = all(
@@ -773,17 +788,31 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                          for m in available_moves),
                         default=0.0,
                     )
-                    if best_atk_now > 0:
-                        return f"move {moves.index(move) + 1}{mega_suffix}"
+                    if best_atk_now <= 0:
+                        continue
+                    # Don't boost def if opponent is special attacker, or spd if physical
+                    if boosts.get("def", 0) > 0 and not boosts.get("spd", 0):
+                        opp_base_s = _load_pokemon_base_stats(opp.get("species", ""))
+                        if opp_base_s and opp_base_s["sp_attack"] > opp_base_s["attack"]:
+                            continue  # opponent is special — def boost is wasted
+                    if boosts.get("spd", 0) > 0 and not boosts.get("def", 0):
+                        opp_base_s = _load_pokemon_base_stats(opp.get("species", ""))
+                        if opp_base_s and opp_base_s["attack"] > opp_base_s["sp_attack"]:
+                            continue  # opponent is physical — spd boost is wasted
+                    return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # "Win the slugfest" check: if our best attack can KO before they KO us,
         # skip recovery and go for the kill. This triggers after setup is complete.
         if my_max_hp_abs > 0 and max_incoming_setup > 0:
             # Adjust incoming damage for our defensive boosts
-            def_boost = active_boosts.get("def", 0) + active_boosts.get("spd", 0)
-            if def_boost > 0:
-                # Each +1 stage roughly reduces damage by ~33% (2/3), +2 = ~50% (2/4)
-                boost_factor = 2.0 / (2.0 + def_boost)
+            # Only apply def boosts if opponent is physical, spd boosts if special
+            opp_base_slug = _load_pokemon_base_stats(opp.get("species", ""))
+            opp_atk_slug = opp_base_slug["attack"] if opp_base_slug else 100
+            opp_spa_slug = opp_base_slug["sp_attack"] if opp_base_slug else 100
+            opp_is_phys_slug = opp_atk_slug >= opp_spa_slug
+            relevant_boost = active_boosts.get("def", 0) if opp_is_phys_slug else active_boosts.get("spd", 0)
+            if relevant_boost > 0:
+                boost_factor = 2.0 / (2.0 + relevant_boost)
                 adjusted_incoming = int(max_incoming_setup * boost_factor)
             else:
                 adjusted_incoming = max_incoming_setup

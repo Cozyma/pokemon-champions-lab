@@ -79,9 +79,11 @@ def _estimate_opponent_max_damage(
     my_types: list[str],
     confirmed_ability: str = "",
 ) -> int:
-    """Estimate max STAB damage the opponent can deal to us.
+    """Estimate max damage the opponent can deal to us.
 
-    Assumes opponent uses ~80 base power STAB move, standard EVs (EV=32, IV=31, Lv50).
+    Considers both STAB moves (~80bp) and coverage moves (~100bp, non-STAB)
+    that are super-effective against our types.
+    Assumes standard EVs (EV=32, IV=31, Lv50).
     Returns 0 when estimation is not possible.
     """
     base = _load_pokemon_base_stats(opponent_species)
@@ -95,13 +97,14 @@ def _estimate_opponent_max_damage(
     opp_spa = calc_stat(base["sp_attack"], 31, 32, 50, Nature.HARDY, "sp_attack")
 
     max_damage = 0
+
+    # 1) STAB moves (power 80, STAB=1.5x)
     for opp_type_str in opponent_types:
         try:
             opp_type = TypeName(opp_type_str.lower())
         except ValueError:
             continue
 
-        # Type effectiveness against us
         eff = 1.0
         for my_type_str in my_types:
             try:
@@ -112,17 +115,54 @@ def _estimate_opponent_max_damage(
         if eff == 0:
             continue
 
-        # Physical STAB damage (power 80)
         phys_dmg = calc_damage_range(
             level=50, power=80, attack_stat=opp_atk, defense_stat=max(my_def, 1),
             stab=True, type_eff=eff,
         )
         max_damage = max(max_damage, max(phys_dmg))
 
-        # Special STAB damage (power 80)
         spec_dmg = calc_damage_range(
             level=50, power=80, attack_stat=opp_spa, defense_stat=max(my_spd, 1),
             stab=True, type_eff=eff,
+        )
+        max_damage = max(max_damage, max(spec_dmg))
+
+    # 2) Coverage moves: non-STAB super-effective (power 100, no STAB)
+    # Check all types that are SE against us — opponents often carry coverage
+    opp_type_set = {t.lower() for t in opponent_types}
+    all_types = [
+        "normal", "fire", "water", "electric", "grass", "ice",
+        "fighting", "poison", "ground", "flying", "psychic",
+        "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy",
+    ]
+    for cov_type_str in all_types:
+        if cov_type_str in opp_type_set:
+            continue  # already covered by STAB above
+        try:
+            cov_type = TypeName(cov_type_str)
+        except ValueError:
+            continue
+
+        eff = 1.0
+        for my_type_str in my_types:
+            try:
+                eff *= type_effectiveness(cov_type, TypeName(my_type_str.lower()))
+            except ValueError:
+                pass
+
+        if eff <= 1.0:
+            continue  # only consider super-effective coverage
+
+        # Coverage move: higher base power (100) but no STAB
+        phys_dmg = calc_damage_range(
+            level=50, power=100, attack_stat=opp_atk, defense_stat=max(my_def, 1),
+            stab=False, type_eff=eff,
+        )
+        max_damage = max(max_damage, max(phys_dmg))
+
+        spec_dmg = calc_damage_range(
+            level=50, power=100, attack_stat=opp_spa, defense_stat=max(my_spd, 1),
+            stab=False, type_eff=eff,
         )
         max_damage = max(max_damage, max(spec_dmg))
 
@@ -149,6 +189,15 @@ def _parse_current_hp(pokemon: dict) -> int:
     m = re.match(r"(\d+)/(\d+)", condition)
     if m:
         return int(m.group(1))
+    return 0
+
+
+def _parse_max_hp(pokemon: dict) -> int:
+    """Return max HP as an integer from condition string."""
+    condition = pokemon.get("condition", "")
+    m = re.match(r"(\d+)/(\d+)", condition)
+    if m:
+        return int(m.group(2))
     return 0
 
 
@@ -265,6 +314,19 @@ def _score_move(
     category = (move.get("category") or (sd_move.get("category", "") if sd_move else "") or "").lower()
     if category == "physical":
         ratio = physical_ratio
+        # Body Press uses Defense stat instead of Attack for damage
+        if move_id == "bodypress":
+            my_def = active_pokemon.get("stats", {}).get("def", 100)
+            my_atk = active_pokemon.get("stats", {}).get("atk", 100)
+            if my_atk > 0:
+                ratio = ratio * (my_def / my_atk)
+                # Apply def boosts (Body Press uses boosted def)
+                if active_boosts:
+                    def_boost = active_boosts.get("def", 0)
+                    if def_boost > 0:
+                        ratio *= (2 + def_boost) / 2
+                    elif def_boost < 0:
+                        ratio *= 2 / (2 - def_boost)
     elif category == "special":
         ratio = special_ratio
     else:
@@ -273,6 +335,18 @@ def _score_move(
     # Type effectiveness
     opp_types = opponent.get("types", [])
     effectiveness = _calc_type_effectiveness(move_type, opp_types)
+
+    # Scrappy: Normal/Fighting moves bypass Ghost immunity
+    my_ability = active_pokemon.get("ability", "").lower().replace(" ", "")
+    if my_ability == "scrappy" and effectiveness == 0.0 and move_type in ("normal", "fighting"):
+        effectiveness = 1.0
+        for dt in opp_types:
+            try:
+                def_type = TypeName(dt.lower())
+                if def_type != TypeName.GHOST:
+                    effectiveness *= type_effectiveness(TypeName(move_type), def_type)
+            except ValueError:
+                pass
 
     accuracy = (move.get("accuracy") if move.get("accuracy") is not True else 100) or 100
     accuracy = accuracy / 100.0
