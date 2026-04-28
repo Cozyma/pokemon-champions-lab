@@ -424,6 +424,20 @@ def _select_team_preview(
             elif min_incoming <= 0.5:
                 score += 0.5
 
+            # Penalty: if any combo member has a terrible individual matchup vs this opp
+            # "best_vs_this_opp" only reflects the best member, but a member that gets
+            # OHKO'd is a liability since we can't control which matchup occurs first.
+            for ci_idx, my_t in enumerate(combo_types):
+                if not my_t:
+                    continue
+                m_types = my_move_types[combo[ci_idx]] or my_t
+                my_atk = max((_calc_type_effectiveness(t, opp_t) for t in m_types), default=1.0)
+                my_def = max((_calc_type_effectiveness(t, my_t) for t in opp_t), default=1.0)
+                individual = my_atk - my_def
+                if individual < -1.5:
+                    # This member is hard-countered — penalize the combo
+                    score -= 0.5
+
         # Shadow Tag penalty: if opponent has trapping ability,
         # getting caught in a bad matchup is devastating.
         # Penalize combos where ANY of our 3 has a terrible matchup vs the trapper.
