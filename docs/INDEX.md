@@ -44,6 +44,7 @@ tags: [index, docs]
 | [2026-04-23-selection-rl-and-selfplay.md](design/decisions/2026-04-23-selection-rl-and-selfplay.md) | 選出RL実装・Self-Play設計（Body Press修正、選出RL 90%、Gen11 100%） | ADR, log, RL, selection, self-play |
 | [2026-04-24-action-theory.md](design/decisions/2026-04-24-action-theory.md) | 行動回数の収支理論と戦略フレーム（サイクル↔起点スペクトラム、リプレイ検証） | ADR, theory, strategy |
 | [2026-04-28-team-pool-and-obs-redesign.md](design/decisions/2026-04-28-team-pool-and-obs-redesign.md) | 対戦相手プール拡大(11→32)+観測空間再設計(選出360dim/バトル186dim) | ADR, log, RL, observation |
+| [2026-04-28-heuristic-bugfix-and-action-turn.md](design/decisions/2026-04-28-heuristic-bugfix-and-action-turn.md) | ヒューリスティクスバグ修正+行動回数理論で積み判定を統一(49%→63%) | ADR, log, heuristic, action-turn |
 
 > 設計判断が発生したら `design/decisions/YYYY-MM-DD-{topic}.md` に記録する。
 
