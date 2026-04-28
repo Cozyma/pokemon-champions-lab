@@ -1,0 +1,53 @@
+Charizard @ Charizardite Y
+Ability: Blaze
+EVs: 30 HP / 32 Def / 1 SpA / 1 SpD / 2 Spe
+Bold Nature
+- Flamethrower
+- Will-O-Wisp
+- Roost
+- Solar Beam
+
+Hippowdon @ Sitrus Berry
+Ability: Sand Stream
+EVs: 32 HP / 17 Def / 17 SpD
+Impish Nature
+- Yawn
+- Earthquake
+- Slack Off
+- Stealth Rock
+
+Gengar @ Gengarite
+Ability: Cursed Body
+EVs: 12 HP / 32 SpA / 22 Spe
+Timid Nature
+- Shadow Ball
+- Focus Blast
+- Icy Wind
+- Sludge Wave
+
+Umbreon @ Leftovers
+Ability: Inner Focus
+EVs: 32 HP / 30 Def / 4 SpD
+Impish Nature
+- Yawn
+- Protect
+- Foul Play
+- Wish
+
+Scizor @ Lum Berry
+Ability: Technician
+EVs: 30 HP / 32 Atk / 4 Def
+Adamant Nature
+- Bullet Punch
+- Close Combat
+- Swords Dance
+- U-turn
+
+Empoleon @ Chople Berry
+Ability: Torrent
+EVs: 32 HP / 5 Def / 29 SpD
+Calm Nature
+- Yawn
+- Surf
+- Flip Turn
+- Stealth Rock

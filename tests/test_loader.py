@@ -35,7 +35,7 @@ class TestLoadItem:
 
 
 class TestLoadTeam:
-    def test_load_example_team(self):
-        team = load_team("example-team")
+    def test_load_screenshot_team(self):
+        team = load_team("screenshot-team")
         assert team.name is not None
         assert len(team.pokemon) >= 1

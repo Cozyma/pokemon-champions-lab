@@ -1,0 +1,53 @@
+Clefable @ Clefabirite
+Ability: Unaware
+EVs: 32 HP / 15 Def / 1 SpA / 1 SpD / 18 Spe
+Bold Nature
+- Draining Kiss
+- Flamethrower
+- Calm Mind
+- Moonlight
+
+Skeledirge @ Sitrus Berry
+Ability: Unaware
+EVs: 32 HP / 32 Def / 2 Spe
+Impish Nature
+- Torch Song
+- Shadow Ball
+- Will-O-Wisp
+- Slack Off
+
+Gyarados @ Leftovers
+Ability: Intimidate
+EVs: 31 HP / 26 Atk / 1 SpD / 7 Spe
+Adamant Nature
+- Waterfall
+- Power Whip
+- Thunder Wave
+- Taunt
+
+Glimmora @ Focus Sash
+Ability: Toxic Debris
+EVs: 28 Def / 32 Spe
+Impish Nature
+- Mud Shot
+- Stealth Rock
+- Reflect
+- Memento
+
+Polteageist @ White Herb
+Ability: Cursed Body
+EVs: 32 Def / 1 SpD / 19 Spe
+Timid Nature
+- Shadow Ball
+- Substitute
+- Shell Smash
+- Baton Pass
+
+Venusaur @ Venusaurite
+Ability: Chlorophyll
+EVs: 21 HP / 2 SpA / 8 Spe
+Calm Nature
+- Giga Drain
+- Sludge Wave
+- Earth Power
+- Synthesis

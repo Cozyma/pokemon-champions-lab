@@ -88,10 +88,10 @@ class TestParseShowdownPaste:
 
 
 class TestLoadShowdownTeam:
-    def test_load_example_team(self):
-        result = load_showdown_team("example-team")
+    def test_load_screenshot_team(self):
+        result = load_showdown_team("screenshot-team")
         assert len(result) >= 1
-        assert result[0]["species"] == "Garchomp"
+        assert result[0]["species"] == "Lopunny"
 
     def test_load_mega_gengar_team(self):
         result = load_showdown_team("mega-gengar-team")
@@ -122,7 +122,7 @@ class TestLoadShowdownTeam:
 class TestListShowdownTeams:
     def test_lists_teams_with_txt(self):
         teams = list_showdown_teams()
-        assert "example-team" in teams
+        assert "screenshot-team" in teams
         assert "mega-gengar-team" in teams
         assert "mega-scizor-team" in teams
 

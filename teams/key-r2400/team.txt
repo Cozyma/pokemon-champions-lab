@@ -1,0 +1,53 @@
+Hippowdon @ Sitrus Berry
+Ability: Sand Stream
+EVs: 32 HP / 2 Def / 32 SpD
+Calm Nature
+- Earthquake
+- Yawn
+- Stealth Rock
+- Whirlwind
+
+Excadrill @ Soft Sand
+Ability: Sand Rush
+EVs: 32 Atk / 15 SpD / 19 Spe
+Jolly Nature
+- Earthquake
+- Iron Head
+- Rock Slide
+- Swords Dance
+
+Gyarados @ Gyaradosite
+Ability: Intimidate
+EVs: 1 HP / 32 Atk / 1 Def / 32 Spe
+Jolly Nature
+- Waterfall
+- Ice Fang
+- Power Whip
+- Dragon Dance
+
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 1 HP / 32 SpA / 1 SpD / 32 Spe
+Timid Nature
+- Draco Meteor
+- Flamethrower
+- Thunderbolt
+- Ice Beam
+
+Archaludon @ Leftovers
+Ability: Stamina
+EVs: 32 HP / 25 SpA / 9 Spe
+Modest Nature
+- Draco Meteor
+- Foul Play
+- Thunderbolt
+- Substitute
+
+Mimikyu @ Spell Tag
+Ability: Disguise
+EVs: 1 HP / 32 Atk / 1 Def / 32 Spe
+Jolly Nature
+- Play Rough
+- Shadow Claw
+- Shadow Sneak
+- Swords Dance

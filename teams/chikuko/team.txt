@@ -1,0 +1,53 @@
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Outrage
+- Earthquake
+- Fire Fang
+- Poison Jab
+
+Froslass @ Frostlasite
+Ability: Cursed Body
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Blizzard
+- Shadow Ball
+- Aurora Veil
+- Taunt
+
+Volcarona @ Lum Berry
+Ability: Flame Body
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Flamethrower
+- Bug Buzz
+- Quiver Dance
+- Morning Sun
+
+Azumarill @ Sitrus Berry
+Ability: Huge Power
+EVs: 32 HP / 32 Atk / 2 Spe
+Adamant Nature
+- Play Rough
+- Aqua Jet
+- Liquidation
+- Belly Drum
+
+Glimmora @ Focus Sash
+Ability: Toxic Debris
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Sludge Wave
+- Mud Shot
+- Mortal Spin
+- Stealth Rock
+
+Kangaskhan @ Kangaskhanite
+Ability: Scrappy
+EVs: 2 HP / 32 Atk / 32 Spe
+Adamant Nature
+- Rock Slide
+- Ice Punch
+- Earthquake
+- Sucker Punch

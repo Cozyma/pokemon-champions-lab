@@ -1,0 +1,53 @@
+Starmie @ Starmieite
+Ability: Natural Cure
+EVs: 2 HP / 32 Atk / 1 Def / 1 SpD / 30 Spe
+Jolly Nature
+- Waterfall
+- Flip Turn
+- Aqua Jet
+- Zen Headbutt
+
+Floette-Eternal @ Choice Scarf
+Ability: Flower Veil
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Light of Ruin
+- Moonblast
+- Psychic
+- Petal Dance
+
+Meganium @ Meganiumite
+Ability: Overgrow
+EVs: 32 HP / 3 Def / 17 SpA / 14 Spe
+Modest Nature
+- Solar Beam
+- Weather Ball
+- Synthesis
+- Substitute
+
+Diggersby @ Focus Sash
+Ability: Huge Power
+EVs: 1 HP / 32 Atk / 1 Def / 32 Spe
+Jolly Nature
+- Earthquake
+- Ice Punch
+- Thunder Punch
+- Quick Attack
+
+Pelipper @ Sitrus Berry
+Ability: Drizzle
+EVs: 32 HP / 32 Def / 2 SpD
+Bold Nature
+- Surf
+- U-turn
+- Hurricane
+- Tailwind
+
+Archaludon @ Shuca Berry
+Ability: Stamina
+EVs: 32 HP / 7 Def / 15 SpA / 1 SpD / 11 Spe
+Modest Nature
+- Draco Meteor
+- Flash Cannon
+- Electro Shot
+- Focus Blast

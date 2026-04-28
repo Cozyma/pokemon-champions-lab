@@ -1,0 +1,53 @@
+Infernape @ Wacan Berry
+Ability: Iron Fist
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Rock Tomb
+- Taunt
+- Will-O-Wisp
+- Stealth Rock
+
+Heliolisk @ Choice Scarf
+Ability: Dry Skin
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Thunderbolt
+- Volt Switch
+- Glare
+- Shed Tail
+
+Froslass @ Frostlasite
+Ability: Cursed Body
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Blizzard
+- Shadow Ball
+- Aurora Veil
+- Nasty Plot
+
+Gyarados @ Gyaradosite
+Ability: Intimidate
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Waterfall
+- Ice Fang
+- Earthquake
+- Dragon Dance
+
+Aegislash-Shield @ Focus Sash
+Ability: Stance Change
+EVs: 2 HP / 32 Atk / 32 Spe
+Adamant Nature
+- Poltergeist
+- Close Combat
+- Shadow Sneak
+- Swords Dance
+
+Hawlucha @ Sitrus Berry
+Ability: Unburden
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Close Combat
+- Brave Bird
+- Substitute
+- Swords Dance

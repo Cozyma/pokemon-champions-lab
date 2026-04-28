@@ -1,0 +1,53 @@
+Gyarados @ Gyaradosite
+Ability: Intimidate
+EVs: 1 HP / 32 Atk / 32 Def / 1 SpD
+Adamant Nature
+- Aqua Tail
+- Power Whip
+- Earthquake
+- Avalanche
+
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 31 HP / 32 SpA / 1 SpD
+Modest Nature
+- Draco Meteor
+- Hurricane
+- Fire Blast
+- Thunder
+
+Slowking @ Black Belt
+Ability: Regenerator
+EVs: 31 HP / 3 Def / 32 SpA
+Modest Nature
+- Sludge Wave
+- Psychic
+- Focus Blast
+- Fire Blast
+
+Tyranitar @ Tyranitarite
+Ability: Sand Stream
+EVs: 32 HP / 32 Atk / 2 SpD
+Adamant Nature
+- Stone Edge
+- Knock Off
+- Superpower
+- Ice Punch
+
+Rotom-Wash @ Mystic Water
+Ability: Levitate
+EVs: 32 HP / 32 SpA
+Modest Nature
+- Thunder
+- Hydro Pump
+- Dark Pulse
+- Volt Switch
+
+Tinkaton @ Never-Melt Ice
+Ability: Mold Breaker
+EVs: 29 HP / 32 Atk / 5 SpD
+Adamant Nature
+- Gigaton Hammer
+- Play Rough
+- Ice Hammer
+- Knock Off

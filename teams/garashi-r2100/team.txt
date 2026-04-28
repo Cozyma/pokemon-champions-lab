@@ -1,0 +1,53 @@
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Outrage
+- Earthquake
+- Rock Slide
+- Stealth Rock
+
+Gengar @ Gengarite
+Ability: Cursed Body
+EVs: 32 HP / 11 Def / 23 Spe
+Bold Nature
+- Hex
+- Sludge Bomb
+- Protect
+- Will-O-Wisp
+
+Umbreon @ Leftovers
+Ability: Synchronize
+EVs: 32 HP / 14 Def / 20 SpD
+Calm Nature
+- Yawn
+- Foul Play
+- Wish
+- Protect
+
+Corviknight @ Sitrus Berry
+Ability: Pressure
+EVs: 32 HP / 25 Def / 9 SpD
+Impish Nature
+- Body Press
+- Iron Defense
+- Roost
+- U-turn
+
+Lopunny @ Lopunnite
+Ability: Cute Charm
+EVs: 1 HP / 32 Atk / 1 Def / 32 Spe
+Jolly Nature
+- Fake Out
+- Close Combat
+- Triple Axel
+- U-turn
+
+Primarina @ Chesto Berry
+Ability: Torrent
+EVs: 32 HP / 26 Def / 8 Spe
+Bold Nature
+- Moonblast
+- Surf
+- Encore
+- Rest

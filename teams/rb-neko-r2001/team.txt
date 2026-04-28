@@ -1,0 +1,53 @@
+Kangaskhan @ Kangaskhanite
+Ability: Scrappy
+EVs: 23 HP / 32 Atk / 11 Spe
+Adamant Nature
+- Fake Out
+- Ice Punch
+- Earthquake
+- Sucker Punch
+
+Aegislash-Shield @ Spell Tag
+Ability: Stance Change
+EVs: 32 HP / 32 Atk / 8 Spe
+Adamant Nature
+- Poltergeist
+- Shadow Ball
+- Close Combat
+- Shadow Sneak
+
+Volcarona @ Leftovers
+Ability: Swarm
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Flamethrower
+- Giga Drain
+- Psychic
+- Quiver Dance
+
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Outrage
+- Earthquake
+- Rock Slide
+- Poison Jab
+
+Greninja @ Focus Sash
+Ability: Protean
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Surf
+- Dark Pulse
+- Ice Beam
+- Water Shuriken
+
+Mimikyu @ Scope Lens
+Ability: Disguise
+EVs: 32 HP / 32 Atk / 2 Def
+Adamant Nature
+- Shadow Claw
+- Play Rough
+- Swords Dance
+- Shadow Sneak

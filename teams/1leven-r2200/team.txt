@@ -1,0 +1,53 @@
+Golurk @ Golurgite
+Ability: Iron Fist
+EVs: 29 HP / 18 Atk / 11 SpD / 8 Spe
+Adamant Nature
+- Poltergeist
+- Headlong Rush
+- Imprison
+- Iron Defense
+
+Snorlax @ Leftovers
+Ability: Thick Fat
+EVs: 32 HP / 2 Atk / 32 SpD
+Calm Nature
+- Fissure
+- Facade
+- Crunch
+- Rest
+
+Clefable @ Clefabirite
+Ability: Unaware
+EVs: 31 HP / 32 Def / 3 SpD
+Bold Nature
+- Moonblast
+- Flamethrower
+- Cosmic Power
+- Moonlight
+
+Toxapex @ Mental Herb
+Ability: Regenerator
+EVs: 32 HP / 2 Atk / 32 SpD
+Calm Nature
+- Throat Chop
+- Toxic
+- Haze
+- Recover
+
+Skeledirge @ Kasib Berry
+Ability: Unaware
+EVs: 32 HP / 32 Def / 2 SpA
+Impish Nature
+- Torch Song
+- Hex
+- Will-O-Wisp
+- Slack Off
+
+Chesnaught @ Brigalosite
+Ability: Bulletproof
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Body Press
+- Spikes
+- Iron Defense
+- Synthesis

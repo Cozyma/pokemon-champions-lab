@@ -1,0 +1,53 @@
+Arcanine @ Shuca Berry
+Ability: Intimidate
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Flare Blitz
+- Extreme Speed
+- Will-O-Wisp
+- Morning Sun
+
+Meganium @ Meganiumite
+Ability: Overgrow
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Solar Beam
+- Synthesis
+- Weather Ball
+- Dazzling Gleam
+
+Hippowdon @ Sitrus Berry
+Ability: Sand Stream
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Earthquake
+- Yawn
+- Slack Off
+- Stealth Rock
+
+Archaludon @ Leftovers
+Ability: Stamina
+EVs: 32 HP / 32 Def / 2 SpD
+Calm Nature
+- Flash Cannon
+- Dragon Tail
+- Thunderbolt
+- Substitute
+
+Garchomp @ Yache Berry
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Scale Shot
+- Rock Tomb
+- Stealth Rock
+
+Greninja @ Greninjite
+Ability: Torrent
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Dark Pulse
+- Ice Beam
+- Sludge Wave
+- Toxic Spikes

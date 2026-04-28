@@ -6,19 +6,19 @@ from pokechamp.models import TeamMember, Nature
 
 class TestBuildBattlePokemon:
     def test_from_team(self):
-        team = load_team("example-team")
+        team = load_team("screenshot-team")
         battle_pokemon = build_battle_pokemon_from_team(team)
         assert len(battle_pokemon) == len(team.pokemon)
-        assert battle_pokemon[0].name == "garchomp"
+        assert battle_pokemon[0].name == "lopunny"
 
 
 class TestEvaluateMatchup:
     def test_mirror_matchup(self):
         """同じ構築同士のマッチアップはスコア約50%になる"""
-        result = evaluate_matchup("example-team", "example-team")
+        result = evaluate_matchup("screenshot-team", "screenshot-team")
         # team name comes from the directory name when loaded from team.txt
-        assert result.team_a == "example-team"
-        assert result.team_b == "example-team"
+        assert result.team_a == "screenshot-team"
+        assert result.team_b == "screenshot-team"
         for i, row in enumerate(result.matrix.matrix):
             for j, win_rate in enumerate(row):
                 if i == j:

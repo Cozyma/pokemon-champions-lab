@@ -1,0 +1,53 @@
+Goodra-Hisui @ Sitrus Berry
+Ability: Sap Sipper
+EVs: 32 HP / 32 SpA / 2 SpD
+Modest Nature
+- Draco Meteor
+- Flamethrower
+- Thunderbolt
+- Acid Spray
+
+Corviknight @ Leftovers
+Ability: Mirror Armor
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- U-turn
+- Body Press
+- Iron Defense
+- Roost
+
+Greninja @ Focus Sash
+Ability: Protean
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Ice Beam
+- Dark Pulse
+- Sludge Wave
+- Water Shuriken
+
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Outrage
+- Earthquake
+- Rock Slide
+- Stealth Rock
+
+Kangaskhan @ Kangaskhanite
+Ability: Scrappy
+EVs: 2 HP / 32 Atk / 32 Spe
+Adamant Nature
+- Fake Out
+- Double-Edge
+- Earthquake
+- Sucker Punch
+
+Charizard @ Charizardite Y
+Ability: Blaze
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Overheat
+- Flamethrower
+- Nitro Charge
+- Solar Beam

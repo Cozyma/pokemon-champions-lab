@@ -426,13 +426,13 @@ def test_estimate_opponent_max_damage_super_effective():
 
 
 def test_estimate_opponent_max_damage_immune():
-    """Ground attack vs flying type should be 0 (immune)."""
+    """Ground STAB vs flying = immune, but coverage moves (e.g. Ice) still deal damage."""
     from pokechamp.fast_battle import _estimate_opponent_max_damage
 
     dmg = _estimate_opponent_max_damage("garchomp", ["ground"], 150, 100, ["flying"])
-    # Ground vs flying = 0x, so ground type should be 0. Dragon vs flying = 1x.
-    # With only ground type, should be 0.
-    assert dmg == 0
+    # Ground vs flying = 0x (immune for STAB), but Garchomp's stats allow
+    # coverage SE moves (e.g. Ice vs Flying = 2x) so damage should be > 0.
+    assert dmg > 0
 
 
 def test_estimate_opponent_max_damage_unknown_species():
@@ -452,17 +452,17 @@ def test_estimate_opponent_speed():
 
 
 def test_should_switch_out_ohko():
-    """Should switch out when opponent can OHKO active pokemon."""
+    """Should switch out when opponent can OHKO active pokemon (above sacrifice threshold)."""
     from pokechamp.fast_battle import _should_switch_out
 
-    # Active pokemon is a low-HP steel type facing a fire/ground garchomp
+    # Active pokemon has enough HP (33%) that switching is worth it
     # Garchomp ground STAB is SE vs steel
     request = {
         "side": {
             "pokemon": [
                 {
                     "active": True,
-                    "condition": "30/180",  # very low HP
+                    "condition": "60/180",  # low HP but above sacrifice threshold (33%)
                     "types": ["steel"],
                     "stats": {"atk": 80, "def": 130, "spa": 60, "spd": 85, "spe": 70},
                     "boosts": {},
@@ -485,6 +485,41 @@ def test_should_switch_out_ohko():
     }
     result = _should_switch_out(request, opponent)
     assert result is True
+
+
+def test_should_sacrifice_low_hp():
+    """Should NOT switch out when HP is critically low — sacrifice instead."""
+    from pokechamp.fast_battle import _should_switch_out
+
+    # Active pokemon at 15% HP facing OHKO — better to sack than waste switch-in HP
+    request = {
+        "side": {
+            "pokemon": [
+                {
+                    "active": True,
+                    "condition": "27/180",  # 15% HP
+                    "types": ["steel"],
+                    "stats": {"atk": 80, "def": 130, "spa": 60, "spd": 85, "spe": 70},
+                    "boosts": {},
+                },
+                {
+                    "active": False,
+                    "condition": "175/175",
+                    "types": ["water", "fairy"],
+                    "stats": {"atk": 77, "def": 92, "spa": 125, "spd": 116, "spe": 60},
+                    "boosts": {},
+                },
+            ]
+        }
+    }
+    opponent = {
+        "species": "garchomp",
+        "types": ["dragon", "ground"],
+        "hp_pct": 100.0,
+        "stats": {},
+    }
+    result = _should_switch_out(request, opponent)
+    assert result is False  # sacrifice: stay and attack
 
 
 def test_choose_best_switch_skips_ohko_target():

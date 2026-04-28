@@ -1,0 +1,53 @@
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 21 HP / 32 SpA / 13 Spe
+Modest Nature
+- Draco Meteor
+- Air Slash
+- Thunderbolt
+- Extreme Speed
+
+Kangaskhan @ Kangaskhanite
+Ability: Scrappy
+EVs: 23 HP / 32 Atk / 11 Spe
+Adamant Nature
+- Body Slam
+- Sucker Punch
+- Earthquake
+- Ice Punch
+
+Corviknight @ Leftovers
+Ability: Pressure
+EVs: 32 HP / 15 Def / 19 SpD
+Calm Nature
+- U-turn
+- Body Press
+- Iron Head
+- Roost
+
+Ceruledge @ Focus Sash
+Ability: Weak Armor
+EVs: 1 HP / 32 Atk / 1 Def / 32 Spe
+Jolly Nature
+- Bitter Blade
+- Poltergeist
+- Close Combat
+- Shadow Sneak
+
+Mimikyu @ Lum Berry
+Ability: Disguise
+EVs: 1 HP / 32 Atk / 32 Def / 1 Spe
+Adamant Nature
+- Play Rough
+- Shadow Sneak
+- Drain Punch
+- Swords Dance
+
+Primarina @ Sitrus Berry
+Ability: Torrent
+EVs: 32 HP / 14 Def / 14 SpA / 6 Spe
+Bold Nature
+- Sparkling Aria
+- Moonblast
+- Aqua Jet
+- Encore

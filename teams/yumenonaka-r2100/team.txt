@@ -1,0 +1,53 @@
+Volcarona @ Sitrus Berry
+Ability: Flame Body
+EVs: 23 HP / 32 Def / 11 Spe
+Bold Nature
+- Fiery Dance
+- Giga Drain
+- Morning Sun
+- Quiver Dance
+
+Snorlax @ Leftovers
+Ability: Thick Fat
+EVs: 32 HP / 2 Atk / 32 Def
+Impish Nature
+- Protect
+- Earthquake
+- Facade
+- Yawn
+
+Venusaur @ Venusaurite
+Ability: Chlorophyll
+EVs: 32 HP / 2 Def / 32 SpA
+Modest Nature
+- Earth Power
+- Sludge Bomb
+- Synthesis
+- Leech Seed
+
+Basculegion @ Choice Scarf
+Ability: Adaptability
+EVs: 32 Atk / 2 Def / 32 Spe
+Jolly Nature
+- Wave Crash
+- Last Respects
+- Aqua Jet
+- Flip Turn
+
+Clefable @ Clefabirite
+Ability: Unaware
+EVs: 32 HP / 11 Def / 23 SpA
+Bold Nature
+- Moonblast
+- Psyshock
+- Calm Mind
+- Moonlight
+
+Garchomp @ Focus Sash
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Outrage
+- Earthquake
+- Rock Tomb
+- Stealth Rock

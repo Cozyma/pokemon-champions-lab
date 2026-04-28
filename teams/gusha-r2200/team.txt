@@ -1,0 +1,53 @@
+Tyranitar @ Leftovers
+Ability: Sand Stream
+EVs: 32 HP / 2 Def / 32 SpD
+Calm Nature
+- Rock Blast
+- Foul Play
+- Stealth Rock
+- Protect
+
+Excadrill @ Sitrus Berry
+Ability: Mold Breaker
+EVs: 32 HP / 2 Atk / 32 SpD
+Calm Nature
+- Earthquake
+- Iron Head
+- Horn Drill
+- Stealth Rock
+
+Meganium @ Meganiumite
+Ability: Overgrow
+EVs: 32 HP / 1 Def / 1 SpA / 30 SpD / 3 Spe
+Calm Nature
+- Solar Beam
+- Weather Ball
+- Dazzling Gleam
+- Synthesis
+
+Skarmory @ BrightPowder
+Ability: Sturdy
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Drill Peck
+- Body Press
+- Iron Defense
+- Roost
+
+Venusaur @ Venusaurite
+Ability: Overgrow
+EVs: 32 HP / 11 Def / 20 SpD / 3 Spe
+Calm Nature
+- Sludge Bomb
+- Earth Power
+- Leech Seed
+- Synthesis
+
+Toxapex @ Black Sludge
+Ability: Regenerator
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Infestation
+- Toxic
+- Haze
+- Recover

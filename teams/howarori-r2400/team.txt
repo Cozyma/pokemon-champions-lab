@@ -1,0 +1,53 @@
+Floette-Eternal @ Floettite
+Ability: Flower Veil
+EVs: 2 HP / 7 Def / 32 SpA / 25 Spe
+Timid Nature
+- Moonblast
+- Draining Kiss
+- Psychic
+- Calm Mind
+
+Garchomp @ Lum Berry
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Scale Shot
+- Fire Fang
+- Swords Dance
+
+Araquanid @ Sitrus Berry
+Ability: Water Bubble
+EVs: 32 HP / 32 Atk / 2 Def
+Adamant Nature
+- Liquidation
+- Lunge
+- Sticky Web
+- Mirror Coat
+
+Gengar @ Focus Sash
+Ability: Cursed Body
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Hex
+- Sludge Wave
+- Icy Wind
+- Will-O-Wisp
+
+Charizard @ Charizardite X
+Ability: Blaze
+EVs: 12 HP / 27 Atk / 27 Spe
+Jolly Nature
+- Flare Blitz
+- Outrage
+- Thunder Punch
+- Swords Dance
+
+Mimikyu @ Spell Tag
+Ability: Disguise
+EVs: 1 HP / 32 Atk / 32 Def / 1 SpD
+Adamant Nature
+- Play Rough
+- Shadow Sneak
+- Shadow Claw
+- Swords Dance

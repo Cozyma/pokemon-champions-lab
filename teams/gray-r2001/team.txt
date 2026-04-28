@@ -1,0 +1,53 @@
+Archaludon @ Sitrus Berry
+Ability: Stamina
+EVs: 32 HP / 32 Def / 2 SpD
+Calm Nature
+- Draco Meteor
+- Flash Cannon
+- Thunder Wave
+- Stealth Rock
+
+Scizor @ Scizorite
+Ability: Technician
+EVs: 32 HP / 32 Atk / 2 Spe
+Adamant Nature
+- Bullet Punch
+- Close Combat
+- Knock Off
+- Swords Dance
+
+Charizard @ Charizardite Y
+Ability: Solar Power
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Flamethrower
+- Air Slash
+- Solar Beam
+- Nitro Charge
+
+Garchomp @ Choice Scarf
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Outrage
+- Stone Edge
+- Poison Jab
+
+Primarina @ Mystic Water
+Ability: Torrent
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Sparkling Aria
+- Moonblast
+- Encore
+- Aqua Jet
+
+Ceruledge @ Focus Sash
+Ability: Weak Armor
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Bitter Blade
+- Poltergeist
+- Close Combat
+- Shadow Sneak

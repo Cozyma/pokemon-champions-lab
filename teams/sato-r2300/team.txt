@@ -1,0 +1,53 @@
+Lopunny @ Lopunnite
+Ability: Cute Charm
+EVs: 32 Atk / 32 Spe
+Jolly Nature
+- Close Combat
+- Fake Out
+- Mach Punch
+- Triple Axel
+
+Primarina @ Chesto Berry
+Ability: Torrent
+EVs: 32 HP / 19 SpA / 14 SpD
+Calm Nature
+- Sparkling Aria
+- Moonblast
+- Aqua Jet
+- Rest
+
+Aegislash-Shield @ Leftovers
+Ability: Stance Change
+EVs: 26 HP / 32 Atk / 8 Spe
+Adamant Nature
+- Poltergeist
+- Iron Head
+- Shadow Sneak
+- King's Shield
+
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 31 HP / 12 Def / 5 SpA / 4 SpD / 14 Spe
+Modest Nature
+- Air Slash
+- Flamethrower
+- Ice Beam
+- Roost
+
+Glimmora @ Focus Sash
+Ability: Toxic Debris
+EVs: 32 SpA / 32 Spe
+Timid Nature
+- Sludge Wave
+- Mud Shot
+- Mortal Spin
+- Stealth Rock
+
+Corviknight @ Lum Berry
+Ability: Mirror Armor
+EVs: 16 HP / 18 Atk / 32 Spe
+Jolly Nature
+- Brave Bird
+- Bulk Up
+- Roost
+- Taunt

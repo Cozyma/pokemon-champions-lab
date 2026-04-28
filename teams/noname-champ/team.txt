@@ -1,0 +1,53 @@
+Gyarados @ Gyaradosite
+Ability: Intimidate
+EVs: 11 HP / 23 Atk / 32 Spe
+Jolly Nature
+- Waterfall
+- Ice Fang
+- Power Whip
+- Dragon Dance
+
+Aegislash-Shield @ Focus Sash
+Ability: Stance Change
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Poltergeist
+- Close Combat
+- Swords Dance
+- Shadow Sneak
+
+Garchomp @ Yache Berry
+Ability: Rough Skin
+EVs: 32 Atk / 1 Def / 1 SpD / 32 Spe
+Jolly Nature
+- Scale Shot
+- Earthquake
+- Swords Dance
+- Fire Fang
+
+Sylveon @ Pixie Plate
+Ability: Pixilate
+EVs: 31 HP / 24 SpA / 11 Spe
+Modest Nature
+- Hyper Voice
+- Misty Terrain
+- Quick Attack
+- Yawn
+
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 13 HP / 32 SpA / 21 Spe
+Modest Nature
+- Flamethrower
+- Thunderbolt
+- Extreme Speed
+- Draco Meteor
+
+Basculegion @ Choice Scarf
+Ability: Adaptability
+EVs: 32 Atk / 2 Def / 32 Spe
+Jolly Nature
+- Last Respects
+- Wave Crash
+- Flip Turn
+- Aqua Jet

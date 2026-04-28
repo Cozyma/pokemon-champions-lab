@@ -26,6 +26,8 @@ tags: [index, docs]
 | [heuristic-ai-spec.md](design/heuristic-ai-spec.md) | ヒューリスティックAI行動原則（技選択・交代判定・積み判断と改善候補） | design, AI, heuristic |
 | [showdown-request-spec.md](design/showdown-request-spec.md) | Showdown Request JSON 仕様書（全フィールド・ログ行・補完要件） | design, showdown, protocol |
 | [meta-analysis-reg-ma.md](design/meta-analysis-reg-ma.md) | チャンピオンズ Reg M-A メタ分析（1,092リプレイから使用率・勝率・コア分析） | design, meta, analysis |
+| [team-building-analysis.md](design/team-building-analysis.md) | チャンピオンズ Reg M-A 構築分析（1,136リプレイから構築・選出・先発・設置の詳細分析） | design, meta, analysis, team-building |
+| [top-team-collection.md](design/top-team-collection.md) | 上位構築コレクション（チャンピオン級/マスター級到達構築+攻略サイト推奨） | design, meta, collection |
 
 ### design/decisions/ — ADR（Architecture Decision Records）
 
@@ -38,7 +40,10 @@ tags: [index, docs]
 | [2026-04-17-ai-overhaul.md](design/decisions/2026-04-17-ai-overhaul.md) | ヒューリスティックAI大幅改善（メガシンカ・Showdownデータ・選出・回復/壁） | ADR, log, AI, heuristic |
 | [2026-04-17-integration-lessons.md](design/decisions/2026-04-17-integration-lessons.md) | 外部プロセス統合の教訓（Contract-First Integration原則） | ADR, lessons-learned, integration |
 | [2026-04-21-rl-phase0-start.md](design/decisions/2026-04-21-rl-phase0-start.md) | RL Phase 0開始（リファクタリング・リプレイ収集・模倣学習Stage 1） | ADR, log, RL, imitation-learning |
-| [2026-04-22-rl-iteration.md](design/decisions/2026-04-22-rl-iteration.md) | RL訓練イテレーション（MaskablePPO、101次元obs、71%達成、メタ分析） | ADR, log, RL, PPO |
+| [2026-04-22-rl-iteration.md](design/decisions/2026-04-22-rl-iteration.md) | RL訓練イテレーション（MaskablePPO、lr decay、78.6%→83%達成） | ADR, log, RL, PPO |
+| [2026-04-23-selection-rl-and-selfplay.md](design/decisions/2026-04-23-selection-rl-and-selfplay.md) | 選出RL実装・Self-Play設計（Body Press修正、選出RL 90%、Gen11 100%） | ADR, log, RL, selection, self-play |
+| [2026-04-24-action-theory.md](design/decisions/2026-04-24-action-theory.md) | 行動回数の収支理論と戦略フレーム（サイクル↔起点スペクトラム、リプレイ検証） | ADR, theory, strategy |
+| [2026-04-28-team-pool-and-obs-redesign.md](design/decisions/2026-04-28-team-pool-and-obs-redesign.md) | 対戦相手プール拡大(11→32)+観測空間再設計(選出360dim/バトル186dim) | ADR, log, RL, observation |
 
 > 設計判断が発生したら `design/decisions/YYYY-MM-DD-{topic}.md` に記録する。
 

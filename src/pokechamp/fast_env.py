@@ -56,15 +56,20 @@ N_TYPES = len(ALL_TYPES)
 # active: types(18) + stats(6) + hp(1) + status(1) = 26
 # moves: 4 * (bp + type_eff + stab + priority + category) = 20
 # opponent active: types(18) + stats(5) + hp(1) + status(1) + ability(3) = 28
+# opponent revealed moves: 4 * (bp + type_eff + stab + category) = 16
 # team hp: 3
-# opp team hp: 3
+# opp team (6 slots): 6 * (type1 + type2 + phys_bias + bulk + spe + revealed + hp + alive) = 48
+# own boosts: 7 (atk, def, spa, spd, spe, accuracy, evasion)
+# opp boosts: 7
 # weather: 8
+# terrain: 4 (electric, grassy, misty, psychic)
+# hazards: 6 (3 per side: rocks, spikes, tspikes)
 # mega flags: 2
 # force_switch: 1
 # trapped: 1
 # action mask: 9
-# Total: 101
-OBS_DIM = 101
+# Total: 186
+OBS_DIM = 186
 
 
 # ---------------------------------------------------------------------------
@@ -109,6 +114,139 @@ def _encode_status(status: str) -> float:
     """Encode status as 0-1."""
     status_map = {"": 0.0, "brn": 0.17, "frz": 0.33, "par": 0.5, "psn": 0.67, "tox": 0.67, "slp": 0.83, "fnt": 1.0}
     return status_map.get(status, 0.0)
+
+
+def _parse_revealed_moves(
+    log_lines: list[str], opp_id: str, current_opp_species: str,
+) -> list[str]:
+    """Extract opponent's revealed move IDs for current active pokemon."""
+    revealed: list[str] = []
+    tracking = False
+    norm_species = current_opp_species.lower().replace("-", "").replace(" ", "")
+    for line in log_lines:
+        # Start tracking when the current species switches in
+        if f"|switch|{opp_id}a:" in line or f"|drag|{opp_id}a:" in line:
+            sp = line.split("|")
+            if len(sp) > 3:
+                sw_species = sp[3].split(",")[0].strip()
+                if sw_species.lower().replace("-", "").replace(" ", "") == norm_species:
+                    tracking = True
+                    revealed = []
+                else:
+                    tracking = False
+        # Track moves used
+        if tracking and f"|move|{opp_id}a:" in line:
+            parts = line.split("|")
+            if len(parts) > 3:
+                move_name = parts[3].strip()
+                move_id = move_name.lower().replace(" ", "").replace("-", "")
+                if move_id not in revealed:
+                    revealed.append(move_id)
+    return revealed[:4]
+
+
+def _parse_boosts(log_lines: list[str], player_id: str) -> list[float]:
+    """Parse current stat boosts for player's active pokemon. Returns 7 floats."""
+    stat_keys = ["atk", "def", "spa", "spd", "spe", "accuracy", "evasion"]
+    boosts = {k: 0 for k in stat_keys}
+    for line in log_lines:
+        # Reset on switch-in
+        if f"|switch|{player_id}a:" in line or f"|drag|{player_id}a:" in line:
+            boosts = {k: 0 for k in stat_keys}
+        # |-boost|p1a: Garchomp|atk|2
+        if f"|-boost|{player_id}a:" in line:
+            parts = line.split("|")
+            # parts: ['', '-boost', 'p1a: Garchomp', 'atk', '2', ...]
+            if len(parts) >= 5:
+                stat = parts[3].strip().lower()
+                try:
+                    amount = int(parts[4].strip())
+                except (ValueError, IndexError):
+                    amount = 1
+                if stat in boosts:
+                    boosts[stat] = min(boosts[stat] + amount, 6)
+        # |-unboost|p1a: Garchomp|spe|1
+        if f"|-unboost|{player_id}a:" in line:
+            parts = line.split("|")
+            if len(parts) >= 5:
+                stat = parts[3].strip().lower()
+                try:
+                    amount = int(parts[4].strip())
+                except (ValueError, IndexError):
+                    amount = 1
+                if stat in boosts:
+                    boosts[stat] = max(boosts[stat] - amount, -6)
+        # |-setboost|p1a: Mimikyu|atk|6
+        if f"|-setboost|{player_id}a:" in line:
+            parts = line.split("|")
+            if len(parts) >= 5:
+                stat = parts[3].strip().lower()
+                try:
+                    amount = int(parts[4].strip())
+                except (ValueError, IndexError):
+                    amount = 0
+                if stat in boosts:
+                    boosts[stat] = max(min(amount, 6), -6)
+        # |-clearallboost  (no player specifier, clears all)
+        if "|-clearallboost" in line:
+            boosts = {k: 0 for k in stat_keys}
+        # |-clearnegativeboost|p1a: Species
+        if f"|-clearnegativeboost|{player_id}a:" in line:
+            for k in stat_keys:
+                if boosts[k] < 0:
+                    boosts[k] = 0
+        # |-clearpositiveboost|p1a: Species
+        if f"|-clearpositiveboost|{player_id}a:" in line:
+            for k in stat_keys:
+                if boosts[k] > 0:
+                    boosts[k] = 0
+    return [boosts[k] / 6.0 for k in stat_keys]
+
+
+def _parse_terrain(log_lines: list[str]) -> str:
+    """Parse current terrain from log lines."""
+    terrain = ""
+    for line in log_lines:
+        if "|-fieldstart|" in line:
+            field = line.split("|-fieldstart|")[1].split("|")[0].strip().lower()
+            if "terrain" in field:
+                terrain = field.replace("move: ", "").replace(" ", "").lower()
+        if "|-fieldend|" in line:
+            field = line.split("|-fieldend|")[1].split("|")[0].strip().lower()
+            if "terrain" in field:
+                terrain = ""
+    return terrain
+
+
+def _parse_hazards(log_lines: list[str], player_id: str) -> list[float]:
+    """Parse entry hazards for a given side. Returns 3 floats: rocks, spikes/3, tspikes/2."""
+    rocks = 0
+    spikes = 0
+    tspikes = 0
+    side_prefix = f"{player_id}: "
+    for line in log_lines:
+        if "|-sidestart|" in line and side_prefix in line:
+            field = line.split("|")
+            # |-sidestart|p1: Player1|Stealth Rock
+            for part in field:
+                low = part.strip().lower()
+                if low == "stealth rock" or low == "move: stealth rock":
+                    rocks = 1
+                elif low == "spikes" or low == "move: spikes":
+                    spikes = min(spikes + 1, 3)
+                elif low == "toxic spikes" or low == "move: toxic spikes":
+                    tspikes = min(tspikes + 1, 2)
+        if "|-sideend|" in line and side_prefix in line:
+            field = line.split("|")
+            for part in field:
+                low = part.strip().lower()
+                if low == "stealth rock" or low == "move: stealth rock":
+                    rocks = 0
+                elif low == "spikes" or low == "move: spikes":
+                    spikes = 0
+                elif low == "toxic spikes" or low == "move: toxic spikes":
+                    tspikes = 0
+    return [float(rocks), spikes / 3.0, tspikes / 2.0]
 
 
 def encode_request(
@@ -259,6 +397,22 @@ def encode_request(
     obs.append(has_immunity)
     obs.append(has_reduction)  # 3 dims
 
+    # --- Opponent revealed moves (16) ---
+    revealed_moves = _parse_revealed_moves(log_lines, opp_id, opp_species)
+    for i in range(N_MOVES):
+        if i < len(revealed_moves):
+            rm_id = revealed_moves[i]
+            rm_sd = showdown_data.get_move(rm_id)
+            rm_bp = (rm_sd.get("basePower", 0) if rm_sd else 0) / 250.0
+            rm_type = (rm_sd.get("type", "") if rm_sd else "").lower()
+            rm_eff = _calc_type_effectiveness(rm_type, types) / 4.0 if types else 0.25
+            rm_stab = 1.0 if rm_type in opp_types else 0.0
+            rm_cat_map = {"Physical": 1.0, "Special": 0.5, "Status": 0.0}
+            rm_cat = rm_cat_map.get(rm_sd.get("category", "") if rm_sd else "", 0.0)
+            obs.extend([rm_bp, rm_eff, rm_stab, rm_cat])
+        else:
+            obs.extend([0.0] * 4)
+
     # --- Team HP (3) ---
     for i in range(3):
         if i < len(team):
@@ -267,14 +421,89 @@ def encode_request(
         else:
             obs.append(0.0)
 
-    # --- Opponent team HP (3) - from log ---
-    opp_fainted = 0
+    # --- Opponent team slots (48) - 6 slots × 8 dims ---
+    # Parse opponent team from |poke| lines (team preview) and track HP/faint
+    opp_team_species: list[str] = []
     for line in log_lines:
+        if f"|poke|{opp_id}|" in line:
+            parts = line.split("|")
+            if len(parts) >= 4:
+                sp = parts[3].split(",")[0].strip()
+                opp_team_species.append(sp)
+
+    # Track which opponent pokemon have been seen in battle and their HP
+    opp_seen_hp: dict[str, float] = {}  # species_key -> hp_fraction
+    opp_fainted_set: set[str] = set()
+    for line in log_lines:
+        # Track switches (reveals pokemon)
+        if f"|switch|{opp_id}a:" in line or f"|drag|{opp_id}a:" in line:
+            parts = line.split("|")
+            if len(parts) > 3:
+                sw_sp = parts[3].split(",")[0].strip()
+                sw_key = sw_sp.lower().replace(" ", "").replace("-", "")
+                if sw_key not in opp_seen_hp:
+                    opp_seen_hp[sw_key] = 1.0
+                # Parse HP from condition in switch line
+                if len(parts) > 4:
+                    cond = parts[4].strip() if len(parts) > 4 else ""
+                    hp_m = re.match(r"(\d+)/(\d+)", cond)
+                    if hp_m:
+                        opp_seen_hp[sw_key] = int(hp_m.group(1)) / int(hp_m.group(2))
+        # Track damage/heal
+        if f"|-damage|{opp_id}a:" in line or f"|-heal|{opp_id}a:" in line:
+            parts = line.split("|")
+            if len(parts) > 3:
+                # Find current species from most recent switch
+                cur_key = opp_species.lower().replace(" ", "").replace("-", "") if opp_species else ""
+                hp_str = parts[3].strip().split()[0] if len(parts) > 3 else ""
+                hp_m = re.match(r"(\d+)/(\d+)", hp_str)
+                if hp_m and cur_key:
+                    opp_seen_hp[cur_key] = int(hp_m.group(1)) / int(hp_m.group(2))
+                elif "fnt" in hp_str and cur_key:
+                    opp_seen_hp[cur_key] = 0.0
+        # Track faints
         if f"|faint|{opp_id}a:" in line:
-            opp_fainted += 1
-    opp_alive = max(3 - opp_fainted, 0)
-    for i in range(3):
-        obs.append(1.0 if i < opp_alive else 0.0)  # rough estimate
+            parts = line.split("|")
+            if len(parts) > 2:
+                faint_name = parts[2].split(":")[1].strip() if ":" in parts[2] else ""
+                faint_key = faint_name.lower().replace(" ", "").replace("-", "")
+                opp_fainted_set.add(faint_key)
+                opp_seen_hp[faint_key] = 0.0
+
+    pokedex = showdown_data.load_pokedex()
+    for i in range(6):
+        if i < len(opp_team_species):
+            sp = opp_team_species[i]
+            sp_key = sp.lower().replace(" ", "").replace("-", "")
+            entry = pokedex.get(sp_key, {})
+            bs = entry.get("baseStats", {})
+            sp_types = _species_types(sp)
+
+            # type1_idx / 18, type2_idx / 18
+            t1_idx = TYPE_TO_IDX.get(sp_types[0], 0) / 18.0 if sp_types else 0.0
+            t2_idx = TYPE_TO_IDX.get(sp_types[1], 0) / 18.0 if len(sp_types) > 1 else 0.0
+            # physical_bias
+            atk_val = bs.get("atk", 80)
+            spa_val = bs.get("spa", 80)
+            phys_bias = max(min((atk_val - spa_val) / 200.0, 1.0), -1.0)
+            # bulk_rating
+            bulk = (bs.get("hp", 80) + bs.get("def", 80) + bs.get("spd", 80)) / 600.0
+            # base_spe
+            base_spe = bs.get("spe", 80) / 200.0
+            # revealed, hp, alive
+            revealed = 1.0 if sp_key in opp_seen_hp else 0.0
+            hp_frac = opp_seen_hp.get(sp_key, 1.0)
+            alive = 0.0 if sp_key in opp_fainted_set else 1.0
+
+            obs.extend([t1_idx, t2_idx, phys_bias, bulk, base_spe, revealed, hp_frac, alive])
+        else:
+            obs.extend([0.0] * 8)
+
+    # --- Own boosts (7) ---
+    obs.extend(_parse_boosts(log_lines, player_id))
+
+    # --- Opponent boosts (7) ---
+    obs.extend(_parse_boosts(log_lines, opp_id))
 
     # --- Weather (8) ---
     weather_types = ["sunnyday", "raindance", "sandstorm", "hail", "snowscape",
@@ -287,6 +516,16 @@ def encode_request(
             current_weather = "" if w == "none" else w
     for w in weather_types:
         obs.append(1.0 if current_weather == w else 0.0)
+
+    # --- Terrain (4) ---
+    terrain_types = ["electricterrain", "grassyterrain", "mistyterrain", "psychicterrain"]
+    current_terrain = _parse_terrain(log_lines)
+    for t in terrain_types:
+        obs.append(1.0 if current_terrain == t else 0.0)
+
+    # --- Entry hazards (6) ---
+    obs.extend(_parse_hazards(log_lines, player_id))   # own side: 3
+    obs.extend(_parse_hazards(log_lines, opp_id))       # opp side: 3
 
     # --- Mega flags (2) ---
     can_mega = bool(active_req.get("canMegaEvo"))
@@ -364,7 +603,9 @@ class FastBattleEnv(gym.Env):
         team_paste: str,
         opponent_paste: str | None = None,
         opponent_pool: list[str] | None = None,
+        team_pool: list[str] | None = None,
         format_id: str = "gen9championsbssregma",
+        selection_model=None,
     ):
         """Create battle environment.
 
@@ -373,15 +614,21 @@ class FastBattleEnv(gym.Env):
             opponent_paste: Single opponent team (fixed matchup)
             opponent_pool: List of opponent teams (random each episode)
                           If both are None, opponent_paste defaults to team_paste.
+            team_pool: List of p1 teams (random each episode).
+                      If None, team_paste is used every episode.
+            selection_model: Optional MaskablePPO for p1 team selection.
+                            If None, uses heuristic _choose_action.
         """
         super().__init__()
         self.team_paste = team_paste
+        self._team_pool = team_pool  # p1 team randomization
         self._opponent_pool = opponent_pool or ([opponent_paste] if opponent_paste else [team_paste])
         self.opponent_paste = self._opponent_pool[0]
         self.format_id = format_id
+        self._selection_model = selection_model
 
         self.observation_space = spaces.Box(
-            low=0.0, high=1.0, shape=(OBS_DIM,), dtype=np.float32,
+            low=-1.0, high=1.0, shape=(OBS_DIM,), dtype=np.float32,
         )
         self.action_space = spaces.Discrete(N_ACTIONS)
 
@@ -407,6 +654,11 @@ class FastBattleEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
+
+        # Randomize p1 team from pool
+        if self._team_pool and len(self._team_pool) > 1:
+            idx = int(self.np_random.integers(0, len(self._team_pool)))
+            self.team_paste = self._team_pool[idx]
 
         # Randomize opponent from pool
         if len(self._opponent_pool) > 1:
@@ -458,9 +710,18 @@ class FastBattleEnv(gym.Env):
         # Handle team preview for both sides
         requests = _parse_sideupdate_requests(output)
 
-        # p1 team preview: use heuristic selection
+        # p1 team preview: use selection model if available, else heuristic
         if "p1" in requests and requests["p1"].get("teamPreview"):
-            p1_action = _choose_action(requests["p1"], self._log_lines, "p1")
+            if self._selection_model is not None:
+                from pokechamp.selection_env import encode_team_preview, TEAM_COMBOS
+                sel_obs = encode_team_preview(requests["p1"], self._log_lines, "p1")
+                sel_action, _ = self._selection_model.predict(
+                    sel_obs, deterministic=True,
+                )
+                combo = TEAM_COMBOS[int(sel_action)]
+                p1_action = "team " + "".join(str(i + 1) for i in combo)
+            else:
+                p1_action = _choose_action(requests["p1"], self._log_lines, "p1")
             self._send(f">p1 {p1_action}")
 
         # p2 team preview
@@ -535,7 +796,11 @@ class FastBattleEnv(gym.Env):
         mega = can_mega and action < N_MOVES  # always mega when attacking
 
         cmd = action_to_command(action, request, mega=mega)
-        self._send(f">p1 {cmd}")
+        try:
+            self._send(f">p1 {cmd}")
+        except (BrokenPipeError, OSError):
+            # Showdown process died — treat as loss
+            return self._prev_obs, -1.0, True, False, {"turn": self._turn, "winner": "p2"}
 
         # Advance to next p1 request (p2 plays automatically)
         obs = self._advance_to_p1_request()
