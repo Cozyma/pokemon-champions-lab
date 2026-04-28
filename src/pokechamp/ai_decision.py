@@ -18,6 +18,7 @@ from pokechamp.ai_scoring import (
     _hp_pct,
     _is_fainted,
     _parse_current_hp,
+    _parse_max_hp,
     _priority_can_ko,
     _score_move,
     _stat_estimation,
@@ -193,13 +194,23 @@ def _should_switch_out(
         my_def = active_stats.get("def", 100)
         my_spd = active_stats.get("spd", 100)
         my_current_hp = _parse_current_hp(active_pokemon)
+        my_max_hp = _parse_max_hp(active_pokemon)
         max_incoming = _estimate_opponent_max_damage(
             opp_species, opp_types, my_def, my_spd, active_types,
             confirmed_ability=opponent.get("ability", ""),
         )
         if max_incoming > 0 and my_current_hp > 0:
+            # --- Sacrifice check: low HP → stay and attack rather than switch ---
+            # Switching wastes the switch-in's HP (takes a free hit).
+            # If we're nearly dead, it's better to attack/sack and bring
+            # the next pokemon in at full HP.
+            hp_ratio = my_current_hp / my_max_hp if my_max_hp > 0 else 0
+            if hp_ratio <= 0.20 and max_incoming >= my_current_hp:
+                # We're dying either way — don't switch, sack this pokemon.
+                return False
+
             if max_incoming >= my_current_hp:
-                return True  # confirmed OHKO
+                return True  # confirmed OHKO (but we have enough HP to justify saving)
             my_spe = active_stats.get("spe", 100)
             opp_spe = _estimate_opponent_speed(opp_species)
             if max_incoming * 2 >= my_current_hp and opp_spe > my_spe:
@@ -318,11 +329,24 @@ def _select_team_preview(
         # Fallback: pick first max_size
         return list(range(1, min(max_size, len(team)) + 1))
 
-    # Get types for our team and opponent
+    # Get types and move types for our team
     my_pokemon: list[tuple[int, list[str]]] = []
+    my_move_types: list[list[str]] = []  # move types per pokemon (for coverage calc)
     for i, mon in enumerate(team):
         types = _get_pokemon_types(mon)
         my_pokemon.append((i, types))
+        # Collect actual move types from the pokemon's moveset
+        mon_move_types: list[str] = []
+        for move_id in (mon.get("moves") or []):
+            if isinstance(move_id, dict):
+                move_id = move_id.get("id", "")
+            sd = showdown_data.get_move(str(move_id))
+            if sd:
+                mt = sd.get("type", "").lower()
+                bp = sd.get("basePower", 0)
+                if mt and bp > 0 and mt not in mon_move_types:
+                    mon_move_types.append(mt)
+        my_move_types.append(mon_move_types)
 
     opp_types_list: list[list[str]] = []
     opp_abilities_list: list[list[str]] = []  # abilities per opponent pokemon
@@ -366,19 +390,20 @@ def _select_team_preview(
             worst_vs_this_opp = 10.0  # for Shadow Tag check
             # Track: can opponent hit all 3 of ours super-effectively?
             min_incoming = 10.0  # lowest eff opponent deals to any of our 3
-            for my_t in combo_types:
+            for ci_idx, my_t in enumerate(combo_types):
                 if not my_t:
                     continue
-                # Offensive: best type eff we deal
+                # Offensive: use actual move types if available, fall back to STAB types
+                move_types = my_move_types[combo[ci_idx]]
+                coverage_types = move_types if move_types else my_t
                 atk_eff = max(
-                    (_calc_type_effectiveness(t, opp_t) for t in my_t),
+                    (_calc_type_effectiveness(t, opp_t) for t in coverage_types),
                     default=1.0,
                 )
                 # Adjust for opponent's damage reduction abilities
                 if oi in opp_damage_reducers:
-                    for my_atk_type in my_t:
+                    for my_atk_type in coverage_types:
                         if my_atk_type in opp_damage_reducers[oi]:
-                            # Our best STAB is reduced
                             atk_eff *= opp_damage_reducers[oi][my_atk_type]
 
                 # Defensive: best type eff they deal to us
@@ -417,7 +442,8 @@ def _select_team_preview(
                     for mi, my_t in enumerate(combo_types):
                         if not my_t or not opp_t:
                             continue
-                        atk = max((_calc_type_effectiveness(t, opp_t) for t in my_t), default=1.0)
+                        m_types = my_move_types[combo[mi]] or my_t
+                        atk = max((_calc_type_effectiveness(t, opp_t) for t in m_types), default=1.0)
                         dfe = max((_calc_type_effectiveness(t, my_t) for t in opp_t), default=1.0)
                         this_matchup = atk - dfe
                         if this_matchup < -1.0:
@@ -467,6 +493,11 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
     moves = active_req.get("moves", [])
     team = request.get("side", {}).get("pokemon", [])
     active_pokemon = next((p for p in team if p.get("active")), {})
+
+    # Ensure active pokemon has types (request JSON may omit them)
+    if not active_pokemon.get("types"):
+        active_pokemon = dict(active_pokemon)  # copy to avoid mutating request
+        active_pokemon["types"] = _get_pokemon_types(active_pokemon)
 
     # Derive stat ratios for physical/special scoring
     active_stats = active_pokemon.get("stats", {})
@@ -718,8 +749,15 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                     continue
 
                 if has_recovery and boosted_incoming < recovery_amount:
-                    # Setup + recovery = wall. Go for it.
-                    return f"move {moves.index(move) + 1}{mega_suffix}"
+                    # Setup + recovery = wall — but only if we can actually damage the opponent.
+                    # If our best move scores 0 (e.g. Fighting→Ghost immune), walling is pointless.
+                    best_atk_after = max(
+                        (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
+                         for m in available_moves),
+                        default=0.0,
+                    )
+                    if best_atk_after > 0:
+                        return f"move {moves.index(move) + 1}{mega_suffix}"
 
                 # Check: does setup let us survive AND hit harder?
                 # Only if HP is high enough to take a hit during setup
@@ -729,7 +767,14 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                     for stat, val in boosts.items() if val > 0
                 )
                 if not already_maxed and active_hp_for_setup >= 60.0:
-                    return f"move {moves.index(move) + 1}{mega_suffix}"
+                    # Don't setup if we can't damage the opponent at all
+                    best_atk_now = max(
+                        (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
+                         for m in available_moves),
+                        default=0.0,
+                    )
+                    if best_atk_now > 0:
+                        return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # "Win the slugfest" check: if our best attack can KO before they KO us,
         # skip recovery and go for the kill. This triggers after setup is complete.
@@ -947,20 +992,36 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
         if scored:
             best_move, best_score = max(scored, key=lambda x: x[1])
             if best_score > 0:
-                # Check if opponent has recovery and we can't break through
-                # If opponent used recovery AND our best damage < ~50% of their HP,
-                # they'll just recover it back — switch to something that can break them
-                opp_has_recovery = _opponent_used_recovery(log_lines, player_id)
-                if opp_has_recovery and available_switches and not in_switch_loop:
+                # Check if we can't meaningfully damage the opponent — switch if possible
+                if available_switches and not in_switch_loop:
                     opp_hp_pct = opp.get("hp_pct", 100.0)
-                    # Rough estimate: if our best score is low relative to opponent's bulk,
-                    # we can't 2HKO through recovery. Use score threshold:
                     # A move that 2HKOs typically scores 150+ (80bp * STAB * ratio * SE).
-                    # If best_score < 80, we likely can't break through recovery.
-                    if best_score < 80 and opp_hp_pct > 50:
-                        switch_cmd = _choose_best_switch(request, opp)
-                        if switch_cmd:
-                            return switch_cmd
+                    # If best_score < 40, we have no real offensive pressure.
+                    # If best_score < 80 and opponent has recovery, they'll just heal it back.
+                    opp_has_recovery = _opponent_used_recovery(log_lines, player_id)
+                    should_bail = False
+                    if best_score < 40 and opp_hp_pct > 30:
+                        should_bail = True  # no effective attacks at all
+                    elif opp_has_recovery and best_score < 80 and opp_hp_pct > 50:
+                        should_bail = True  # can't break through recovery
+                    if should_bail:
+                        # Only switch if a teammate has a meaningfully better matchup.
+                        # Prevents pointless back-and-forth when nobody can break through.
+                        my_matchup = _estimate_matchup(
+                            active_pokemon.get("types", []), active_stats, _hp_pct(active_pokemon),
+                            opp.get("types", []), opp_stats, opp.get("hp_pct", 100.0),
+                        )
+                        switch_improves = any(
+                            _estimate_matchup(
+                                _get_pokemon_types(sw), sw.get("stats", {}), _hp_pct(sw),
+                                opp.get("types", []), opp_stats, opp.get("hp_pct", 100.0),
+                            ) > my_matchup + 0.5
+                            for sw in available_switches
+                        )
+                        if switch_improves:
+                            switch_cmd = _choose_best_switch(request, opp)
+                            if switch_cmd:
+                                return switch_cmd
                 return f"move {moves.index(best_move) + 1}{mega_suffix}"
             # All moves score 0 (immune/no effect): switch if possible (unless looping)
             if available_switches and not in_switch_loop:
