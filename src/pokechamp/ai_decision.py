@@ -767,9 +767,11 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                 if has_recovery and boosted_incoming < recovery_amount:
                     # Setup + recovery = wall — but only if we can actually damage the opponent.
                     # If our best move scores 0 (e.g. Fighting→Ghost immune), walling is pointless.
+                    # Exclude pivot moves (U-turn etc.) — they escape, not KO.
+                    _pivot_ids_setup = {"uturn", "voltswitch", "flipturn"}
                     best_atk_after = max(
                         (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
-                         for m in available_moves),
+                         for m in available_moves if m.get("id", "") not in _pivot_ids_setup),
                         default=0.0,
                     )
                     if best_atk_after > 0:
@@ -783,10 +785,13 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                     for stat, val in boosts.items() if val > 0
                 )
                 if not already_maxed and active_hp_for_setup >= 60.0:
-                    # Don't setup if we can't damage the opponent at all
+                    # Don't setup if we can't damage the opponent at all.
+                    # Exclude pivot moves — if the only "attack" is U-turn,
+                    # we'd just escape anyway, so setup is pointless.
+                    _pivot_ids_setup2 = {"uturn", "voltswitch", "flipturn"}
                     best_atk_now = max(
                         (_score_move(m, active_pokemon, opp, physical_ratio, special_ratio, active_boosts)
-                         for m in available_moves),
+                         for m in available_moves if m.get("id", "") not in _pivot_ids_setup2),
                         default=0.0,
                     )
                     if best_atk_now <= 0:
