@@ -941,9 +941,10 @@ def test_choose_action_skips_stealth_rock_when_already_set():
 
     log_lines = [
         # Three p2 switches seen so opp_remaining >= 3 and hazard setup block fires
-        "|switch|p2a: Corviknight|Corviknight, L50, F|173/173",
-        "|switch|p2a: Dracovish|Dracovish, L50|155/155",
-        "|switch|p2a: Togekiss|Togekiss, L50, F|177/177",
+        # Use Normal/Ground types so Garchomp's Earthquake is always effective
+        "|switch|p2a: Snorlax|Snorlax, L50, M|267/267",
+        "|switch|p2a: Diggersby|Diggersby, L50, M|161/161",
+        "|switch|p2a: Kangaskhan|Kangaskhan, L50, F|203/203",
         "|-sidestart|p2: p2|Stealth Rock",
     ]
     request = {
@@ -969,9 +970,9 @@ def test_choose_action_skips_stealth_rock_when_already_set():
                     "stats": {"atk": 182, "def": 115, "spa": 90, "spd": 105, "spe": 169},
                     "boosts": {},
                 },
-                {"ident": "p1: Corviknight", "active": False, "condition": "173/173",
+                {"ident": "p1: Corviknight", "active": False, "condition": "0 fnt",
                  "types": ["steel", "flying"], "stats": {"spe": 130}},
-                {"ident": "p1: Primarina", "active": False, "condition": "155/155",
+                {"ident": "p1: Primarina", "active": False, "condition": "0 fnt",
                  "types": ["water", "fairy"], "stats": {"spe": 112}},
             ]
         },

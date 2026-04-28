@@ -21,12 +21,25 @@ def _get_species_types(species_raw: str) -> list[str]:
     key = species_raw.lower().replace(" ", "-")
     if key in _SPECIES_TYPES_CACHE:
         return _SPECIES_TYPES_CACHE[key]
+    result: list[str] = []
+    # Try legacy loader first
     try:
         from pokechamp.loader import load_pokemon
         poke = load_pokemon(key)
         result = [t.value for t in poke.types]
     except Exception:
-        result = []
+        pass
+    # Fallback to Showdown pokedex (handles Aegislash, megas, etc.)
+    if not result:
+        try:
+            from pokechamp import showdown_data
+            pokedex = showdown_data.load_pokedex()
+            sd_key = species_raw.lower().replace(" ", "").replace("-", "")
+            entry = pokedex.get(sd_key)
+            if entry:
+                result = [t.lower() for t in entry.get("types", [])]
+        except Exception:
+            pass
     _SPECIES_TYPES_CACHE[key] = result
     return result
 
