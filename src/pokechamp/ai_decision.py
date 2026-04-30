@@ -752,12 +752,88 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
                         continue
                     return f"move {moves.index(move) + 1}{mega_suffix}"
 
+        # Pre-compute: do we have a recovery move?
+        has_recovery = any(
+            showdown_data.get_move(m.get("id", "")) and
+            showdown_data.get_move(m.get("id", "")).get("isHeal") and
+            showdown_data.get_move(m.get("id", "")).get("category") == "Status" and
+            showdown_data.get_move(m.get("id", "")).get("target") == "self"
+            for m in available_moves
+        )
+
         # Hazard removal
         my_conditions = _parse_side_conditions(log_lines, player_id)
         if my_conditions:
             for i, move in enumerate(available_moves):
                 if move.get("id") in ("rapidspin", "defog"):
                     return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # =================================================================
+        # Status moves: Toxic and recovery (action-turn theory)
+        #
+        # Toxic: 1-turn investment → opponent takes increasing residual damage
+        #   each turn (1/16, 2/16, 3/16...). With recovery, we outlast them.
+        #   Worth using when: opponent isn't already poisoned, we can survive
+        #   long enough for poison to KO (i.e., we have recovery or high bulk).
+        #
+        # Recovery: extends our action turns. Use when HP is below threshold
+        #   and incoming damage is survivable.
+        #
+        # Haze: resets opponent boosts. Use when opponent has boosted.
+        # =================================================================
+
+        # --- Toxic: apply poison if we can wall the opponent ---
+        # Parse opponent status from log
+        opp_status = ""
+        opp_id_status = "p2" if player_id == "p1" else "p1"
+        for line in reversed(log_lines):
+            if f"|switch|{opp_id_status}a:" in line or f"|drag|{opp_id_status}a:" in line:
+                break  # status resets on switch
+            if f"|-status|{opp_id_status}a:" in line:
+                parts = line.split("|")
+                if len(parts) > 3:
+                    opp_status = parts[3].strip()
+                break
+        if not opp_status:  # opponent not already statused
+            for move in available_moves:
+                if move.get("id") in ("toxic", "willowisp"):
+                    move_sd = showdown_data.get_move(move.get("id", ""))
+                    if not move_sd:
+                        continue
+                    # Only use if we can survive multiple turns (wall check)
+                    if max_incoming_setup > 0 and my_hp_abs > 0:
+                        survive_turns = _count_action_turns(
+                            my_hp_abs, max_incoming_setup,
+                            my_max_hp_abs // 2 if has_recovery else 0,
+                        )
+                        if survive_turns >= 4:
+                            # We can wall → poison is the best win condition
+                            return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # --- Haze: reset opponent boosts ---
+        if any(v > 0 for v in opp_boosts.values()):
+            for move in available_moves:
+                if move.get("id") == "haze":
+                    return f"move {moves.index(move) + 1}{mega_suffix}"
+
+        # --- Recovery: heal when HP is low and we can survive ---
+        if has_recovery and my_max_hp_abs > 0:
+            hp_pct = (my_hp_abs / my_max_hp_abs * 100) if my_max_hp_abs > 0 else 100
+            recovery_amount = my_max_hp_abs // 2
+            # Use recovery if: HP below 50% AND incoming won't KO us next turn
+            # OR HP below 70% AND we're walling (incoming < recovery)
+            is_walling = max_incoming_setup < recovery_amount
+            should_recover = (
+                (hp_pct < 50 and max_incoming_setup < my_hp_abs)
+                or (hp_pct < 70 and is_walling)
+            )
+            if should_recover:
+                for move in available_moves:
+                    sd_heal = showdown_data.get_move(move.get("id", ""))
+                    if (sd_heal and sd_heal.get("isHeal")
+                            and sd_heal.get("category") == "Status"
+                            and sd_heal.get("target") == "self"):
+                        return f"move {moves.index(move) + 1}{mega_suffix}"
 
         # =================================================================
         # Action-turn accounting: compare "attack now" vs "setup first"
@@ -772,14 +848,7 @@ def _choose_action(request: dict, log_lines: list[str], player_id: str) -> str:
         _pivot_ids_setup = {"uturn", "voltswitch", "flipturn"}
         survives_setup_turn = (max_incoming_setup < my_hp_abs) if my_hp_abs > 0 else False
 
-        # Detect recovery move and amount
-        has_recovery = any(
-            showdown_data.get_move(m.get("id", "")) and
-            showdown_data.get_move(m.get("id", "")).get("isHeal") and
-            showdown_data.get_move(m.get("id", "")).get("category") == "Status" and
-            showdown_data.get_move(m.get("id", "")).get("target") == "self"
-            for m in available_moves
-        )
+        # Recovery detection (already computed above)
         recovery_per_turn = my_max_hp_abs // 2 if (my_max_hp_abs > 0 and has_recovery) else 0
 
         # Current incoming damage (adjusted for existing boosts)
