@@ -57,7 +57,7 @@ N_TYPES = len(ALL_TYPES)
 # moves: 4 * (bp + type_eff + stab + priority + category) = 20
 # opponent active: types(18) + stats(5) + hp(1) + status(1) + ability(3) = 28
 # opponent revealed moves: 4 * (bp + type_eff + stab + category) = 16
-# team hp: 3
+# bench (2 slots): 2 * (types(18) + stats(6) + hp(1) + move_eff(4)) = 58
 # opp team (6 slots): 6 * (type1 + type2 + phys_bias + bulk + spe + revealed + hp + alive) = 48
 # own boosts: 7 (atk, def, spa, spd, spe, accuracy, evasion)
 # opp boosts: 7
@@ -68,8 +68,8 @@ N_TYPES = len(ALL_TYPES)
 # force_switch: 1
 # trapped: 1
 # action mask: 9
-# Total: 186
-OBS_DIM = 186
+# Total: 241
+OBS_DIM = 241
 
 
 # ---------------------------------------------------------------------------
@@ -413,13 +413,47 @@ def encode_request(
         else:
             obs.extend([0.0] * 4)
 
-    # --- Team HP (3) ---
-    for i in range(3):
-        if i < len(team):
-            hp_f, _ = _parse_condition(team[i].get("condition", "100/100"))
-            obs.append(hp_f)
+    # --- Bench pokemon (58) - 2 slots × 29 dims ---
+    # Encode non-active team members with full info for switch decisions
+    bench = [p for p in team if not p.get("active") and p.get("condition", "") != "0 fnt"]
+    for i in range(2):
+        if i < len(bench):
+            b_mon = bench[i]
+            # Types (18)
+            b_species = b_mon.get("ident", "").split(": ", 1)[-1] if b_mon else ""
+            b_types = _species_types(b_species)
+            obs.extend(_encode_types_onehot(b_types))
+            # Stats (6): atk/def/spa/spd/spe/hp normalized
+            b_stats = b_mon.get("stats", {})
+            obs.append(b_stats.get("atk", 100) / 200.0)
+            obs.append(b_stats.get("def", 100) / 200.0)
+            obs.append(b_stats.get("spa", 100) / 200.0)
+            obs.append(b_stats.get("spd", 100) / 200.0)
+            obs.append(b_stats.get("spe", 100) / 200.0)
+            # HP stat from condition (max HP)
+            b_cond = b_mon.get("condition", "100/100")
+            b_hp_frac, _ = _parse_condition(b_cond)
+            b_max_hp_m = re.match(r"\d+/(\d+)", b_cond)
+            b_max_hp = int(b_max_hp_m.group(1)) / 300.0 if b_max_hp_m else 0.5
+            obs.append(b_max_hp)
+            # Current HP fraction (1)
+            obs.append(b_hp_frac)
+            # Move effectiveness vs opponent active (4)
+            b_moves = b_mon.get("moves", [])
+            for mi in range(4):
+                if mi < len(b_moves):
+                    m_id = b_moves[mi] if isinstance(b_moves[mi], str) else b_moves[mi].get("id", "")
+                    m_sd = showdown_data.get_move(m_id)
+                    if m_sd and m_sd.get("basePower", 0) > 0:
+                        m_type = m_sd.get("type", "").lower()
+                        m_eff = _calc_type_effectiveness(m_type, opp_types) / 4.0 if opp_types else 0.25
+                        obs.append(m_eff)
+                    else:
+                        obs.append(0.0)
+                else:
+                    obs.append(0.0)
         else:
-            obs.append(0.0)
+            obs.extend([0.0] * 29)
 
     # --- Opponent team slots (48) - 6 slots × 8 dims ---
     # Parse opponent team from |poke| lines (team preview) and track HP/faint
