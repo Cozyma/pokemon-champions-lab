@@ -46,6 +46,7 @@ tags: [index, docs]
 | [2026-04-28-team-pool-and-obs-redesign.md](design/decisions/2026-04-28-team-pool-and-obs-redesign.md) | 対戦相手プール拡大(11→32)+観測空間再設計(選出360dim/バトル186dim) | ADR, log, RL, observation |
 | [2026-04-28-heuristic-bugfix-and-action-turn.md](design/decisions/2026-04-28-heuristic-bugfix-and-action-turn.md) | ヒューリスティクスバグ修正+行動回数理論で積み判定を統一(49%→63%) | ADR, log, heuristic, action-turn |
 | [2026-04-30-heuristic-status-moves.md](design/decisions/2026-04-30-heuristic-status-moves.md) | 状態技(Toxic/回復/Haze)対応+全チーム横断スキャン(71%ベースライン確認) | ADR, log, heuristic, status |
+| [2026-04-30-battle-rl-and-quality-metrics.md](design/decisions/2026-04-30-battle-rl-and-quality-metrics.md) | バトルRL再訓練(57%頭打ち)・品質指標導入・報酬設計 | ADR, log, RL, metrics, reward |
 
 > 設計判断が発生したら `design/decisions/YYYY-MM-DD-{topic}.md` に記録する。
 
