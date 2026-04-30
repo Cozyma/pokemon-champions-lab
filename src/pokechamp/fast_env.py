@@ -67,9 +67,10 @@ N_TYPES = len(ALL_TYPES)
 # mega flags: 2
 # force_switch: 1
 # trapped: 1
+# inference signals: 5 (speed order x3, overall speed ratio, current matchup speed)
 # action mask: 9
-# Total: 273
-OBS_DIM = 273
+# Total: 278
+OBS_DIM = 278
 
 
 # ---------------------------------------------------------------------------
@@ -637,6 +638,57 @@ def encode_request(
 
     # --- Trapped (1) ---
     obs.append(1.0 if is_trapped else 0.0)
+
+    # --- Opponent inference signals (5) ---
+    # Materials for inferring opponent's item/EV spread from battle observations.
+    # 1-3: Move order last 3 turns (1.0 = we moved first, 0.0 = opp first, 0.5 = unknown)
+    # 4: Times opponent moved first overall (ratio) — speed tier inference
+    # 5: Opponent moved first THIS matchup (since switch-in) — current speed comparison
+    #
+    # Simple approach: scan log for move line order within each turn.
+    we_first_count = 0
+    opp_first_count = 0
+    recent_order = [0.5, 0.5, 0.5]
+    recent_idx = 0
+    i_line = 0
+    while i_line < len(log_lines):
+        line = log_lines[i_line]
+        if "|turn|" in line:
+            # Scan moves in this turn
+            our_pos, opp_pos = -1, -1
+            for j in range(i_line + 1, min(i_line + 20, len(log_lines))):
+                if "|turn|" in log_lines[j]:
+                    break
+                if f"|move|{player_id}a:" in log_lines[j] and our_pos < 0:
+                    our_pos = j
+                if f"|move|{opp_id}a:" in log_lines[j] and opp_pos < 0:
+                    opp_pos = j
+            if our_pos > 0 and opp_pos > 0:
+                we_went_first = our_pos < opp_pos
+                if we_went_first:
+                    we_first_count += 1
+                else:
+                    opp_first_count += 1
+                if recent_idx < 3:
+                    recent_order[recent_idx] = 1.0 if we_went_first else 0.0
+                    recent_idx += 1
+        i_line += 1
+    obs.extend(recent_order)  # 3 dims
+    total_order = we_first_count + opp_first_count
+    obs.append(we_first_count / max(total_order, 1))  # 1 dim: overall speed win ratio
+
+    # Current matchup speed: did we move first since last switch-in?
+    current_matchup_first = 0.5
+    for line in reversed(log_lines):
+        if f"|switch|{player_id}a:" in line or f"|switch|{opp_id}a:" in line:
+            break
+        if f"|move|{player_id}a:" in line:
+            current_matchup_first = 1.0
+            break
+        if f"|move|{opp_id}a:" in line:
+            current_matchup_first = 0.0
+            break
+    obs.append(current_matchup_first)  # 1 dim
 
     # --- Switch mask ---
     if is_force_switch or (not is_trapped):
