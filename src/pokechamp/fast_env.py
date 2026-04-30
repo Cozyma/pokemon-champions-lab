@@ -54,7 +54,7 @@ N_TYPES = len(ALL_TYPES)
 
 # Observation dimensions:
 # active: types(18) + stats(6) + hp(1) + status(1) + item(8) = 34
-# moves: 4 * (bp + type_eff + stab + priority + category) = 20
+# moves: 4 * (bp + type_eff + stab + priority + category + is_setup + boost_total + is_heal + is_debuff) = 36
 # opponent active: types(18) + stats(5) + hp(1) + status(1) + ability(3) + item(8) = 36
 # opponent revealed moves: 4 * (bp + type_eff + stab + category) = 16
 # bench (2 slots): 2 * (types(18) + stats(6) + hp(1) + move_eff(4) + item(8)) = 74
@@ -69,8 +69,8 @@ N_TYPES = len(ALL_TYPES)
 # trapped: 1
 # inference signals: 5 (speed order x3, overall speed ratio, current matchup speed)
 # action mask: 9
-# Total: 278
-OBS_DIM = 278
+# Total: 294
+OBS_DIM = 294
 
 
 # ---------------------------------------------------------------------------
@@ -368,10 +368,46 @@ def encode_request(
             pri = max(min(sd.get("priority", 0) if sd else 0, 5), -5) / 5.0
             cat_map = {"Physical": 1.0, "Special": 0.5, "Status": 0.0}
             cat = cat_map.get(sd.get("category", "") if sd else "", 0.0)
-            obs.extend([bp, eff, stab, pri, cat])
+            # Status move features
+            is_setup = 0.0     # self-boost (Swords Dance, Iron Defense, etc.)
+            boost_total = 0.0  # total boost stages / 6
+            is_heal = 0.0      # recovery (Recover, Roost, etc.)
+            is_debuff = 0.0    # opponent debuff or status (Toxic, Will-O-Wisp, Icy Wind, etc.)
+            if sd:
+                boosts = sd.get("boosts") or {}
+                target = sd.get("target", "")
+                if boosts and target == "self":
+                    positive_sum = sum(v for v in boosts.values() if v > 0)
+                    if positive_sum > 0:
+                        is_setup = 1.0
+                        boost_total = min(positive_sum / 6.0, 1.0)
+                # Debuff: moves that lower opponent stats or inflict status
+                if boosts and target in ("normal", "allAdjacentFoes", "allAdjacent"):
+                    negative_sum = sum(-v for v in boosts.values() if v < 0)
+                    if negative_sum > 0:
+                        is_debuff = 1.0
+                if sd.get("status") in ("brn", "par", "psn", "tox", "slp", "frz"):
+                    is_debuff = 1.0
+                # Secondary effect debuffs (Icy Wind spe-1, etc.)
+                for sec in (sd.get("secondaries") or []):
+                    if sec.get("boosts"):
+                        neg = sum(-v for v in sec["boosts"].values() if v < 0)
+                        if neg > 0:
+                            is_debuff = 1.0
+                # Single secondary (some moves use "secondary" not "secondaries")
+                single_sec = sd.get("secondary") or {}
+                if single_sec.get("boosts"):
+                    neg = sum(-v for v in single_sec["boosts"].values() if v < 0)
+                    if neg > 0:
+                        is_debuff = 1.0
+                if single_sec.get("status") in ("brn", "par", "psn", "tox", "slp", "frz"):
+                    is_debuff = 1.0
+                if sd.get("isHeal") and sd.get("category") == "Status":
+                    is_heal = 1.0
+            obs.extend([bp, eff, stab, pri, cat, is_setup, boost_total, is_heal, is_debuff])
             mask[i] = 1.0
         else:
-            obs.extend([0.0] * 5)
+            obs.extend([0.0] * 9)
 
     # --- Opponent active (28) ---
     obs.extend(_encode_types_onehot(opp_types))  # 18
