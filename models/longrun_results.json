@@ -1,260 +1,445 @@
 [
   {
     "steps": 2000,
-    "elapsed_min": 2.3,
-    "overall_win_rate": 0.371,
-    "total_wins": 13,
-    "total_games": 35,
+    "elapsed_min": 3.8,
+    "overall_win_rate": 0.629,
+    "total_wins": 44,
+    "total_games": 70,
     "per_opponent": {
       "example-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-gengar-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 1,
+        "games": 10
       },
       "mega-kangaskhan-team": {
-        "wins": 3,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-scizor-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 6,
+        "games": 10
       },
       "mega-venusaur-charizardx": {
-        "wins": 5,
-        "games": 5
+        "wins": 8,
+        "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 0,
-        "games": 5
+        "wins": 9,
+        "games": 10
       },
       "screenshot-team": {
         "wins": 0,
-        "games": 5
+        "games": 10
       }
     }
   },
   {
     "steps": 4000,
-    "elapsed_min": 5.3,
-    "overall_win_rate": 0.543,
-    "total_wins": 19,
-    "total_games": 35,
+    "elapsed_min": 8.7,
+    "overall_win_rate": 0.757,
+    "total_wins": 53,
+    "total_games": 70,
     "per_opponent": {
       "example-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-gengar-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 7,
+        "games": 10
       },
       "mega-kangaskhan-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-scizor-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 5,
+        "games": 10
       },
       "mega-venusaur-charizardx": {
-        "wins": 0,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 5,
-        "games": 5
+        "wins": 2,
+        "games": 10
       },
       "screenshot-team": {
-        "wins": 4,
-        "games": 5
+        "wins": 9,
+        "games": 10
       }
     }
   },
   {
     "steps": 6000,
-    "elapsed_min": 8.2,
-    "overall_win_rate": 0.514,
-    "total_wins": 18,
-    "total_games": 35,
+    "elapsed_min": 13.4,
+    "overall_win_rate": 0.843,
+    "total_wins": 59,
+    "total_games": 70,
     "per_opponent": {
       "example-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-gengar-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-kangaskhan-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-scizor-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 2,
+        "games": 10
       },
       "mega-venusaur-charizardx": {
-        "wins": 2,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 5,
-        "games": 5
+        "wins": 7,
+        "games": 10
       },
       "screenshot-team": {
-        "wins": 1,
-        "games": 5
+        "wins": 10,
+        "games": 10
       }
     }
   },
   {
     "steps": 8000,
-    "elapsed_min": 11.2,
-    "overall_win_rate": 0.457,
-    "total_wins": 16,
-    "total_games": 35,
+    "elapsed_min": 17.8,
+    "overall_win_rate": 0.843,
+    "total_wins": 59,
+    "total_games": 70,
     "per_opponent": {
       "example-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-gengar-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-kangaskhan-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-scizor-team": {
         "wins": 0,
-        "games": 5
+        "games": 10
       },
       "mega-venusaur-charizardx": {
-        "wins": 1,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 5,
-        "games": 5
+        "wins": 9,
+        "games": 10
       },
       "screenshot-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 10,
+        "games": 10
       }
     }
   },
   {
     "steps": 10000,
-    "elapsed_min": 14.1,
-    "overall_win_rate": 0.714,
-    "total_wins": 25,
-    "total_games": 35,
+    "elapsed_min": 22.3,
+    "overall_win_rate": 0.943,
+    "total_wins": 66,
+    "total_games": 70,
     "per_opponent": {
       "example-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-gengar-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-kangaskhan-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-scizor-team": {
-        "wins": 3,
-        "games": 5
+        "wins": 6,
+        "games": 10
       },
       "mega-venusaur-charizardx": {
-        "wins": 4,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "screenshot-team": {
-        "wins": 3,
-        "games": 5
+        "wins": 10,
+        "games": 10
       }
     }
   },
   {
     "steps": 12000,
-    "elapsed_min": 17.4,
-    "overall_win_rate": 0.629,
-    "total_wins": 22,
-    "total_games": 35,
+    "elapsed_min": 26.8,
+    "overall_win_rate": 0.914,
+    "total_wins": 64,
+    "total_games": 70,
     "per_opponent": {
       "example-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-gengar-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-kangaskhan-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-scizor-team": {
-        "wins": 2,
-        "games": 5
+        "wins": 6,
+        "games": 10
       },
       "mega-venusaur-charizardx": {
-        "wins": 3,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 5,
-        "games": 5
+        "wins": 8,
+        "games": 10
       },
       "screenshot-team": {
-        "wins": 2,
-        "games": 5
+        "wins": 10,
+        "games": 10
       }
     }
   },
   {
     "steps": 14000,
-    "elapsed_min": 20.4,
-    "overall_win_rate": 0.657,
-    "total_wins": 23,
-    "total_games": 35,
+    "elapsed_min": 31.3,
+    "overall_win_rate": 0.9,
+    "total_wins": 63,
+    "total_games": 70,
     "per_opponent": {
       "example-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-gengar-team": {
-        "wins": 0,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-kangaskhan-team": {
-        "wins": 5,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "mega-scizor-team": {
         "wins": 5,
-        "games": 5
+        "games": 10
       },
       "mega-venusaur-charizardx": {
-        "wins": 0,
-        "games": 5
+        "wins": 10,
+        "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 5,
-        "games": 5
+        "wins": 8,
+        "games": 10
       },
       "screenshot-team": {
-        "wins": 3,
-        "games": 5
+        "wins": 10,
+        "games": 10
+      }
+    }
+  },
+  {
+    "steps": 16000,
+    "elapsed_min": 35.8,
+    "overall_win_rate": 0.9,
+    "total_wins": 63,
+    "total_games": 70,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 5,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 10,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 8,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 10,
+        "games": 10
+      }
+    }
+  },
+  {
+    "steps": 18000,
+    "elapsed_min": 40.3,
+    "overall_win_rate": 0.914,
+    "total_wins": 64,
+    "total_games": 70,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 9,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 5,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 10,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 10,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 10,
+        "games": 10
+      }
+    }
+  },
+  {
+    "steps": 20000,
+    "elapsed_min": 44.9,
+    "overall_win_rate": 0.971,
+    "total_wins": 68,
+    "total_games": 70,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 8,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 10,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 10,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 10,
+        "games": 10
+      }
+    }
+  },
+  {
+    "steps": 22000,
+    "elapsed_min": 49.5,
+    "overall_win_rate": 0.957,
+    "total_wins": 67,
+    "total_games": 70,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 8,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 9,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 10,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 10,
+        "games": 10
+      }
+    }
+  },
+  {
+    "steps": 24000,
+    "elapsed_min": 53.9,
+    "overall_win_rate": 1.0,
+    "total_wins": 70,
+    "total_games": 70,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 10,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 10,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 10,
+        "games": 10
       }
     }
   }

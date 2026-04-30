@@ -4,3 +4,4 @@ __pycache__/
 dist/
 .venv/
 .ruff_cache/
+engines/showdown/node_modules/

@@ -1,0 +1,53 @@
+Hippowdon @ Leftovers
+Ability: Sand Stream
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Stealth Rock
+- Yawn
+- Earthquake
+- Slack Off
+
+Floette-Eternal @ Floettinite
+Ability: Flower Veil
+EVs: 32 HP / 2 Def / 32 SpA
+Bold Nature
+- Calm Mind
+- Draining Kiss
+- Moonblast
+- Synthesis
+
+Blastoise @ Blastoisinite
+Ability: Rain Dish
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Shell Smash
+- Water Pulse
+- Dark Pulse
+- Aura Sphere
+
+Aegislash-Shield @ Leftovers
+Ability: Stance Change
+EVs: 32 HP / 32 Atk / 2 SpD
+Adamant Nature
+- King's Shield
+- Shadow Sneak
+- Poltergeist
+- Swords Dance
+
+Hydreigon @ Choice Scarf
+Ability: Levitate
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Dark Pulse
+- U-turn
+- Draco Meteor
+- Flash Cannon
+
+Volcarona @ Sitrus Berry
+Ability: Flame Body
+EVs: 2 HP / 32 SpA / 32 Spe
+Timid Nature
+- Quiver Dance
+- Flamethrower
+- Giga Drain
+- Morning Sun

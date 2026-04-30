@@ -1,0 +1,107 @@
+[
+  {
+    "round": 1,
+    "elapsed_min": 40.0,
+    "overall_win_rate": 0.757,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 8,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 7,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 8,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 10,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 0,
+        "games": 10
+      }
+    }
+  },
+  {
+    "round": 2,
+    "elapsed_min": 79.9,
+    "overall_win_rate": 0.886,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 8,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 9,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 9,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 10,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 6,
+        "games": 10
+      }
+    }
+  },
+  {
+    "round": 3,
+    "elapsed_min": 124.0,
+    "overall_win_rate": 0.829,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 9,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 9,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 9,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 1,
+        "games": 10
+      }
+    }
+  }
+]

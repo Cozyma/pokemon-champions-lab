@@ -1,0 +1,24 @@
+Self-play training: 10 rounds, 2000 steps/round
+Initial models: models/selection_best, models/ppo_masked_best
+
+============================================================
+Round 1/10
+  Opponent: v0 (of 1 versions)
+  [A] Training selection (2000 steps)...
+  [B] Training battle (2000 steps)...
+  Evaluating...
+  Round 1: vs heuristic 86%, vs self(v0) 95% (41.4min)
+    vs example-team: 10/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 10/10
+    vs mega-scizor-team: 10/10
+    vs mega-venusaur-charizardx: 10/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 0/10
+  Snapshot saved as v1
+  ★ New best vs heuristic: 86%
+
+============================================================
+Round 2/10
+  Opponent: v1 (of 2 versions)
+  [A] Training selection (2000 steps)...

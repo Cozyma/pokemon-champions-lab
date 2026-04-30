@@ -1,0 +1,53 @@
+Archaludon @ Archaludonite
+Ability: Stamina
+EVs: 32 HP / 2 Def / 32 SpA
+Modest Nature
+- Stealth Rock
+- Flash Cannon
+- Draco Meteor
+- Dragon Tail
+
+Corviknight @ Leftovers
+Ability: Pressure
+EVs: 32 HP / 32 Def / 2 SpD
+Impish Nature
+- Body Press
+- U-turn
+- Iron Defense
+- Roost
+
+Garchomp @ Focus Sash
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Earthquake
+- Scale Shot
+- Stealth Rock
+- Swords Dance
+
+Primarina @ Sitrus Berry
+Ability: Torrent
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Moonblast
+- Sparkling Aria
+- Calm Mind
+- Encore
+
+Kingambit @ Leftovers
+Ability: Supreme Overlord
+EVs: 32 HP / 32 Atk / 2 SpD
+Adamant Nature
+- Sucker Punch
+- Iron Head
+- Swords Dance
+- Kowtow Cleave
+
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Draco Meteor
+- Flamethrower
+- Thunderbolt
+- Extreme Speed

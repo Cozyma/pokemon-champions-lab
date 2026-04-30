@@ -1,0 +1,195 @@
+Teams: ['example-team', 'mega-gengar-team', 'mega-kangaskhan-team', 'mega-scizor-team', 'mega-venusaur-charizardx', 'sand-mega-gyarados', 'screenshot-team']
+p1: screenshot-team, opponent pool: 6 teams
+LR schedule: 0.0002 → 2e-05 (linear decay)
+Resuming from models/ppo_masked_best
+
+============================================================
+Training to 2000 steps...
+Evaluating at 2000 steps (2.6min elapsed)...
+  Overall: 37/70 = 53%
+    vs example-team: 10/10
+    vs mega-gengar-team: 0/10
+    vs mega-kangaskhan-team: 8/10
+    vs mega-scizor-team: 2/10
+    vs mega-venusaur-charizardx: 5/10
+    vs sand-mega-gyarados: 6/10
+    vs screenshot-team: 6/10
+  ★ New best: 53%
+
+============================================================
+Training to 4000 steps...
+Evaluating at 4000 steps (6.5min elapsed)...
+  Overall: 35/70 = 50%
+    vs example-team: 10/10
+    vs mega-gengar-team: 0/10
+    vs mega-kangaskhan-team: 5/10
+    vs mega-scizor-team: 4/10
+    vs mega-venusaur-charizardx: 5/10
+    vs sand-mega-gyarados: 5/10
+    vs screenshot-team: 6/10
+  No improvement (1/5)
+
+============================================================
+Training to 6000 steps...
+Evaluating at 6000 steps (10.2min elapsed)...
+  Overall: 39/70 = 56%
+    vs example-team: 10/10
+    vs mega-gengar-team: 0/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 7/10
+    vs mega-venusaur-charizardx: 4/10
+    vs sand-mega-gyarados: 4/10
+    vs screenshot-team: 5/10
+  ★ New best: 56%
+
+============================================================
+Training to 8000 steps...
+Evaluating at 8000 steps (13.9min elapsed)...
+  Overall: 34/70 = 49%
+    vs example-team: 10/10
+    vs mega-gengar-team: 0/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 5/10
+    vs mega-venusaur-charizardx: 2/10
+    vs sand-mega-gyarados: 3/10
+    vs screenshot-team: 5/10
+  No improvement (1/5)
+
+============================================================
+Training to 10000 steps...
+Evaluating at 10000 steps (17.6min elapsed)...
+  Overall: 44/70 = 63%
+    vs example-team: 10/10
+    vs mega-gengar-team: 0/10
+    vs mega-kangaskhan-team: 10/10
+    vs mega-scizor-team: 7/10
+    vs mega-venusaur-charizardx: 4/10
+    vs sand-mega-gyarados: 6/10
+    vs screenshot-team: 7/10
+  ★ New best: 63%
+
+============================================================
+Training to 12000 steps...
+Evaluating at 12000 steps (21.5min elapsed)...
+  Overall: 34/70 = 49%
+    vs example-team: 10/10
+    vs mega-gengar-team: 0/10
+    vs mega-kangaskhan-team: 8/10
+    vs mega-scizor-team: 6/10
+    vs mega-venusaur-charizardx: 3/10
+    vs sand-mega-gyarados: 3/10
+    vs screenshot-team: 4/10
+  No improvement (1/5)
+
+============================================================
+Training to 14000 steps...
+Evaluating at 14000 steps (25.2min elapsed)...
+  Overall: 47/70 = 67%
+    vs example-team: 10/10
+    vs mega-gengar-team: 7/10
+    vs mega-kangaskhan-team: 10/10
+    vs mega-scizor-team: 7/10
+    vs mega-venusaur-charizardx: 5/10
+    vs sand-mega-gyarados: 3/10
+    vs screenshot-team: 5/10
+  ★ New best: 67%
+
+============================================================
+Training to 16000 steps...
+Evaluating at 16000 steps (29.2min elapsed)...
+  Overall: 53/70 = 76%
+    vs example-team: 10/10
+    vs mega-gengar-team: 9/10
+    vs mega-kangaskhan-team: 10/10
+    vs mega-scizor-team: 3/10
+    vs mega-venusaur-charizardx: 4/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 7/10
+  ★ New best: 76%
+
+============================================================
+Training to 18000 steps...
+Evaluating at 18000 steps (33.3min elapsed)...
+  Overall: 49/70 = 70%
+    vs example-team: 10/10
+    vs mega-gengar-team: 8/10
+    vs mega-kangaskhan-team: 10/10
+    vs mega-scizor-team: 7/10
+    vs mega-venusaur-charizardx: 3/10
+    vs sand-mega-gyarados: 7/10
+    vs screenshot-team: 4/10
+  No improvement (1/5)
+
+============================================================
+Training to 20000 steps...
+Evaluating at 20000 steps (37.6min elapsed)...
+  Overall: 49/70 = 70%
+    vs example-team: 10/10
+    vs mega-gengar-team: 6/10
+    vs mega-kangaskhan-team: 8/10
+    vs mega-scizor-team: 4/10
+    vs mega-venusaur-charizardx: 1/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 10/10
+  No improvement (2/5)
+
+============================================================
+Training to 22000 steps...
+Evaluating at 22000 steps (41.8min elapsed)...
+  Overall: 47/70 = 67%
+    vs example-team: 10/10
+    vs mega-gengar-team: 7/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 4/10
+    vs mega-venusaur-charizardx: 2/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 5/10
+  No improvement (3/5)
+
+============================================================
+Training to 24000 steps...
+Evaluating at 24000 steps (45.9min elapsed)...
+  Overall: 49/70 = 70%
+    vs example-team: 10/10
+    vs mega-gengar-team: 6/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 8/10
+    vs mega-venusaur-charizardx: 3/10
+    vs sand-mega-gyarados: 8/10
+    vs screenshot-team: 5/10
+  No improvement (4/5)
+
+============================================================
+Training to 26000 steps...
+Evaluating at 26000 steps (50.3min elapsed)...
+  Overall: 45/70 = 64%
+    vs example-team: 10/10
+    vs mega-gengar-team: 6/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 4/10
+    vs mega-venusaur-charizardx: 1/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 5/10
+  No improvement (5/5)
+
+��� Early stopping: no improvement for 5 checkpoints
+
+============================================================
+Training complete: 51.5min
+
+Progression:
+    2000 steps: 53% (2.6min)
+    4000 steps: 50% (6.5min)
+    6000 steps: 56% (10.2min)
+    8000 steps: 49% (13.9min)
+    10000 steps: 63% (17.6min)
+    12000 steps: 49% (21.5min)
+    14000 steps: 67% (25.2min)
+    16000 steps: 76% (29.2min)
+    18000 steps: 70% (33.3min)
+    20000 steps: 70% (37.6min)
+    22000 steps: 67% (41.8min)
+    24000 steps: 70% (45.9min)
+    26000 steps: 64% (50.3min)
+
+Best model: ppo_masked_best (76%)

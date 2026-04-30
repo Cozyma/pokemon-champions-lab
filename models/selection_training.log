@@ -1,0 +1,134 @@
+Teams: ['example-team', 'mega-gengar-team', 'mega-kangaskhan-team', 'mega-scizor-team', 'mega-venusaur-charizardx', 'sand-mega-gyarados', 'screenshot-team']
+p1: screenshot-team, opponent pool: 6 teams
+LR schedule: 0.0003 -> 3e-05
+Starting fresh MaskablePPO for selection
+
+Evaluating heuristic baseline...
+Heuristic baseline: 45/70 = 64%
+  vs example-team: 10/10
+  vs mega-gengar-team: 10/10
+  vs mega-kangaskhan-team: 7/10
+  vs mega-scizor-team: 0/10
+  vs mega-venusaur-charizardx: 4/10
+  vs sand-mega-gyarados: 9/10
+  vs screenshot-team: 5/10
+
+============================================================
+Training to 1000 steps...
+Evaluating at 1000 steps (19.0min elapsed)...
+  Overall: 50/70 = 71%
+    vs example-team: 9/10
+    vs mega-gengar-team: 9/10
+    vs mega-kangaskhan-team: 4/10
+    vs mega-scizor-team: 2/10
+    vs mega-venusaur-charizardx: 8/10
+    vs sand-mega-gyarados: 8/10
+    vs screenshot-team: 10/10
+  ★ New best: 71%
+
+============================================================
+Training to 2000 steps...
+Evaluating at 2000 steps (38.1min elapsed)...
+  Overall: 63/70 = 90%
+    vs example-team: 10/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 5/10
+    vs mega-venusaur-charizardx: 10/10
+    vs sand-mega-gyarados: 9/10
+    vs screenshot-team: 10/10
+  ★ New best: 90%
+
+============================================================
+Training to 3000 steps...
+Evaluating at 3000 steps (57.1min elapsed)...
+  Overall: 61/70 = 87%
+    vs example-team: 10/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 5/10
+    vs mega-venusaur-charizardx: 8/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 9/10
+  No improvement (1/10)
+
+============================================================
+Training to 4000 steps...
+Evaluating at 4000 steps (77.3min elapsed)...
+  Overall: 57/70 = 81%
+    vs example-team: 10/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 10/10
+    vs mega-scizor-team: 1/10
+    vs mega-venusaur-charizardx: 10/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 6/10
+  No improvement (2/10)
+
+============================================================
+Training to 5000 steps...
+Evaluating at 5000 steps (98.0min elapsed)...
+  Overall: 56/70 = 80%
+    vs example-team: 10/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 6/10
+    vs mega-scizor-team: 5/10
+    vs mega-venusaur-charizardx: 10/10
+    vs sand-mega-gyarados: 9/10
+    vs screenshot-team: 6/10
+  No improvement (3/10)
+
+============================================================
+Training to 6000 steps...
+Evaluating at 6000 steps (118.4min elapsed)...
+  Overall: 53/70 = 76%
+    vs example-team: 10/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 6/10
+    vs mega-scizor-team: 4/10
+    vs mega-venusaur-charizardx: 9/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 4/10
+  No improvement (4/10)
+
+============================================================
+Training to 7000 steps...
+Evaluating at 7000 steps (138.9min elapsed)...
+  Overall: 60/70 = 86%
+    vs example-team: 9/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 8/10
+    vs mega-scizor-team: 8/10
+    vs mega-venusaur-charizardx: 10/10
+    vs sand-mega-gyarados: 9/10
+    vs screenshot-team: 6/10
+  No improvement (5/10)
+
+============================================================
+Training to 8000 steps...
+Evaluating at 8000 steps (161.7min elapsed)...
+  Overall: 51/70 = 73%
+    vs example-team: 9/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 7/10
+    vs mega-scizor-team: 3/10
+    vs mega-venusaur-charizardx: 9/10
+    vs sand-mega-gyarados: 9/10
+    vs screenshot-team: 4/10
+  No improvement (6/10)
+
+============================================================
+Training to 9000 steps...
+Evaluating at 9000 steps (184.7min elapsed)...
+  Overall: 54/70 = 77%
+    vs example-team: 10/10
+    vs mega-gengar-team: 10/10
+    vs mega-kangaskhan-team: 8/10
+    vs mega-scizor-team: 5/10
+    vs mega-venusaur-charizardx: 10/10
+    vs sand-mega-gyarados: 9/10
+    vs screenshot-team: 2/10
+  No improvement (7/10)
+
+============================================================
+Training to 10000 steps...

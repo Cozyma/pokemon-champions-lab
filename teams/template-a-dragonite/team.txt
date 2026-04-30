@@ -1,0 +1,53 @@
+Garchomp @ Focus Sash
+Ability: Rough Skin
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Stealth Rock
+- Spikes
+- Dragon Tail
+- Earthquake
+
+Dragonite @ Dragoninite
+Ability: Multiscale
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Air Slash
+- Flamethrower
+- Draco Meteor
+- Extreme Speed
+
+Skeledirge @ Leftovers
+Ability: Unaware
+EVs: 32 HP / 2 Def / 32 SpA
+Modest Nature
+- Torch Song
+- Yawn
+- Slack Off
+- Shadow Ball
+
+Meowscarada @ Focus Sash
+Ability: Protean
+EVs: 2 HP / 32 Atk / 32 Spe
+Jolly Nature
+- Knock Off
+- U-turn
+- Flower Trick
+- Play Rough
+
+Aegislash-Shield @ Leftovers
+Ability: Stance Change
+EVs: 32 HP / 32 Atk / 2 SpD
+Adamant Nature
+- King's Shield
+- Shadow Sneak
+- Poltergeist
+- Swords Dance
+
+Primarina @ Sitrus Berry
+Ability: Torrent
+EVs: 2 HP / 32 SpA / 32 Spe
+Modest Nature
+- Calm Mind
+- Moonblast
+- Sparkling Aria
+- Aqua Jet

@@ -10,6 +10,8 @@ Usage:
 Options:
     --resume PATH   Resume from a saved model checkpoint
     --steps N       Total training steps (default: 80000)
+    --lr-start F    Initial learning rate (default: 1e-3)
+    --lr-end F      Final learning rate (default: 1e-4)
 """
 from __future__ import annotations
 
@@ -31,7 +33,7 @@ MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 RESULTS_PATH = MODELS_DIR / "longrun_results.json"
 
 CHECKPOINT_EVERY = 2000
-EVAL_GAMES_PER_OPP = 5
+EVAL_GAMES_PER_OPP = 10
 EARLY_STOP_PATIENCE = 5  # stop after N checkpoints without improvement
 
 
@@ -41,13 +43,13 @@ def load_teams() -> dict[str, str]:
             if not t.parent.name.startswith("test-")}
 
 
-def evaluate(model, p1_paste: str, teams: dict[str, str], n_per_opp: int = 5) -> dict:
+def evaluate(model, p1_paste: str, teams: dict[str, str], n_per_opp: int = 5, selection_model=None) -> dict:
     """Evaluate against each opponent team."""
     results = {}
     for opp_name, opp_paste in sorted(teams.items()):
         wins = 0
         for _ in range(n_per_opp):
-            ev = FastBattleEnv(team_paste=p1_paste, opponent_paste=opp_paste)
+            ev = FastBattleEnv(team_paste=p1_paste, opponent_paste=opp_paste, selection_model=selection_model)
             obs, _ = ev.reset()
             done = False
             while not done:
@@ -66,6 +68,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--resume", type=str, default=None, help="Resume from checkpoint path")
     parser.add_argument("--steps", type=int, default=80000, help="Total training steps")
+    parser.add_argument("--lr-start", type=float, default=1e-3, help="Initial learning rate")
+    parser.add_argument("--lr-end", type=float, default=1e-4, help="Final learning rate")
+    parser.add_argument("--selection-model", type=str, default=None, help="Selection RL model for p1 team preview")
     args = parser.parse_args()
 
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
@@ -78,16 +83,33 @@ def main():
     opp_pool = [v for k, v in teams.items() if k != p1_name]
     print(f"p1: {p1_name}, opponent pool: {len(opp_pool)} teams")
 
-    env = FastBattleEnv(team_paste=p1_paste, opponent_pool=opp_pool)
+    selection_model = None
+    if args.selection_model:
+        from sb3_contrib import MaskablePPO as _M
+        selection_model = _M.load(args.selection_model, device="cpu")
+        print(f"Using selection model: {args.selection_model}")
+
+    env = FastBattleEnv(team_paste=p1_paste, opponent_pool=opp_pool, selection_model=selection_model)
+
+    # Linear lr decay: lr_start → lr_end over training
+    lr_start = args.lr_start
+    lr_end = args.lr_end
+
+    def lr_schedule(progress_remaining: float) -> float:
+        """Linear decay from lr_start to lr_end. progress_remaining: 1.0 → 0.0."""
+        return lr_end + (lr_start - lr_end) * progress_remaining
+
+    print(f"LR schedule: {lr_start} → {lr_end} (linear decay)")
 
     if args.resume:
         print(f"Resuming from {args.resume}")
         model = MaskablePPO.load(args.resume, env=env, device="cpu")
+        model.learning_rate = lr_schedule
     else:
         print("Starting fresh MaskablePPO")
         model = MaskablePPO(
             "MlpPolicy", env,
-            learning_rate=1e-3,
+            learning_rate=lr_schedule,
             n_steps=32,
             batch_size=16,
             n_epochs=4,
@@ -120,7 +142,7 @@ def main():
 
         # Evaluate
         print(f"Evaluating at {step_target} steps ({elapsed/60:.1f}min elapsed)...", flush=True)
-        eval_results = evaluate(model, p1_paste, teams, n_per_opp=EVAL_GAMES_PER_OPP)
+        eval_results = evaluate(model, p1_paste, teams, n_per_opp=EVAL_GAMES_PER_OPP, selection_model=selection_model)
 
         total_wins = sum(r["wins"] for r in eval_results.values())
         total_games = sum(r["games"] for r in eval_results.values())

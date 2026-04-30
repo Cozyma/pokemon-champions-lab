@@ -1,0 +1,39 @@
+[
+  {
+    "round": 1,
+    "elapsed_min": 39.3,
+    "vs_heuristic": 0.6,
+    "vs_self": 0.65,
+    "opponent_version": 1,
+    "per_opponent": {
+      "example-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-gengar-team": {
+        "wins": 4,
+        "games": 10
+      },
+      "mega-kangaskhan-team": {
+        "wins": 10,
+        "games": 10
+      },
+      "mega-scizor-team": {
+        "wins": 1,
+        "games": 10
+      },
+      "mega-venusaur-charizardx": {
+        "wins": 10,
+        "games": 10
+      },
+      "sand-mega-gyarados": {
+        "wins": 7,
+        "games": 10
+      },
+      "screenshot-team": {
+        "wins": 0,
+        "games": 10
+      }
+    }
+  }
+]

@@ -1,0 +1,79 @@
+Teams: ['example-team', 'mega-gengar-team', 'mega-kangaskhan-team', 'mega-scizor-team', 'mega-venusaur-charizardx', 'sand-mega-gyarados', 'screenshot-team']
+p1: screenshot-team, opponent pool: 6 teams
+LR schedule: 0.0005 → 5e-05 (linear decay)
+Resuming from models/ppo_masked_best
+
+============================================================
+Training to 2000 steps...
+Evaluating at 2000 steps (2.8min elapsed)...
+  Overall: 44/70 = 63%
+    vs example-team: 10/10
+    vs mega-gengar-team: 4/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 6/10
+    vs mega-venusaur-charizardx: 0/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 5/10
+  ★ New best: 63%
+
+============================================================
+Training to 4000 steps...
+Evaluating at 4000 steps (6.5min elapsed)...
+  Overall: 46/70 = 66%
+    vs example-team: 10/10
+    vs mega-gengar-team: 0/10
+    vs mega-kangaskhan-team: 7/10
+    vs mega-scizor-team: 10/10
+    vs mega-venusaur-charizardx: 0/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 9/10
+  ★ New best: 66%
+
+============================================================
+Training to 6000 steps...
+Evaluating at 6000 steps (10.3min elapsed)...
+  Overall: 55/70 = 79%
+    vs example-team: 10/10
+    vs mega-gengar-team: 9/10
+    vs mega-kangaskhan-team: 10/10
+    vs mega-scizor-team: 10/10
+    vs mega-venusaur-charizardx: 0/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 6/10
+  ★ New best: 79%
+
+============================================================
+Training to 8000 steps...
+Evaluating at 8000 steps (14.3min elapsed)...
+  Overall: 51/70 = 73%
+    vs example-team: 10/10
+    vs mega-gengar-team: 5/10
+    vs mega-kangaskhan-team: 9/10
+    vs mega-scizor-team: 10/10
+    vs mega-venusaur-charizardx: 0/10
+    vs sand-mega-gyarados: 10/10
+    vs screenshot-team: 7/10
+  No improvement (1/5)
+
+============================================================
+Training to 10000 steps...
+Traceback (most recent call last):
+  File "/home/deploy/pokemon-champions-lab/scripts/train_longrun.py", line 186, in <module>
+    main()
+  File "/home/deploy/pokemon-champions-lab/scripts/train_longrun.py", line 129, in main
+    model.learn(total_timesteps=CHECKPOINT_EVERY, reset_num_timesteps=False)
+  File "/home/deploy/pokemon-champions-lab/.venv/lib/python3.10/site-packages/sb3_contrib/ppo_mask/ppo_mask.py", line 453, in learn
+    continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, self.n_steps, use_masking)
+  File "/home/deploy/pokemon-champions-lab/.venv/lib/python3.10/site-packages/sb3_contrib/ppo_mask/ppo_mask.py", line 233, in collect_rollouts
+    new_obs, rewards, dones, infos = env.step(actions)
+  File "/home/deploy/pokemon-champions-lab/.venv/lib/python3.10/site-packages/stable_baselines3/common/vec_env/base_vec_env.py", line 222, in step
+    return self.step_wait()
+  File "/home/deploy/pokemon-champions-lab/.venv/lib/python3.10/site-packages/stable_baselines3/common/vec_env/dummy_vec_env.py", line 59, in step_wait
+    obs, self.buf_rews[env_idx], terminated, truncated, self.buf_infos[env_idx] = self.envs[env_idx].step(  # type: ignore[assignment]
+  File "/home/deploy/pokemon-champions-lab/.venv/lib/python3.10/site-packages/stable_baselines3/common/monitor.py", line 94, in step
+    observation, reward, terminated, truncated, info = self.env.step(action)
+  File "/home/deploy/pokemon-champions-lab/src/pokechamp/fast_env.py", line 538, in step
+    self._send(f">p1 {cmd}")
+  File "/home/deploy/pokemon-champions-lab/src/pokechamp/fast_env.py", line 398, in _send
+    self._proc.stdin.write((line + "\n").encode())
+BrokenPipeError: [Errno 32] Broken pipe
