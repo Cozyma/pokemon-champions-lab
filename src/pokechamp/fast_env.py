@@ -788,12 +788,7 @@ class FastBattleEnv(gym.Env):
         self._current_request: dict = {}
         self._turn = 0
         self._prev_obs: np.ndarray | None = None
-        self._prev_team_hp: float = 0.0
-        self._prev_opp_fainted: int = 0
-        self._p1_has_boosts: bool = False
-        self._p1_boost_turns: int = 0  # turns spent setting up
-        self._p1_last_switch_turn: int = 0
-        self._p1_switched_species: str = ""
+        self._prev_action_balance: float = 0.0
 
     def _send(self, line: str) -> None:
         if self._proc and self._proc.stdin:
@@ -855,12 +850,7 @@ class FastBattleEnv(gym.Env):
 
         self._log_lines = []
         self._turn = 0
-        self._prev_team_hp = 3.0
-        self._prev_opp_fainted = 0
-        self._p1_has_boosts = False
-        self._p1_boost_turns = 0
-        self._p1_last_switch_turn = 0
-        self._p1_switched_species = ""
+        self._prev_action_balance = 0.0
 
         # Read initial output and get first request
         output = self._read_output(first=True)
@@ -979,7 +969,18 @@ class FastBattleEnv(gym.Env):
         return obs, reward, terminated, truncated, {"turn": self._turn, "winner": winner}
 
     def _compute_reward(self, winner) -> float:
-        """Compute step reward."""
+        """Compute step reward based on action-turn balance theory.
+
+        Core idea: reward = change in (my_action_turns - opp_action_turns).
+        This naturally rewards:
+        - Dealing damage (reduces opp survival → their action_turns drop)
+        - Defensive boosts (reduces incoming → our action_turns increase)
+        - Offensive boosts (faster KO → fewer turns needed)
+        - Recovery (extends our action_turns)
+        And naturally penalizes:
+        - Taking damage (our action_turns drop)
+        - Wasting a turn on immune moves (no opp damage, we take a hit)
+        """
         if winner is not None:
             if winner == "p1":
                 return 1.0
@@ -987,87 +988,96 @@ class FastBattleEnv(gym.Env):
                 return -1.0
             return 0.0  # tie
 
-        # Intermediate rewards: HP changes, KOs, and quality signals
-        reward = 0.0
-        team = self._current_request.get("side", {}).get("pokemon", [])
-
-        # Team HP sum
-        team_hp = sum(
-            _parse_condition(p.get("condition", "0 fnt"))[0]
-            for p in team
+        # --- Compute current action-turn balance ---
+        from pokechamp.ai_decision import (
+            _estimate_incoming_after_boost,
+            _count_action_turns,
+            _turns_to_ko,
         )
-        reward += (team_hp - self._prev_team_hp) * 0.1
-        self._prev_team_hp = team_hp
 
-        # Opponent fainted count
-        opp_fainted = sum(1 for line in self._log_lines if "|faint|p2a:" in line)
-        new_kos = opp_fainted - self._prev_opp_fainted
-        reward += new_kos * 0.3
-        self._prev_opp_fainted = opp_fainted
+        team = self._current_request.get("side", {}).get("pokemon", [])
+        active = next((p for p in team if p.get("active")), {})
+        active_stats = active.get("stats", {})
 
-        # --- Quality-based rewards (from recent log lines) ---
+        # Our HP
+        my_hp = 0
+        my_max_hp = 0
+        cond = active.get("condition", "0/0")
+        cond_m = re.match(r"(\d+)/(\d+)", cond)
+        if cond_m:
+            my_hp = int(cond_m.group(1))
+            my_max_hp = int(cond_m.group(2))
+
+        # Alive count (our remaining pokemon)
+        my_alive = sum(1 for p in team if p.get("condition", "") != "0 fnt")
+
+        # Opponent info from log
+        from pokechamp.log_parser import _parse_opponent_from_log
+        opp = _parse_opponent_from_log(self._log_lines, "p1")
+        opp_hp_pct = opp.get("hp_pct", 100.0)
+        opp_species = opp.get("species", "")
+        opp_types = opp.get("types", [])
+
+        # Estimate incoming damage
+        from pokechamp.ai_scoring import (
+            _estimate_opponent_max_damage,
+            _score_move,
+        )
+        incoming = 0
+        if opp_species and opp_types and my_max_hp > 0:
+            incoming = _estimate_opponent_max_damage(
+                opp_species, opp_types,
+                active_stats.get("def", 100), active_stats.get("spd", 100),
+                active.get("types", []),
+            )
+
+        # Check for recovery
+        active_req = self._current_request.get("active", [{}])
+        active_moves = (active_req[0] if active_req else {}).get("moves", [])
+        has_recovery = any(
+            showdown_data.get_move(m.get("id", "")) and
+            showdown_data.get_move(m.get("id", "")).get("isHeal")
+            for m in active_moves
+        )
+        recovery = my_max_hp // 2 if has_recovery else 0
+
+        # Our best attack score
+        active_boosts = active.get("boosts", {})
+        phys_ratio = active_stats.get("atk", 100) / 100
+        spec_ratio = active_stats.get("spa", 100) / 100
+        best_atk = max(
+            (_score_move(m, active, opp, phys_ratio, spec_ratio, active_boosts)
+             for m in active_moves if m.get("id")),
+            default=0.0,
+        )
+
+        # Compute action-turn balance
+        my_action_turns = _count_action_turns(my_hp, incoming, recovery)
+        opp_ko_turns = _turns_to_ko(best_atk, opp_hp_pct)
+
+        # Balance: how many "useful" turns do we have?
+        # useful = min(survive, KO) — no point living past KO
+        # Also factor in remaining pokemon count
+        my_useful = min(my_action_turns, opp_ko_turns) + (my_alive - 1) * 3
+        opp_alive = 3 - sum(1 for line in self._log_lines if "|faint|p2a:" in line)
+        opp_useful = opp_alive * 3  # rough estimate
+
+        balance = my_useful - opp_useful
+
+        # Reward = change in balance from previous step
+        reward = (balance - self._prev_action_balance) * 0.05
+        self._prev_action_balance = balance
+
+        # Clamp to avoid extreme values
+        reward = max(min(reward, 0.5), -0.5)
+
+        # Keep immune penalty — clear bug signal
         recent = self._log_lines[-20:]
-
-        # 1. Immune move penalty: we attacked but opponent was immune
-        #    (only if opponent didn't switch this turn — i.e., we should have known)
         for line in recent:
             if "|-immune|p2a:" in line:
-                # Check if opponent switched this turn
                 opp_switched = any("|switch|p2a:" in l and "[from]" not in l for l in recent)
                 if not opp_switched:
                     reward -= 0.3
-
-        # 2. Setup + KO bonus: we KO'd while having boosts
-        if new_kos > 0 and self._p1_has_boosts:
-            reward += 0.2 * new_kos
-
-        # 3. Wasted setup penalty: we had boosts but our pokemon fainted
-        #    (invested turns in setup but couldn't recover the investment)
-        for line in recent:
-            if "|faint|p1a:" in line:
-                if self._p1_has_boosts and self._p1_boost_turns > 0:
-                    reward -= 0.2 * self._p1_boost_turns
-                self._p1_has_boosts = False
-                self._p1_boost_turns = 0
-
-        # 4. Bad switch penalty: we switched and the new pokemon fainted
-        #    within 2 turns (switch cost a turn + lost the pokemon)
-        current_turn = 0
-        for line in reversed(self._log_lines):
-            m = re.match(r"\|turn\|(\d+)", line)
-            if m:
-                current_turn = int(m.group(1))
-                break
-        for line in recent:
-            if "|faint|p1a:" in line:
-                turns_since_switch = current_turn - self._p1_last_switch_turn
-                if 0 < turns_since_switch <= 2 and self._p1_last_switch_turn > 0:
-                    reward -= 0.2
-
-        # Track state for next step
-        for line in recent:
-            # Track setup moves
-            if "|move|p1a:" in line:
-                parts = line.split("|")
-                if len(parts) > 3:
-                    move_name = parts[3].strip()
-                    move_id = move_name.lower().replace(" ", "").replace("-", "")
-                    sd = showdown_data.get_move(move_id)
-                    if sd and sd.get("boosts") and sd.get("category") == "Status" and sd.get("target") == "self":
-                        self._p1_has_boosts = True
-                        self._p1_boost_turns += 1
-
-            # Track voluntary switches
-            if "|switch|p1a:" in line and "[from]" not in line:
-                parts = line.split("|")
-                if len(parts) > 3:
-                    sp = parts[3].split(",")[0].strip()
-                    if sp != self._p1_switched_species:
-                        self._p1_last_switch_turn = current_turn
-                        self._p1_switched_species = sp
-                        # Switching out resets boosts
-                        self._p1_has_boosts = False
-                        self._p1_boost_turns = 0
 
         return reward
 
