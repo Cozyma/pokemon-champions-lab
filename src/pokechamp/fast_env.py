@@ -53,11 +53,11 @@ TYPE_TO_IDX = {t: i for i, t in enumerate(ALL_TYPES)}
 N_TYPES = len(ALL_TYPES)
 
 # Observation dimensions:
-# active: types(18) + stats(6) + hp(1) + status(1) = 26
+# active: types(18) + stats(6) + hp(1) + status(1) + item(8) = 34
 # moves: 4 * (bp + type_eff + stab + priority + category) = 20
-# opponent active: types(18) + stats(5) + hp(1) + status(1) + ability(3) = 28
+# opponent active: types(18) + stats(5) + hp(1) + status(1) + ability(3) + item(8) = 36
 # opponent revealed moves: 4 * (bp + type_eff + stab + category) = 16
-# bench (2 slots): 2 * (types(18) + stats(6) + hp(1) + move_eff(4)) = 58
+# bench (2 slots): 2 * (types(18) + stats(6) + hp(1) + move_eff(4) + item(8)) = 74
 # opp team (6 slots): 6 * (type1 + type2 + phys_bias + bulk + spe + revealed + hp + alive) = 48
 # own boosts: 7 (atk, def, spa, spd, spe, accuracy, evasion)
 # opp boosts: 7
@@ -68,8 +68,8 @@ N_TYPES = len(ALL_TYPES)
 # force_switch: 1
 # trapped: 1
 # action mask: 9
-# Total: 241
-OBS_DIM = 241
+# Total: 273
+OBS_DIM = 273
 
 
 # ---------------------------------------------------------------------------
@@ -108,6 +108,56 @@ def _parse_condition(condition: str) -> tuple[float, str]:
     if m:
         return int(m.group(1)) / int(m.group(2)), status
     return 1.0, status
+
+
+# Item category encoding (8 categories)
+_ITEM_CATEGORIES = {
+    # Choice items (lock move, boost one stat)
+    "choicescarf": 0, "choiceband": 0, "choicespecs": 0,
+    # Life Orb
+    "lifeorb": 1,
+    # Focus Sash
+    "focussash": 2,
+    # Leftovers / Black Sludge (passive recovery)
+    "leftovers": 3, "blacksludge": 3,
+    # Berries
+    "sitrusberry": 4, "lumberry": 4, "cheriberry": 4, "chestoberry": 4,
+    "pechaberry": 4, "rawstberry": 4, "aspearberry": 4, "leppaberry": 4,
+    "oranberry": 4, "persimberry": 4, "figyberry": 4, "wikiberry": 4,
+    "magoberry": 4, "aguavberry": 4, "iapapaberry": 4,
+    # Resist berries
+    "occaberry": 4, "passhoberry": 4, "wacanberry": 4, "rindoberry": 4,
+    "yacheberry": 4, "chopleberry": 4, "kebiaberry": 4, "shucaberry": 4,
+    "cobaberry": 4, "payapaberry": 4, "tangaberry": 4, "chartiberry": 4,
+    "kasibberry": 4, "habanberry": 4, "colburberry": 4, "babiriberry": 4,
+    "chilanberry": 4, "roseliberry": 4,
+    # Type-boosting items
+    "mysticwater": 6, "charcoal": 6, "miracleseed": 6, "magnet": 6,
+    "nevermeltice": 6, "blackbelt": 6, "poisonbarb": 6, "softsand": 6,
+    "sharpbeak": 6, "twistedspoon": 6, "silverpowder": 6, "hardstone": 6,
+    "spelltag": 6, "dragonfang": 6, "blackglasses": 6, "metalcoat": 6,
+    "silkscarf": 6, "pixieplate": 6, "fairyfeather": 6,
+    # Other boost items
+    "expertbelt": 6, "wiseglasses": 6, "muscleband": 6,
+    "scopelens": 6, "razorclaw": 6, "brightpowder": 6,
+    "whiteherb": 7, "mentalherb": 7, "eviolite": 7,
+    "heavydutyboots": 7, "airballoon": 7, "redcard": 7,
+}
+N_ITEM_CATEGORIES = 8  # 0-7
+
+
+def _encode_item(item_id: str) -> list[float]:
+    """Encode item as 8-dim one-hot category vector."""
+    vec = [0.0] * N_ITEM_CATEGORIES
+    key = item_id.lower().replace(" ", "").replace("-", "")
+    # Mega stones (category 5)
+    if key.endswith("ite") or key.endswith("inite") or key.endswith("nite"):
+        if key not in _ITEM_CATEGORIES:  # not a berry ending in -ite
+            vec[5] = 1.0
+            return vec
+    cat = _ITEM_CATEGORIES.get(key, 7)  # default: other
+    vec[cat] = 1.0
+    return vec
 
 
 def _encode_status(status: str) -> float:
@@ -290,6 +340,7 @@ def encode_request(
     hp_frac, status = _parse_condition(condition)
     obs.append(hp_frac)
     obs.append(_encode_status(status))
+    obs.extend(_encode_item(active_mon.get("item", "")))  # 8
 
     # --- Moves (20) ---
     moves = active_req.get("moves", [])
@@ -397,6 +448,18 @@ def encode_request(
     obs.append(has_immunity)
     obs.append(has_reduction)  # 3 dims
 
+    # Opponent item (8) — from log if revealed (Knock Off, Trick, etc.)
+    opp_item = ""
+    for line in reversed(log_lines[-50:]):
+        if f"|switch|{opp_id}a:" in line:
+            break
+        if f"|-enditem|{opp_id}a:" in line or f"|-item|{opp_id}a:" in line:
+            parts = line.split("|")
+            if len(parts) > 3:
+                opp_item = parts[3].strip()
+            break
+    obs.extend(_encode_item(opp_item))  # 8
+
     # --- Opponent revealed moves (16) ---
     revealed_moves = _parse_revealed_moves(log_lines, opp_id, opp_species)
     for i in range(N_MOVES):
@@ -452,8 +515,10 @@ def encode_request(
                         obs.append(0.0)
                 else:
                     obs.append(0.0)
+            # Item (8)
+            obs.extend(_encode_item(b_mon.get("item", "")))
         else:
-            obs.extend([0.0] * 29)
+            obs.extend([0.0] * 37)  # 29 + 8 = 37 per bench slot
 
     # --- Opponent team slots (48) - 6 slots × 8 dims ---
     # Parse opponent team from |poke| lines (team preview) and track HP/faint
