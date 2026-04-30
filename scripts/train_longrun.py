@@ -44,8 +44,10 @@ def load_teams() -> dict[str, str]:
 
 
 def evaluate(model, p1_paste: str, teams: dict[str, str], n_per_opp: int = 5, selection_model=None) -> dict:
-    """Evaluate against each opponent team."""
+    """Evaluate against each opponent team, collecting battle metrics."""
+    from pokechamp.battle_metrics import analyze_battle
     results = {}
+    all_metrics = []
     for opp_name, opp_paste in sorted(teams.items()):
         wins = 0
         for _ in range(n_per_opp):
@@ -57,10 +59,15 @@ def evaluate(model, p1_paste: str, teams: dict[str, str], n_per_opp: int = 5, se
                 action, _ = model.predict(obs, deterministic=True, action_masks=mask)
                 obs, reward, terminated, truncated, info = ev.step(int(action))
                 done = terminated or truncated
+            # Collect battle metrics from the env's log
+            if hasattr(ev, '_log_lines') and ev._log_lines:
+                m = analyze_battle(ev._log_lines, "p1")
+                all_metrics.append(m)
             ev.close()
             if info.get("winner") == "p1":
                 wins += 1
         results[opp_name] = {"wins": wins, "games": n_per_opp}
+    results["_metrics"] = all_metrics
     return results
 
 
@@ -71,6 +78,11 @@ def main():
     parser.add_argument("--lr-start", type=float, default=1e-3, help="Initial learning rate")
     parser.add_argument("--lr-end", type=float, default=1e-4, help="Final learning rate")
     parser.add_argument("--selection-model", type=str, default=None, help="Selection RL model for p1 team preview")
+    parser.add_argument("--n-steps", type=int, default=32, help="Steps per PPO update")
+    parser.add_argument("--batch-size", type=int, default=16, help="Minibatch size")
+    parser.add_argument("--ent-coef", type=float, default=0.1, help="Entropy coefficient")
+    parser.add_argument("--checkpoint-every", type=int, default=None, help="Checkpoint interval (default: CHECKPOINT_EVERY)")
+    parser.add_argument("--eval-games", type=int, default=None, help="Games per opponent for eval")
     args = parser.parse_args()
 
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
@@ -110,11 +122,11 @@ def main():
         model = MaskablePPO(
             "MlpPolicy", env,
             learning_rate=lr_schedule,
-            n_steps=32,
-            batch_size=16,
+            n_steps=args.n_steps,
+            batch_size=args.batch_size,
             n_epochs=4,
             gamma=0.99,
-            ent_coef=0.1,
+            ent_coef=args.ent_coef,
             clip_range=0.2,
             device="cpu",
             verbose=0,
@@ -125,15 +137,17 @@ def main():
     best_win_rate = 0.0
     no_improve_count = 0
 
+    checkpoint_interval = args.checkpoint_every or CHECKPOINT_EVERY
+    eval_n = args.eval_games or EVAL_GAMES_PER_OPP
     total_steps = args.steps
-    n_checkpoints = total_steps // CHECKPOINT_EVERY
+    n_checkpoints = total_steps // checkpoint_interval
 
     for checkpoint in range(1, n_checkpoints + 1):
-        step_target = checkpoint * CHECKPOINT_EVERY
+        step_target = checkpoint * checkpoint_interval
         print(f"\n{'='*60}", flush=True)
         print(f"Training to {step_target} steps...", flush=True)
 
-        model.learn(total_timesteps=CHECKPOINT_EVERY, reset_num_timesteps=False)
+        model.learn(total_timesteps=checkpoint_interval, reset_num_timesteps=False)
         elapsed = time.time() - start_time
 
         # Save checkpoint
@@ -142,7 +156,10 @@ def main():
 
         # Evaluate
         print(f"Evaluating at {step_target} steps ({elapsed/60:.1f}min elapsed)...", flush=True)
-        eval_results = evaluate(model, p1_paste, teams, n_per_opp=EVAL_GAMES_PER_OPP, selection_model=selection_model)
+        eval_results = evaluate(model, p1_paste, teams, n_per_opp=eval_n, selection_model=selection_model)
+
+        # Extract metrics before computing totals
+        battle_metrics = eval_results.pop("_metrics", [])
 
         total_wins = sum(r["wins"] for r in eval_results.values())
         total_games = sum(r["games"] for r in eval_results.values())
@@ -152,6 +169,14 @@ def main():
         for opp, r in sorted(eval_results.items()):
             print(f"    vs {opp}: {r['wins']}/{r['games']}", flush=True)
 
+        # Print battle quality metrics
+        if battle_metrics:
+            from pokechamp.battle_metrics import summarize_metrics, format_metrics
+            summary = summarize_metrics(battle_metrics)
+            print("  --- Quality Metrics ---", flush=True)
+            for line in format_metrics(summary).split("\n"):
+                print(f"  {line}", flush=True)
+
         checkpoint_result = {
             "steps": step_target,
             "elapsed_min": round(elapsed / 60, 1),
@@ -160,6 +185,9 @@ def main():
             "total_games": total_games,
             "per_opponent": eval_results,
         }
+        if battle_metrics:
+            from pokechamp.battle_metrics import summarize_metrics as _sm
+            checkpoint_result["quality"] = _sm(battle_metrics)
         all_results.append(checkpoint_result)
         RESULTS_PATH.write_text(json.dumps(all_results, indent=2))
 
