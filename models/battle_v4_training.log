@@ -1,0 +1,147 @@
+Teams: ['1leven-r2200', 'archaludon-corv', 'chiku-r2300', 'chikuko', 'cr7-r2300', 'daisangen-r2500', 'garashi-r2100', 'gray-r2001', 'gusha-r2200', 'howarori-r2200', 'howarori-r2400', 'karbain-greninja', 'key-r2400', 'kurifuto-r2200', 'mana-r2300', 'mega-gengar-team', 'mega-kangaskhan-team', 'mega-scizor-team', 'mega-venusaur-charizardx', 'noname-champ', 'rb-neko-r2001', 'sand-mega-gyarados', 'sato-r2300', 'screenshot-team', 'shioinu-r2400', 'suzu-r2400', 'template-a-dragonite', 'template-b-gyarados', 'template-c-hippo', 'teramatsu-r2100', 'unaware-wall-r2400', 'yumenonaka-r2100']
+p1: screenshot-team, opponent pool: 31 teams
+Using selection model: models/selection_best.zip
+LR schedule: 0.0003 → 3e-05 (linear decay)
+Starting fresh MaskablePPO
+
+============================================================
+Training to 5000 steps...
+Evaluating at 5000 steps (7.3min elapsed)...
+  Overall: 57/96 = 59%
+    vs 1leven-r2200: 3/3
+    vs archaludon-corv: 1/3
+    vs chiku-r2300: 3/3
+    vs chikuko: 0/3
+    vs cr7-r2300: 3/3
+    vs daisangen-r2500: 2/3
+    vs garashi-r2100: 3/3
+    vs gray-r2001: 0/3
+    vs gusha-r2200: 0/3
+    vs howarori-r2200: 0/3
+    vs howarori-r2400: 0/3
+    vs karbain-greninja: 3/3
+    vs key-r2400: 0/3
+    vs kurifuto-r2200: 0/3
+    vs mana-r2300: 1/3
+    vs mega-gengar-team: 1/3
+    vs mega-kangaskhan-team: 3/3
+    vs mega-scizor-team: 0/3
+    vs mega-venusaur-charizardx: 3/3
+    vs noname-champ: 3/3
+    vs rb-neko-r2001: 3/3
+    vs sand-mega-gyarados: 3/3
+    vs sato-r2300: 2/3
+    vs screenshot-team: 0/3
+    vs shioinu-r2400: 3/3
+    vs suzu-r2400: 2/3
+    vs template-a-dragonite: 3/3
+    vs template-b-gyarados: 3/3
+    vs template-c-hippo: 3/3
+    vs teramatsu-r2100: 0/3
+    vs unaware-wall-r2400: 3/3
+    vs yumenonaka-r2100: 3/3
+  --- Quality Metrics ---
+  Battles: 96
+  Avg turns: 9.2
+  Wasted moves: 71/786 (9.0%)
+  Setup: 0 KOs / 0 attempts (0% success), 0 wasted
+  Switches: 424 total, +0 gained, -73 lost (ROI: -0.17)
+  ★ New best: 59%
+
+============================================================
+Training to 10000 steps...
+Evaluating at 10000 steps (16.3min elapsed)...
+  Overall: 57/96 = 59%
+    vs 1leven-r2200: 3/3
+    vs archaludon-corv: 1/3
+    vs chiku-r2300: 0/3
+    vs chikuko: 0/3
+    vs cr7-r2300: 3/3
+    vs daisangen-r2500: 2/3
+    vs garashi-r2100: 3/3
+    vs gray-r2001: 1/3
+    vs gusha-r2200: 0/3
+    vs howarori-r2200: 0/3
+    vs howarori-r2400: 0/3
+    vs karbain-greninja: 3/3
+    vs key-r2400: 0/3
+    vs kurifuto-r2200: 0/3
+    vs mana-r2300: 1/3
+    vs mega-gengar-team: 2/3
+    vs mega-kangaskhan-team: 3/3
+    vs mega-scizor-team: 0/3
+    vs mega-venusaur-charizardx: 2/3
+    vs noname-champ: 3/3
+    vs rb-neko-r2001: 3/3
+    vs sand-mega-gyarados: 3/3
+    vs sato-r2300: 3/3
+    vs screenshot-team: 1/3
+    vs shioinu-r2400: 3/3
+    vs suzu-r2400: 3/3
+    vs template-a-dragonite: 2/3
+    vs template-b-gyarados: 3/3
+    vs template-c-hippo: 3/3
+    vs teramatsu-r2100: 0/3
+    vs unaware-wall-r2400: 3/3
+    vs yumenonaka-r2100: 3/3
+  --- Quality Metrics ---
+  Battles: 96
+  Avg turns: 9.2
+  Wasted moves: 73/791 (9.2%)
+  Setup: 0 KOs / 0 attempts (0% success), 0 wasted
+  Switches: 424 total, +0 gained, -76 lost (ROI: -0.18)
+  No improvement (1/5)
+
+============================================================
+Training to 15000 steps...
+Evaluating at 15000 steps (25.4min elapsed)...
+  Overall: 59/96 = 61%
+    vs 1leven-r2200: 3/3
+    vs archaludon-corv: 2/3
+    vs chiku-r2300: 3/3
+    vs chikuko: 2/3
+    vs cr7-r2300: 3/3
+    vs daisangen-r2500: 0/3
+    vs garashi-r2100: 3/3
+    vs gray-r2001: 1/3
+    vs gusha-r2200: 0/3
+    vs howarori-r2200: 0/3
+    vs howarori-r2400: 0/3
+    vs karbain-greninja: 3/3
+    vs key-r2400: 0/3
+    vs kurifuto-r2200: 0/3
+    vs mana-r2300: 2/3
+    vs mega-gengar-team: 3/3
+    vs mega-kangaskhan-team: 1/3
+    vs mega-scizor-team: 1/3
+    vs mega-venusaur-charizardx: 3/3
+    vs noname-champ: 1/3
+    vs rb-neko-r2001: 2/3
+    vs sand-mega-gyarados: 3/3
+    vs sato-r2300: 0/3
+    vs screenshot-team: 1/3
+    vs shioinu-r2400: 2/3
+    vs suzu-r2400: 3/3
+    vs template-a-dragonite: 3/3
+    vs template-b-gyarados: 3/3
+    vs template-c-hippo: 3/3
+    vs teramatsu-r2100: 2/3
+    vs unaware-wall-r2400: 3/3
+    vs yumenonaka-r2100: 3/3
+  --- Quality Metrics ---
+  Battles: 96
+  Avg turns: 9.2
+  Wasted moves: 60/768 (7.8%)
+  Setup: 0 KOs / 0 attempts (0% success), 0 wasted
+  Switches: 422 total, +0 gained, -77 lost (ROI: -0.18)
+  ★ New best: 61%
+
+============================================================
+Training complete: 27.0min
+
+Progression:
+    5000 steps: 59% (7.3min)
+    10000 steps: 59% (16.3min)
+    15000 steps: 62% (25.4min)
+
+Best model: ppo_masked_best (61%)

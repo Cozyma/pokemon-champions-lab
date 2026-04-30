@@ -1,9 +1,9 @@
 [
   {
     "steps": 1000,
-    "elapsed_min": 17.3,
-    "overall_win_rate": 0.725,
-    "total_wins": 232,
+    "elapsed_min": 18.2,
+    "overall_win_rate": 0.7,
+    "total_wins": 224,
     "total_games": 320,
     "per_opponent": {
       "1leven-r2200": {
@@ -11,7 +11,7 @@
         "games": 10
       },
       "archaludon-corv": {
-        "wins": 10,
+        "wins": 5,
         "games": 10
       },
       "chiku-r2300": {
@@ -19,15 +19,15 @@
         "games": 10
       },
       "chikuko": {
-        "wins": 9,
-        "games": 10
-      },
-      "cr7-r2300": {
         "wins": 10,
         "games": 10
       },
+      "cr7-r2300": {
+        "wins": 6,
+        "games": 10
+      },
       "daisangen-r2500": {
-        "wins": 5,
+        "wins": 10,
         "games": 10
       },
       "garashi-r2100": {
@@ -43,7 +43,7 @@
         "games": 10
       },
       "howarori-r2200": {
-        "wins": 8,
+        "wins": 10,
         "games": 10
       },
       "howarori-r2400": {
@@ -51,23 +51,23 @@
         "games": 10
       },
       "karbain-greninja": {
-        "wins": 10,
+        "wins": 9,
         "games": 10
       },
       "key-r2400": {
-        "wins": 7,
+        "wins": 8,
         "games": 10
       },
       "kurifuto-r2200": {
-        "wins": 7,
+        "wins": 9,
         "games": 10
       },
       "mana-r2300": {
-        "wins": 5,
+        "wins": 6,
         "games": 10
       },
       "mega-gengar-team": {
-        "wins": 10,
+        "wins": 9,
         "games": 10
       },
       "mega-kangaskhan-team": {
@@ -75,7 +75,7 @@
         "games": 10
       },
       "mega-scizor-team": {
-        "wins": 4,
+        "wins": 0,
         "games": 10
       },
       "mega-venusaur-charizardx": {
@@ -83,7 +83,7 @@
         "games": 10
       },
       "noname-champ": {
-        "wins": 9,
+        "wins": 6,
         "games": 10
       },
       "rb-neko-r2001": {
@@ -91,11 +91,11 @@
         "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 0,
+        "wins": 10,
         "games": 10
       },
       "sato-r2300": {
-        "wins": 8,
+        "wins": 0,
         "games": 10
       },
       "screenshot-team": {
@@ -107,15 +107,15 @@
         "games": 10
       },
       "suzu-r2400": {
-        "wins": 0,
+        "wins": 10,
         "games": 10
       },
       "template-a-dragonite": {
-        "wins": 7,
+        "wins": 5,
         "games": 10
       },
       "template-b-gyarados": {
-        "wins": 9,
+        "wins": 7,
         "games": 10
       },
       "template-c-hippo": {
@@ -123,7 +123,7 @@
         "games": 10
       },
       "teramatsu-r2100": {
-        "wins": 7,
+        "wins": 2,
         "games": 10
       },
       "unaware-wall-r2400": {
@@ -131,16 +131,16 @@
         "games": 10
       },
       "yumenonaka-r2100": {
-        "wins": 9,
+        "wins": 4,
         "games": 10
       }
     }
   },
   {
     "steps": 2000,
-    "elapsed_min": 39.6,
-    "overall_win_rate": 0.725,
-    "total_wins": 232,
+    "elapsed_min": 41.4,
+    "overall_win_rate": 0.766,
+    "total_wins": 245,
     "total_games": 320,
     "per_opponent": {
       "1leven-r2200": {
@@ -148,7 +148,7 @@
         "games": 10
       },
       "archaludon-corv": {
-        "wins": 9,
+        "wins": 10,
         "games": 10
       },
       "chiku-r2300": {
@@ -160,11 +160,11 @@
         "games": 10
       },
       "cr7-r2300": {
-        "wins": 10,
+        "wins": 8,
         "games": 10
       },
       "daisangen-r2500": {
-        "wins": 5,
+        "wins": 8,
         "games": 10
       },
       "garashi-r2100": {
@@ -172,15 +172,15 @@
         "games": 10
       },
       "gray-r2001": {
-        "wins": 5,
+        "wins": 4,
         "games": 10
       },
       "gusha-r2200": {
-        "wins": 2,
+        "wins": 1,
         "games": 10
       },
       "howarori-r2200": {
-        "wins": 5,
+        "wins": 7,
         "games": 10
       },
       "howarori-r2400": {
@@ -192,7 +192,7 @@
         "games": 10
       },
       "key-r2400": {
-        "wins": 2,
+        "wins": 5,
         "games": 10
       },
       "kurifuto-r2200": {
@@ -200,11 +200,11 @@
         "games": 10
       },
       "mana-r2300": {
-        "wins": 4,
+        "wins": 6,
         "games": 10
       },
       "mega-gengar-team": {
-        "wins": 9,
+        "wins": 10,
         "games": 10
       },
       "mega-kangaskhan-team": {
@@ -228,11 +228,11 @@
         "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 1,
+        "wins": 2,
         "games": 10
       },
       "sato-r2300": {
-        "wins": 6,
+        "wins": 10,
         "games": 10
       },
       "screenshot-team": {
@@ -244,11 +244,11 @@
         "games": 10
       },
       "suzu-r2400": {
-        "wins": 1,
+        "wins": 2,
         "games": 10
       },
       "template-a-dragonite": {
-        "wins": 9,
+        "wins": 8,
         "games": 10
       },
       "template-b-gyarados": {
@@ -275,7 +275,7 @@
   },
   {
     "steps": 3000,
-    "elapsed_min": 61.9,
+    "elapsed_min": 64.5,
     "overall_win_rate": 0.725,
     "total_wins": 232,
     "total_games": 320,
@@ -285,7 +285,7 @@
         "games": 10
       },
       "archaludon-corv": {
-        "wins": 9,
+        "wins": 10,
         "games": 10
       },
       "chiku-r2300": {
@@ -297,11 +297,11 @@
         "games": 10
       },
       "cr7-r2300": {
-        "wins": 10,
+        "wins": 9,
         "games": 10
       },
       "daisangen-r2500": {
-        "wins": 4,
+        "wins": 6,
         "games": 10
       },
       "garashi-r2100": {
@@ -309,7 +309,7 @@
         "games": 10
       },
       "gray-r2001": {
-        "wins": 6,
+        "wins": 5,
         "games": 10
       },
       "gusha-r2200": {
@@ -317,7 +317,7 @@
         "games": 10
       },
       "howarori-r2200": {
-        "wins": 8,
+        "wins": 7,
         "games": 10
       },
       "howarori-r2400": {
@@ -325,11 +325,11 @@
         "games": 10
       },
       "karbain-greninja": {
-        "wins": 9,
+        "wins": 10,
         "games": 10
       },
       "key-r2400": {
-        "wins": 1,
+        "wins": 2,
         "games": 10
       },
       "kurifuto-r2200": {
@@ -337,15 +337,15 @@
         "games": 10
       },
       "mana-r2300": {
-        "wins": 5,
+        "wins": 8,
         "games": 10
       },
       "mega-gengar-team": {
-        "wins": 10,
+        "wins": 8,
         "games": 10
       },
       "mega-kangaskhan-team": {
-        "wins": 10,
+        "wins": 9,
         "games": 10
       },
       "mega-scizor-team": {
@@ -357,7 +357,7 @@
         "games": 10
       },
       "noname-champ": {
-        "wins": 8,
+        "wins": 6,
         "games": 10
       },
       "rb-neko-r2001": {
@@ -365,305 +365,31 @@
         "games": 10
       },
       "sand-mega-gyarados": {
-        "wins": 1,
-        "games": 10
-      },
-      "sato-r2300": {
-        "wins": 7,
-        "games": 10
-      },
-      "screenshot-team": {
-        "wins": 9,
-        "games": 10
-      },
-      "shioinu-r2400": {
-        "wins": 10,
-        "games": 10
-      },
-      "suzu-r2400": {
-        "wins": 2,
-        "games": 10
-      },
-      "template-a-dragonite": {
-        "wins": 7,
-        "games": 10
-      },
-      "template-b-gyarados": {
-        "wins": 9,
-        "games": 10
-      },
-      "template-c-hippo": {
-        "wins": 10,
-        "games": 10
-      },
-      "teramatsu-r2100": {
-        "wins": 8,
-        "games": 10
-      },
-      "unaware-wall-r2400": {
-        "wins": 9,
-        "games": 10
-      },
-      "yumenonaka-r2100": {
-        "wins": 9,
-        "games": 10
-      }
-    }
-  },
-  {
-    "steps": 4000,
-    "elapsed_min": 84.0,
-    "overall_win_rate": 0.719,
-    "total_wins": 230,
-    "total_games": 320,
-    "per_opponent": {
-      "1leven-r2200": {
-        "wins": 10,
-        "games": 10
-      },
-      "archaludon-corv": {
-        "wins": 10,
-        "games": 10
-      },
-      "chiku-r2300": {
-        "wins": 10,
-        "games": 10
-      },
-      "chikuko": {
-        "wins": 8,
-        "games": 10
-      },
-      "cr7-r2300": {
-        "wins": 10,
-        "games": 10
-      },
-      "daisangen-r2500": {
-        "wins": 7,
-        "games": 10
-      },
-      "garashi-r2100": {
-        "wins": 10,
-        "games": 10
-      },
-      "gray-r2001": {
-        "wins": 2,
-        "games": 10
-      },
-      "gusha-r2200": {
-        "wins": 1,
-        "games": 10
-      },
-      "howarori-r2200": {
         "wins": 3,
         "games": 10
       },
-      "howarori-r2400": {
-        "wins": 0,
+      "sato-r2300": {
+        "wins": 8,
         "games": 10
       },
-      "karbain-greninja": {
-        "wins": 10,
-        "games": 10
-      },
-      "key-r2400": {
-        "wins": 1,
-        "games": 10
-      },
-      "kurifuto-r2200": {
-        "wins": 10,
-        "games": 10
-      },
-      "mana-r2300": {
-        "wins": 5,
-        "games": 10
-      },
-      "mega-gengar-team": {
+      "screenshot-team": {
         "wins": 9,
         "games": 10
       },
-      "mega-kangaskhan-team": {
+      "shioinu-r2400": {
         "wins": 10,
         "games": 10
       },
-      "mega-scizor-team": {
+      "suzu-r2400": {
         "wins": 2,
         "games": 10
       },
-      "mega-venusaur-charizardx": {
-        "wins": 10,
-        "games": 10
-      },
-      "noname-champ": {
-        "wins": 10,
-        "games": 10
-      },
-      "rb-neko-r2001": {
-        "wins": 10,
-        "games": 10
-      },
-      "sand-mega-gyarados": {
-        "wins": 1,
-        "games": 10
-      },
-      "sato-r2300": {
-        "wins": 6,
-        "games": 10
-      },
-      "screenshot-team": {
-        "wins": 8,
-        "games": 10
-      },
-      "shioinu-r2400": {
-        "wins": 10,
-        "games": 10
-      },
-      "suzu-r2400": {
-        "wins": 1,
-        "games": 10
-      },
       "template-a-dragonite": {
-        "wins": 10,
-        "games": 10
-      },
-      "template-b-gyarados": {
-        "wins": 7,
-        "games": 10
-      },
-      "template-c-hippo": {
-        "wins": 10,
-        "games": 10
-      },
-      "teramatsu-r2100": {
-        "wins": 10,
-        "games": 10
-      },
-      "unaware-wall-r2400": {
-        "wins": 10,
-        "games": 10
-      },
-      "yumenonaka-r2100": {
-        "wins": 9,
-        "games": 10
-      }
-    }
-  },
-  {
-    "steps": 5000,
-    "elapsed_min": 105.9,
-    "overall_win_rate": 0.694,
-    "total_wins": 222,
-    "total_games": 320,
-    "per_opponent": {
-      "1leven-r2200": {
-        "wins": 10,
-        "games": 10
-      },
-      "archaludon-corv": {
-        "wins": 8,
-        "games": 10
-      },
-      "chiku-r2300": {
-        "wins": 10,
-        "games": 10
-      },
-      "chikuko": {
-        "wins": 10,
-        "games": 10
-      },
-      "cr7-r2300": {
-        "wins": 10,
-        "games": 10
-      },
-      "daisangen-r2500": {
         "wins": 5,
         "games": 10
       },
-      "garashi-r2100": {
-        "wins": 10,
-        "games": 10
-      },
-      "gray-r2001": {
-        "wins": 8,
-        "games": 10
-      },
-      "gusha-r2200": {
-        "wins": 8,
-        "games": 10
-      },
-      "howarori-r2200": {
-        "wins": 10,
-        "games": 10
-      },
-      "howarori-r2400": {
-        "wins": 0,
-        "games": 10
-      },
-      "karbain-greninja": {
-        "wins": 10,
-        "games": 10
-      },
-      "key-r2400": {
-        "wins": 7,
-        "games": 10
-      },
-      "kurifuto-r2200": {
-        "wins": 10,
-        "games": 10
-      },
-      "mana-r2300": {
-        "wins": 8,
-        "games": 10
-      },
-      "mega-gengar-team": {
-        "wins": 1,
-        "games": 10
-      },
-      "mega-kangaskhan-team": {
-        "wins": 10,
-        "games": 10
-      },
-      "mega-scizor-team": {
-        "wins": 4,
-        "games": 10
-      },
-      "mega-venusaur-charizardx": {
-        "wins": 10,
-        "games": 10
-      },
-      "noname-champ": {
-        "wins": 7,
-        "games": 10
-      },
-      "rb-neko-r2001": {
-        "wins": 7,
-        "games": 10
-      },
-      "sand-mega-gyarados": {
-        "wins": 1,
-        "games": 10
-      },
-      "sato-r2300": {
-        "wins": 3,
-        "games": 10
-      },
-      "screenshot-team": {
-        "wins": 4,
-        "games": 10
-      },
-      "shioinu-r2400": {
-        "wins": 7,
-        "games": 10
-      },
-      "suzu-r2400": {
-        "wins": 6,
-        "games": 10
-      },
-      "template-a-dragonite": {
-        "wins": 6,
-        "games": 10
-      },
       "template-b-gyarados": {
-        "wins": 1,
+        "wins": 8,
         "games": 10
       },
       "template-c-hippo": {
@@ -671,11 +397,11 @@
         "games": 10
       },
       "teramatsu-r2100": {
-        "wins": 1,
+        "wins": 7,
         "games": 10
       },
       "unaware-wall-r2400": {
-        "wins": 10,
+        "wins": 9,
         "games": 10
       },
       "yumenonaka-r2100": {

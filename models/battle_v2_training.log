@@ -1,0 +1,365 @@
+Teams: ['1leven-r2200', 'archaludon-corv', 'chiku-r2300', 'chikuko', 'cr7-r2300', 'daisangen-r2500', 'garashi-r2100', 'gray-r2001', 'gusha-r2200', 'howarori-r2200', 'howarori-r2400', 'karbain-greninja', 'key-r2400', 'kurifuto-r2200', 'mana-r2300', 'mega-gengar-team', 'mega-kangaskhan-team', 'mega-scizor-team', 'mega-venusaur-charizardx', 'noname-champ', 'rb-neko-r2001', 'sand-mega-gyarados', 'sato-r2300', 'screenshot-team', 'shioinu-r2400', 'suzu-r2400', 'template-a-dragonite', 'template-b-gyarados', 'template-c-hippo', 'teramatsu-r2100', 'unaware-wall-r2400', 'yumenonaka-r2100']
+p1: screenshot-team, opponent pool: 31 teams
+Using selection model: models/selection_best.zip
+LR schedule: 0.0003 → 3e-05 (linear decay)
+Starting fresh MaskablePPO
+
+============================================================
+Training to 2000 steps...
+Evaluating at 2000 steps (2.8min elapsed)...
+  Overall: 161/320 = 50%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 2/10
+    vs chiku-r2300: 9/10
+    vs chikuko: 3/10
+    vs cr7-r2300: 8/10
+    vs daisangen-r2500: 2/10
+    vs garashi-r2100: 0/10
+    vs gray-r2001: 1/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 0/10
+    vs howarori-r2400: 6/10
+    vs karbain-greninja: 0/10
+    vs key-r2400: 4/10
+    vs kurifuto-r2200: 0/10
+    vs mana-r2300: 3/10
+    vs mega-gengar-team: 5/10
+    vs mega-kangaskhan-team: 3/10
+    vs mega-scizor-team: 10/10
+    vs mega-venusaur-charizardx: 9/10
+    vs noname-champ: 10/10
+    vs rb-neko-r2001: 4/10
+    vs sand-mega-gyarados: 10/10
+    vs sato-r2300: 1/10
+    vs screenshot-team: 3/10
+    vs shioinu-r2400: 3/10
+    vs suzu-r2400: 7/10
+    vs template-a-dragonite: 10/10
+    vs template-b-gyarados: 4/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 4/10
+    vs unaware-wall-r2400: 10/10
+    vs yumenonaka-r2100: 10/10
+  ★ New best: 50%
+
+============================================================
+Training to 4000 steps...
+Evaluating at 4000 steps (11.0min elapsed)...
+  Overall: 161/320 = 50%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 10/10
+    vs chiku-r2300: 1/10
+    vs chikuko: 1/10
+    vs cr7-r2300: 10/10
+    vs daisangen-r2500: 8/10
+    vs garashi-r2100: 0/10
+    vs gray-r2001: 1/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 0/10
+    vs howarori-r2400: 7/10
+    vs karbain-greninja: 0/10
+    vs key-r2400: 1/10
+    vs kurifuto-r2200: 0/10
+    vs mana-r2300: 9/10
+    vs mega-gengar-team: 7/10
+    vs mega-kangaskhan-team: 1/10
+    vs mega-scizor-team: 3/10
+    vs mega-venusaur-charizardx: 4/10
+    vs noname-champ: 9/10
+    vs rb-neko-r2001: 9/10
+    vs sand-mega-gyarados: 9/10
+    vs sato-r2300: 2/10
+    vs screenshot-team: 0/10
+    vs shioinu-r2400: 10/10
+    vs suzu-r2400: 5/10
+    vs template-a-dragonite: 8/10
+    vs template-b-gyarados: 0/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 6/10
+    vs unaware-wall-r2400: 10/10
+    vs yumenonaka-r2100: 10/10
+  No improvement (1/5)
+
+============================================================
+Training to 6000 steps...
+Evaluating at 6000 steps (19.7min elapsed)...
+  Overall: 172/320 = 54%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 2/10
+    vs chiku-r2300: 10/10
+    vs chikuko: 3/10
+    vs cr7-r2300: 10/10
+    vs daisangen-r2500: 2/10
+    vs garashi-r2100: 0/10
+    vs gray-r2001: 4/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 1/10
+    vs howarori-r2400: 9/10
+    vs karbain-greninja: 0/10
+    vs key-r2400: 1/10
+    vs kurifuto-r2200: 1/10
+    vs mana-r2300: 3/10
+    vs mega-gengar-team: 6/10
+    vs mega-kangaskhan-team: 3/10
+    vs mega-scizor-team: 10/10
+    vs mega-venusaur-charizardx: 6/10
+    vs noname-champ: 9/10
+    vs rb-neko-r2001: 3/10
+    vs sand-mega-gyarados: 9/10
+    vs sato-r2300: 1/10
+    vs screenshot-team: 4/10
+    vs shioinu-r2400: 3/10
+    vs suzu-r2400: 8/10
+    vs template-a-dragonite: 10/10
+    vs template-b-gyarados: 6/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 9/10
+    vs unaware-wall-r2400: 9/10
+    vs yumenonaka-r2100: 10/10
+  ★ New best: 54%
+
+============================================================
+Training to 8000 steps...
+Evaluating at 8000 steps (28.7min elapsed)...
+  Overall: 184/320 = 57%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 5/10
+    vs chiku-r2300: 7/10
+    vs chikuko: 0/10
+    vs cr7-r2300: 10/10
+    vs daisangen-r2500: 10/10
+    vs garashi-r2100: 0/10
+    vs gray-r2001: 3/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 1/10
+    vs howarori-r2400: 6/10
+    vs karbain-greninja: 0/10
+    vs key-r2400: 1/10
+    vs kurifuto-r2200: 0/10
+    vs mana-r2300: 6/10
+    vs mega-gengar-team: 6/10
+    vs mega-kangaskhan-team: 4/10
+    vs mega-scizor-team: 10/10
+    vs mega-venusaur-charizardx: 6/10
+    vs noname-champ: 8/10
+    vs rb-neko-r2001: 10/10
+    vs sand-mega-gyarados: 9/10
+    vs sato-r2300: 1/10
+    vs screenshot-team: 4/10
+    vs shioinu-r2400: 10/10
+    vs suzu-r2400: 5/10
+    vs template-a-dragonite: 10/10
+    vs template-b-gyarados: 5/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 7/10
+    vs unaware-wall-r2400: 10/10
+    vs yumenonaka-r2100: 10/10
+  ★ New best: 57%
+
+============================================================
+Training to 10000 steps...
+Evaluating at 10000 steps (37.3min elapsed)...
+  Overall: 162/320 = 51%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 0/10
+    vs chiku-r2300: 9/10
+    vs chikuko: 1/10
+    vs cr7-r2300: 9/10
+    vs daisangen-r2500: 3/10
+    vs garashi-r2100: 0/10
+    vs gray-r2001: 0/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 0/10
+    vs howarori-r2400: 6/10
+    vs karbain-greninja: 2/10
+    vs key-r2400: 9/10
+    vs kurifuto-r2200: 0/10
+    vs mana-r2300: 1/10
+    vs mega-gengar-team: 8/10
+    vs mega-kangaskhan-team: 5/10
+    vs mega-scizor-team: 8/10
+    vs mega-venusaur-charizardx: 8/10
+    vs noname-champ: 10/10
+    vs rb-neko-r2001: 2/10
+    vs sand-mega-gyarados: 9/10
+    vs sato-r2300: 1/10
+    vs screenshot-team: 3/10
+    vs shioinu-r2400: 3/10
+    vs suzu-r2400: 3/10
+    vs template-a-dragonite: 10/10
+    vs template-b-gyarados: 5/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 7/10
+    vs unaware-wall-r2400: 10/10
+    vs yumenonaka-r2100: 10/10
+  No improvement (1/5)
+
+============================================================
+Training to 12000 steps...
+Evaluating at 12000 steps (45.5min elapsed)...
+  Overall: 161/320 = 50%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 2/10
+    vs chiku-r2300: 8/10
+    vs chikuko: 1/10
+    vs cr7-r2300: 10/10
+    vs daisangen-r2500: 1/10
+    vs garashi-r2100: 0/10
+    vs gray-r2001: 2/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 0/10
+    vs howarori-r2400: 6/10
+    vs karbain-greninja: 0/10
+    vs key-r2400: 3/10
+    vs kurifuto-r2200: 0/10
+    vs mana-r2300: 1/10
+    vs mega-gengar-team: 8/10
+    vs mega-kangaskhan-team: 2/10
+    vs mega-scizor-team: 8/10
+    vs mega-venusaur-charizardx: 10/10
+    vs noname-champ: 9/10
+    vs rb-neko-r2001: 5/10
+    vs sand-mega-gyarados: 10/10
+    vs sato-r2300: 2/10
+    vs screenshot-team: 2/10
+    vs shioinu-r2400: 5/10
+    vs suzu-r2400: 6/10
+    vs template-a-dragonite: 9/10
+    vs template-b-gyarados: 3/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 8/10
+    vs unaware-wall-r2400: 10/10
+    vs yumenonaka-r2100: 10/10
+  No improvement (2/5)
+
+============================================================
+Training to 14000 steps...
+Evaluating at 14000 steps (53.8min elapsed)...
+  Overall: 163/320 = 51%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 0/10
+    vs chiku-r2300: 10/10
+    vs chikuko: 4/10
+    vs cr7-r2300: 10/10
+    vs daisangen-r2500: 6/10
+    vs garashi-r2100: 0/10
+    vs gray-r2001: 4/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 0/10
+    vs howarori-r2400: 6/10
+    vs karbain-greninja: 0/10
+    vs key-r2400: 5/10
+    vs kurifuto-r2200: 0/10
+    vs mana-r2300: 2/10
+    vs mega-gengar-team: 6/10
+    vs mega-kangaskhan-team: 0/10
+    vs mega-scizor-team: 9/10
+    vs mega-venusaur-charizardx: 5/10
+    vs noname-champ: 10/10
+    vs rb-neko-r2001: 2/10
+    vs sand-mega-gyarados: 8/10
+    vs sato-r2300: 0/10
+    vs screenshot-team: 5/10
+    vs shioinu-r2400: 3/10
+    vs suzu-r2400: 6/10
+    vs template-a-dragonite: 10/10
+    vs template-b-gyarados: 5/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 7/10
+    vs unaware-wall-r2400: 10/10
+    vs yumenonaka-r2100: 10/10
+  No improvement (3/5)
+
+============================================================
+Training to 16000 steps...
+Evaluating at 16000 steps (62.2min elapsed)...
+  Overall: 184/320 = 57%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 1/10
+    vs chiku-r2300: 5/10
+    vs chikuko: 7/10
+    vs cr7-r2300: 10/10
+    vs daisangen-r2500: 2/10
+    vs garashi-r2100: 5/10
+    vs gray-r2001: 0/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 4/10
+    vs howarori-r2400: 9/10
+    vs karbain-greninja: 10/10
+    vs key-r2400: 5/10
+    vs kurifuto-r2200: 3/10
+    vs mana-r2300: 2/10
+    vs mega-gengar-team: 1/10
+    vs mega-kangaskhan-team: 6/10
+    vs mega-scizor-team: 10/10
+    vs mega-venusaur-charizardx: 7/10
+    vs noname-champ: 7/10
+    vs rb-neko-r2001: 10/10
+    vs sand-mega-gyarados: 7/10
+    vs sato-r2300: 3/10
+    vs screenshot-team: 2/10
+    vs shioinu-r2400: 10/10
+    vs suzu-r2400: 3/10
+    vs template-a-dragonite: 10/10
+    vs template-b-gyarados: 5/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 2/10
+    vs unaware-wall-r2400: 8/10
+    vs yumenonaka-r2100: 10/10
+  No improvement (4/5)
+
+============================================================
+Training to 18000 steps...
+Evaluating at 18000 steps (70.5min elapsed)...
+  Overall: 168/320 = 52%
+    vs 1leven-r2200: 10/10
+    vs archaludon-corv: 6/10
+    vs chiku-r2300: 5/10
+    vs chikuko: 0/10
+    vs cr7-r2300: 10/10
+    vs daisangen-r2500: 8/10
+    vs garashi-r2100: 0/10
+    vs gray-r2001: 1/10
+    vs gusha-r2200: 0/10
+    vs howarori-r2200: 0/10
+    vs howarori-r2400: 10/10
+    vs karbain-greninja: 0/10
+    vs key-r2400: 2/10
+    vs kurifuto-r2200: 0/10
+    vs mana-r2300: 8/10
+    vs mega-gengar-team: 5/10
+    vs mega-kangaskhan-team: 1/10
+    vs mega-scizor-team: 4/10
+    vs mega-venusaur-charizardx: 9/10
+    vs noname-champ: 8/10
+    vs rb-neko-r2001: 10/10
+    vs sand-mega-gyarados: 8/10
+    vs sato-r2300: 1/10
+    vs screenshot-team: 0/10
+    vs shioinu-r2400: 10/10
+    vs suzu-r2400: 7/10
+    vs template-a-dragonite: 9/10
+    vs template-b-gyarados: 2/10
+    vs template-c-hippo: 10/10
+    vs teramatsu-r2100: 4/10
+    vs unaware-wall-r2400: 10/10
+    vs yumenonaka-r2100: 10/10
+  No improvement (5/5)
+
+��� Early stopping: no improvement for 5 checkpoints
+
+============================================================
+Training complete: 75.8min
+
+Progression:
+    2000 steps: 50% (2.8min)
+    4000 steps: 50% (11.0min)
+    6000 steps: 54% (19.7min)
+  ★ 8000 steps: 57% (28.7min)
+    10000 steps: 51% (37.3min)
+    12000 steps: 50% (45.5min)
+    14000 steps: 51% (53.8min)
+  ★ 16000 steps: 57% (62.2min)
+    18000 steps: 52% (70.5min)
+
+Best model: ppo_masked_best (57%)
